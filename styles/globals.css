@@ -3,24 +3,24 @@
 @tailwind utilities;
 
 input {
-  @apply border;
-  @apply border-solid;
-  @apply border-gray-300;
-  /* @apply rounded-md; */
-  @apply px-4;
-  @apply py-2;
+    @apply border;
+    @apply border-solid;
+    @apply border-gray-300;
+    /* @apply rounded-md; */
+    @apply px-4;
+    @apply py-2;
 }
 
 .border-hairline {
-  @apply border border-black border-opacity-10;
+    @apply border border-black border-opacity-10;
 }
 
 .button {
-  @apply bg-black text-white rounded-r-md inline-block px-5 py-3;
+    @apply rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50;
 }
 
 .image-wrapper {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    position: relative;
 }
