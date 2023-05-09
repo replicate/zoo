@@ -229,6 +229,7 @@ export default function Home() {
                         href={`https://replicate.com/p/${prediction.id}`}
                         className=""
                         target="_blank"
+                        rel="noreferrer"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -287,7 +288,7 @@ export default function Home() {
           <div className="h-28 text-xs"></div>
           <div>
             <h5 class="text-lg text-gray-800">Text to Image</h5>
-            <div className="mt-4 grid space-y-2">
+            <div className="mt-4 grid space-y-1">
               {models.map((model) => (
                 <div key={model.id} class="relative flex items-start">
                   <div class="flex h-6 items-center">
@@ -301,11 +302,11 @@ export default function Home() {
                   </div>
                   <div class="ml-3 text-sm leading-6">
                     {model.checked ? (
-                      <label for="model" class="font-medium text-gray-900">
+                      <label for="model" class="text-gray-900">
                         {model.name}
                       </label>
                     ) : (
-                      <label for="model" class="font-medium text-gray-500">
+                      <label for="model" class="text-gray-500">
                         {model.name}
                       </label>
                     )}
