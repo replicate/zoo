@@ -10,56 +10,68 @@ export default function Home() {
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
 
-  const models = [
+  const [models, setModels] = useState([
     {
       id: 3,
       name: "stability-ai/stable-diffusion 1.5",
       version:
         "328bd9692d29d6781034e3acab8cf3fcb122161e6f5afb896a4ca9fd57090577",
+      checked: true,
     },
     {
       id: 1,
       name: "stability-ai/stable-diffusion 2.1",
       version:
         "db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf",
+      checked: true,
     },
     {
       id: 2,
       name: "ai-forever/kandinsky-2",
       version:
         "601eea49d49003e6ea75a11527209c4f510a93e2112c969d548fbb45b9c4f19f",
+      checked: true,
     },
     {
       id: 4,
       name: "tstramer/material-diffusion",
       version:
         "a42692c54c0f407f803a0a8a9066160976baedb77c91171a01730f9b0d7beeff",
+      checked: true,
     },
-  ];
-
-  const [selectedModels, setSelectedModels] = useState([]);
+  ]);
 
   function getModelByVersion(version) {
     return models.find((m) => m.version === version);
   }
 
+  function getSelectedModels() {
+    return models.filter((m) => m.checked);
+  }
+
   const handleCheckboxChange = (e) => {
     const modelId = parseInt(e.target.value, 10);
-    const model = models.find((m) => m.id === modelId);
 
-    if (e.target.checked) {
-      const newModels = [...selectedModels, model];
-      setSelectedModels(newModels);
-    } else {
-      setSelectedModels((prev) => prev.filter((item) => item !== model));
-    }
+    // Update the checked flag for the model with the matching modelId
+    const updatedModels = models.map((model) => {
+      if (model.id === modelId) {
+        return {
+          ...model,
+          checked: e.target.checked,
+        };
+      }
+      return model;
+    });
+
+    // Set the new models array
+    setModels(updatedModels);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
-    for (const model of selectedModels) {
+    for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model
       // Update the API call or any other logic as needed to use the selected model
 
@@ -134,7 +146,7 @@ export default function Home() {
                 <input
                   type="checkbox"
                   value={model.id}
-                  checked="true"
+                  checked={true}
                   onChange={handleCheckboxChange}
                 />
                 <span className="ml-2">{model.name}</span>
