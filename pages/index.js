@@ -149,7 +149,7 @@ export default function Home() {
         <div class="sm:flex">
           <div class="mb-4 flex-shrink-0 sm:mb-0 sm:mr-4">
             <img
-              src="https://github-production-user-asset-6210df.s3.amazonaws.com/14149230/237235028-5818ffa6-af8a-4c1a-9644-1ddcceac008e.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A/20230509/us-east-1/s3/aws4_request&X-Amz-Date=20230509T223509Z&X-Amz-Expires=300&X-Amz-Signature=64eec013b9782cc731583552ee9739ec5a12e6f25f7ede44fe015e5462eb6995&X-Amz-SignedHeaders=host&actor_id=14149230&key_id=0&repo_id=601830749"
+              src="https://github.com/cbh123/shlinked/assets/14149230/4db7f46a-51ca-462e-b6a8-86fbebb499c0"
               alt=""
               className="h-12 w-12 inline-flex"
             />
@@ -202,7 +202,7 @@ export default function Home() {
                   <div className="mt-6">
                     <a href={model.replicate_link}>
                       <img
-                        src="https://github-production-user-asset-6210df.s3.amazonaws.com/14149230/237239375-cc337cae-5a36-4857-ae6e-7f0b73d861f8.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20230509%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230509T230912Z&X-Amz-Expires=300&X-Amz-Signature=2181102531e342069cb5aaf89b4bf47f37ee09ceb7df18ca111311315a0b90ff&X-Amz-SignedHeaders=host&actor_id=14149230&key_id=0&repo_id=622710084"
+                        src="https://github.com/cbh123/shlinked/assets/14149230/705eeeaf-94b9-4ae2-b3b3-6f3121d81412"
                         alt=""
                         className="h-6 w-6 "
                       />
