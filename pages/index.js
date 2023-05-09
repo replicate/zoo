@@ -54,11 +54,22 @@ export default function Home() {
       name: "material-diffusion",
       version:
         "a42692c54c0f407f803a0a8a9066160976baedb77c91171a01730f9b0d7beeff",
-      checked: true,
+      checked: false,
       description:
         "Stable diffusion fork for generating tileable outputs using v1.5 model",
       replicate_link: "https://replicate.com/tstramer/material-diffusion",
       github_link: "https://replicate.com/tstramer/material-diffusion",
+    },
+    {
+      id: 5,
+      owner: "prompthero",
+      name: "openjourney-v4",
+      version:
+        "e8818682e72a8b25895c7d90e889b712b6edfc5151f145e3606f21c1e85c65bf",
+      checked: true,
+      description: "SD 1.5 trained with +124k MJv4 images by PromptHero",
+      replicate_link: "https://replicate.com/prompthero/openjourney-v4",
+      github_link: "https://replicate.com/prompthero/openjourney-v4",
     },
   ]);
 
