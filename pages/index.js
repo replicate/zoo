@@ -14,31 +14,47 @@ export default function Home() {
   const [models, setModels] = useState([
     {
       id: 3,
-      name: "stability-ai/stable-diffusion 1.5",
+      owner: "stability-ai",
+      name: "stable-diffusion 1.5",
       version:
         "328bd9692d29d6781034e3acab8cf3fcb122161e6f5afb896a4ca9fd57090577",
       checked: true,
+      description:
+        "A latent text-to-image diffusion model capable of generating photo-realistic images given any text input",
+      replicate_link: "https://replicate.com/stability-ai/stable-diffusion",
     },
     {
       id: 1,
-      name: "stability-ai/stable-diffusion 2.1",
+      owner: "stability-ai",
+      name: "stable-diffusion 2.1",
       version:
         "db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf",
       checked: true,
+      description:
+        "A latent text-to-image diffusion model capable of generating photo-realistic images given any text input",
+      replicate_link: "https://replicate.com/stability-ai/stable-diffusion",
     },
     {
       id: 2,
-      name: "ai-forever/kandinsky-2",
+      owner: "ai-forever",
+      name: "kandinsky-2",
       version:
         "601eea49d49003e6ea75a11527209c4f510a93e2112c969d548fbb45b9c4f19f",
       checked: true,
+      description:
+        "text2img model trained on LAION HighRes and fine-tuned on internal datasets",
+      replicate_link: "https://replicate.com/ai-forever/kandinsky-2",
     },
     {
       id: 4,
-      name: "tstramer/material-diffusion",
+      owner: "tstramer",
+      name: "material-diffusion",
       version:
         "a42692c54c0f407f803a0a8a9066160976baedb77c91171a01730f9b0d7beeff",
       checked: true,
+      description:
+        "Stable diffusion fork for generating tileable outputs using v1.5 model",
+      replicate_link: "https://replicate.com/tstramer/material-diffusion",
     },
   ]);
 
@@ -48,6 +64,10 @@ export default function Home() {
 
   function getSelectedModels() {
     return models.filter((m) => m.checked);
+  }
+
+  function getPredictionsByVersion(version) {
+    return predictions.filter((p) => p.version === version);
   }
 
   const handleCheckboxChange = (e) => {
@@ -169,7 +189,51 @@ export default function Home() {
             </form>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          {getSelectedModels().map((model) => (
+            <div key={model.id} className="mt-5">
+              <div className="grid grid-cols-4 gap-6 tracking-wide">
+                <div class="border-l-4 border-gray-900 pl-6 py-2 mb-10">
+                  <h5 class="text-sm text-gray-500">{model.owner}</h5>
+                  <h5 class="text-xl font-medium text-gray-800">
+                    {model.name}
+                  </h5>
+                  <p class="text-sm  text-gray-500 mt-4">{model.description}</p>
+
+                  <div className="mt-6">
+                    <a href={model.replicate_link}>
+                      <img
+                        src="https://github-production-user-asset-6210df.s3.amazonaws.com/14149230/237239375-cc337cae-5a36-4857-ae6e-7f0b73d861f8.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20230509%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230509T230912Z&X-Amz-Expires=300&X-Amz-Signature=2181102531e342069cb5aaf89b4bf47f37ee09ceb7df18ca111311315a0b90ff&X-Amz-SignedHeaders=host&actor_id=14149230&key_id=0&repo_id=622710084"
+                        alt=""
+                        className="h-6 w-6 "
+                      />
+                    </a>
+                  </div>
+                </div>
+                {getPredictionsByVersion(model.version).map((prediction) => (
+                  <div key={prediction.id}>
+                    {prediction.output && (
+                      <div className="image-wrapper rounded-lg">
+                        <Image
+                          fill
+                          src={prediction.output[prediction.output.length - 1]}
+                          alt="output"
+                          className="p-5"
+                        />
+                      </div>
+                    )}
+
+                    <p className="py-3 text-sm opacity-50 flex items-center justify-center">
+                      {prediction.status === "succeeded"
+                        ? ""
+                        : prediction.status}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          <div className="hidden grid grid-cols-3 gap-4">
             {predictions.map((prediction) => (
               <div key={prediction.id}>
                 {prediction.output && (
