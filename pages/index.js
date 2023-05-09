@@ -9,6 +9,7 @@ export default function Home() {
   const [prompt, setPrompt] = useState(promptmaker());
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
+  const [numOutputs, setNumOutputs] = useState(3);
 
   const [models, setModels] = useState([
     {
@@ -74,111 +75,157 @@ export default function Home() {
     for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model
       // Update the API call or any other logic as needed to use the selected model
-
-      const response = await fetch("/api/predictions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt: e.target.prompt.value,
-          version: model.version,
-        }),
-      });
-      let prediction = await response.json();
-      if (response.status !== 201) {
-        setError(prediction.detail);
-        return;
-      }
-      setPredictions((prev) => [...prev, prediction]);
-
-      const updatePrediction = async () => {
-        while (
-          prediction.status !== "succeeded" &&
-          prediction.status !== "failed"
-        ) {
-          await sleep(1000);
-          const response = await fetch("/api/predictions/" + prediction.id);
-          prediction = await response.json();
-          if (response.status !== 200) {
-            setError(prediction.detail);
-            return;
-          }
-          console.log({ prediction });
-          setPredictions((prev) =>
-            prev.map((item) => (item.id === prediction.id ? prediction : item))
-          );
+      for (let i = 0; i < numOutputs; i++) {
+        const response = await fetch("/api/predictions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prompt: e.target.prompt.value,
+            version: model.version,
+          }),
+        });
+        let prediction = await response.json();
+        if (response.status !== 201) {
+          setError(prediction.detail);
+          return;
         }
-      };
+        setPredictions((prev) => [...prev, prediction]);
 
-      updatePrediction();
+        const updatePrediction = async () => {
+          while (
+            prediction.status !== "succeeded" &&
+            prediction.status !== "failed"
+          ) {
+            await sleep(1000);
+            const response = await fetch("/api/predictions/" + prediction.id);
+            prediction = await response.json();
+            if (response.status !== 200) {
+              setError(prediction.detail);
+              return;
+            }
+            console.log({ prediction });
+            setPredictions((prev) =>
+              prev.map((item) =>
+                item.id === prediction.id ? prediction : item
+              )
+            );
+          }
+        };
+
+        updatePrediction();
+      }
     }
   };
 
   return (
-    <div className="container max-w-2xl mx-auto p-5">
+    <div className="mx-auto container p-5">
       <Head>
-        <title>Replicate + Next.js</title>
+        <title>Zeke</title>
       </Head>
 
-      <h1 className="py-6 text-center font-bold text-2xl">Cat.Dev</h1>
+      <nav>
+        <div class="sm:flex">
+          <div class="mb-4 flex-shrink-0 sm:mb-0 sm:mr-4">
+            <img
+              src="https://github-production-user-asset-6210df.s3.amazonaws.com/14149230/237235028-5818ffa6-af8a-4c1a-9644-1ddcceac008e.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A/20230509/us-east-1/s3/aws4_request&X-Amz-Date=20230509T223509Z&X-Amz-Expires=300&X-Amz-Signature=64eec013b9782cc731583552ee9739ec5a12e6f25f7ede44fe015e5462eb6995&X-Amz-SignedHeaders=host&actor_id=14149230&key_id=0&repo_id=601830749"
+              alt=""
+              className="h-12 w-12 inline-flex"
+            />
+          </div>
+          <div class="flex">
+            <h4 class="text-lg items-center flex justify-center">
+              Replicate <span class="text-zinc-500 ml-1">Playground</span>
+            </h4>
+          </div>
+        </div>
+      </nav>
 
-      <form className="w-full" onSubmit={handleSubmit}>
-        <div className="">
-          <textarea
-            name="prompt"
-            className="w-full border-2"
-            rows="3"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Enter a prompt to display an image"
-          />
+      <div className="grid grid-cols-12 gap-x-16 mt-12">
+        {/* Form + Outputs */}
+        <div className="col-span-9 h-full">
+          <div className="h-24">
+            <form className="w-full" onSubmit={handleSubmit}>
+              <div className="flex">
+                <textarea
+                  name="prompt"
+                  className="w-full border-2 p-3 rounded-md"
+                  rows="1"
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="Enter a prompt to display an image"
+                />
 
-          <div className="text-right">
-            <button className="button" type="submit">
-              Go!
-            </button>
+                <div className="ml-3">
+                  <button
+                    className="button h-full font-bold hover:bg-slate-800"
+                    type="submit"
+                  >
+                    Go
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
 
-          <div className="">
-            {models.map((model) => (
-              <label key={model.id} className="block">
-                <input
-                  type="checkbox"
-                  value={model.id}
-                  checked={true}
-                  onChange={handleCheckboxChange}
-                />
-                <span className="ml-2">{model.name}</span>
-              </label>
+          <div className="grid grid-cols-3 gap-4">
+            {predictions.map((prediction) => (
+              <div key={prediction.id}>
+                {prediction.output && (
+                  <div className="image-wrapper mt-5">
+                    <Image
+                      fill
+                      src={prediction.output[prediction.output.length - 1]}
+                      alt="output"
+                      sizes="100vw"
+                    />
+                  </div>
+                )}
+
+                <p className="py-3 text-sm opacity-50">
+                  {prediction.status === "succeeded"
+                    ? getModelByVersion(prediction.version).name
+                    : prediction.status}
+                </p>
+              </div>
             ))}
           </div>
         </div>
-      </form>
 
-      {error && <div>{error}</div>}
-
-      <div className="grid grid-cols-3 gap-4">
-        {predictions.map((prediction) => (
-          <div key={prediction.id}>
-            {prediction.output && (
-              <div className="image-wrapper mt-5">
-                <Image
-                  fill
-                  src={prediction.output[prediction.output.length - 1]}
-                  alt="output"
-                  sizes="100vw"
-                />
-              </div>
-            )}
-
-            <p className="py-3 text-sm opacity-50">
-              {prediction.status === "succeeded"
-                ? getModelByVersion(prediction.version).name
-                : prediction.status}
-            </p>
+        {/* Checkboxes */}
+        <div className="col-span-3 h-screen">
+          <div className="h-28 text-xs"></div>
+          <div>
+            <h5 class="text-lg text-gray-800">Text to Image</h5>
+            <div className="mt-4 grid space-y-2">
+              {models.map((model) => (
+                <div key={model.id} class="relative flex items-start">
+                  <div class="flex h-6 items-center">
+                    <input
+                      className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                      type="checkbox"
+                      value={model.id}
+                      checked={model.checked}
+                      onChange={handleCheckboxChange}
+                    />
+                  </div>
+                  <div class="ml-3 text-sm leading-6">
+                    {model.checked ? (
+                      <label for="model" class="font-medium text-gray-900">
+                        {model.name}
+                      </label>
+                    ) : (
+                      <label for="model" class="font-medium text-gray-500">
+                        {model.name}
+                      </label>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );
