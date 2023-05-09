@@ -22,6 +22,7 @@ export default function Home() {
       description:
         "A latent text-to-image diffusion model capable of generating photo-realistic images given any text input",
       replicate_link: "https://replicate.com/stability-ai/stable-diffusion",
+      github_link: "https://github.com/replicate/cog-stable-diffusion",
     },
     {
       id: 1,
@@ -33,6 +34,7 @@ export default function Home() {
       description:
         "A latent text-to-image diffusion model capable of generating photo-realistic images given any text input",
       replicate_link: "https://replicate.com/stability-ai/stable-diffusion",
+      github_link: "https://github.com/replicate/cog-stable-diffusion",
     },
     {
       id: 2,
@@ -44,6 +46,7 @@ export default function Home() {
       description:
         "text2img model trained on LAION HighRes and fine-tuned on internal datasets",
       replicate_link: "https://replicate.com/ai-forever/kandinsky-2",
+      github_link: "https://github.com/chenxwh/Kandinsky-2",
     },
     {
       id: 4,
@@ -55,6 +58,7 @@ export default function Home() {
       description:
         "Stable diffusion fork for generating tileable outputs using v1.5 model",
       replicate_link: "https://replicate.com/tstramer/material-diffusion",
+      github_link: "https://replicate.com/tstramer/material-diffusion",
     },
   ]);
 
@@ -189,95 +193,85 @@ export default function Home() {
             </form>
           </div>
 
-          {getSelectedModels().map((model) => (
-            <div key={model.id} className="mt-5">
-              <div className="grid grid-cols-4 gap-6 tracking-wide">
-                <div class="border-l-4 border-gray-900 pl-6 py-2 mb-10">
-                  <h5 class="text-sm text-gray-500">{model.owner}</h5>
-                  <h5 class="text-xl font-medium text-gray-800">
-                    {model.name}
-                  </h5>
-                  <p class="text-sm  text-gray-500 mt-4">{model.description}</p>
+          <div>
+            {getSelectedModels().map((model) => (
+              <div key={model.id} className="mt-5">
+                <div className="grid grid-cols-4 gap-6 tracking-wide">
+                  <div class="border-l-4 border-gray-900 pl-6 py-2 mb-10">
+                    <h5 class="text-sm text-gray-500">{model.owner}</h5>
+                    <h5 class="text-xl font-medium text-gray-800">
+                      {model.name}
+                    </h5>
+                    <p class="text-sm  text-gray-500 mt-4">
+                      {model.description}
+                    </p>
 
-                  <div className="mt-6">
-                    <a href={model.replicate_link}>
-                      <img
-                        src="https://github.com/cbh123/shlinked/assets/14149230/705eeeaf-94b9-4ae2-b3b3-6f3121d81412"
-                        alt=""
-                        className="h-6 w-6 "
-                      />
-                    </a>
-                  </div>
-                </div>
-                {getPredictionsByVersion(model.version).map((prediction) => (
-                  <div className="group relative" key={prediction.id}>
-                    {prediction.output && (
-                      <div className="image-wrapper rounded-lg">
-                        <Image
-                          fill
-                          src={prediction.output[prediction.output.length - 1]}
-                          alt="output"
-                          className="p-6"
+                    <div className="mt-6 flex">
+                      <a href={model.replicate_link}>
+                        <img
+                          src="https://github.com/cbh123/shlinked/assets/14149230/705eeeaf-94b9-4ae2-b3b3-6f3121d81412"
+                          alt=""
+                          className="h-6 w-6 "
                         />
-                      </div>
-                    )}
-
-                    <div className="hidden absolute group-hover:block inset-0 bg-white bg-opacity-80"></div>
-
-                    <div className="hidden absolute z-50 group-hover:block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-3">
-                      <a
-                        href={`https://replicate.com/p/${prediction.id}`}
-                        className=""
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="w-8 h-8 text-gray-900 hover:text-gray-400"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-                          />
-                        </svg>
+                      </a>
+                      <a href={model.github_link}>
+                        <img
+                          src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                          alt=""
+                          className="h-6 w-6 bg-white ml-2"
+                        />
                       </a>
                     </div>
-
-                    <p className="py-3 text-sm opacity-50 flex items-center justify-center">
-                      {prediction.status === "succeeded"
-                        ? ""
-                        : prediction.status}
-                    </p>
                   </div>
-                ))}
-              </div>
-            </div>
-          ))}
+                  {getPredictionsByVersion(model.version).map((prediction) => (
+                    <div className="group relative" key={prediction.id}>
+                      {prediction.output && (
+                        <div className="image-wrapper rounded-lg">
+                          <Image
+                            fill
+                            src={
+                              prediction.output[prediction.output.length - 1]
+                            }
+                            alt="output"
+                            className="p-6"
+                          />
+                        </div>
+                      )}
 
-          <div className="hidden grid grid-cols-3 gap-4">
-            {predictions.map((prediction) => (
-              <div key={prediction.id}>
-                {prediction.output && (
-                  <div className="image-wrapper mt-5">
-                    <Image
-                      fill
-                      src={prediction.output[prediction.output.length - 1]}
-                      alt="output"
-                      sizes="100vw"
-                    />
-                  </div>
-                )}
+                      <div className="hidden absolute group-hover:block inset-0 bg-white bg-opacity-80"></div>
 
-                <p className="py-3 text-sm opacity-50">
-                  {prediction.status === "succeeded"
-                    ? getModelByVersion(prediction.version).name
-                    : prediction.status}
-                </p>
+                      <div className="hidden absolute z-50 group-hover:block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-3">
+                        <a
+                          href={`https://replicate.com/p/${prediction.id}`}
+                          className=""
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={1.5}
+                            stroke="currentColor"
+                            className="w-8 h-8 text-gray-900 hover:text-gray-400"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                            />
+                          </svg>
+                        </a>
+                      </div>
+
+                      <p className="py-3 text-sm opacity-50 flex items-center justify-center">
+                        {prediction.status === "succeeded"
+                          ? ""
+                          : prediction.status}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
