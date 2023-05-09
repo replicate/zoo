@@ -193,12 +193,16 @@ export default function Home() {
                 />
 
                 <div className="ml-3">
-                  <button
-                    className="button h-full font-bold hover:bg-slate-800"
-                    type="submit"
-                  >
-                    Go
-                  </button>
+                  {predictions.length == 0 ? (
+                    <button
+                      className="button h-full font-bold hover:bg-slate-800"
+                      type="submit"
+                    >
+                      Go
+                    </button>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
             </form>
