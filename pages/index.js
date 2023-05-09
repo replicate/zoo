@@ -210,17 +210,42 @@ export default function Home() {
                   </div>
                 </div>
                 {getPredictionsByVersion(model.version).map((prediction) => (
-                  <div key={prediction.id}>
+                  <div className="group relative" key={prediction.id}>
                     {prediction.output && (
                       <div className="image-wrapper rounded-lg">
                         <Image
                           fill
                           src={prediction.output[prediction.output.length - 1]}
                           alt="output"
-                          className="p-5"
+                          className="p-6"
                         />
                       </div>
                     )}
+
+                    <div className="hidden absolute group-hover:block inset-0 bg-white bg-opacity-80"></div>
+
+                    <div className="hidden absolute z-50 group-hover:block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-3">
+                      <a
+                        href={`https://replicate.com/p/${prediction.id}`}
+                        className=""
+                        target="_blank"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-8 h-8 text-gray-900 hover:text-gray-400"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                          />
+                        </svg>
+                      </a>
+                    </div>
 
                     <p className="py-3 text-sm opacity-50 flex items-center justify-center">
                       {prediction.status === "succeeded"
