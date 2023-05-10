@@ -164,7 +164,7 @@ export default function Home() {
         <div className="sm:flex">
           <div className="mb-4 flex-shrink-0 sm:mb-0 sm:mr-4">
             <img
-              src="https://github.com/cbh123/shlinked/assets/14149230/4db7f46a-51ca-462e-b6a8-86fbebb499c0"
+              src="/replicate-black.png"
               alt=""
               className="h-12 w-12 inline-flex"
             />
