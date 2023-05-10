@@ -211,8 +211,8 @@ export default function Home() {
           <div>
             {getSelectedModels().map((model) => (
               <div key={model.id} className="mt-5">
-                <div className="grid grid-cols-4 gap-6 tracking-wide">
-                  <div className="border-l-4 border-gray-900 pl-6 py-2 mb-10">
+                <div className="grid grid-cols-4 gap-6 tracking-wide mb-10">
+                  <div className="border-l-4 border-gray-900 pl-6 py-2">
                     <h5 className="text-sm text-gray-500">{model.owner}</h5>
                     <h5 className="text-xl font-medium text-gray-800">
                       {model.name}
@@ -248,7 +248,7 @@ export default function Home() {
                               prediction.output[prediction.output.length - 1]
                             }
                             alt="output"
-                            className=""
+                            className="rounded-xl"
                           />
                         </div>
                       )}
@@ -279,11 +279,11 @@ export default function Home() {
                         </a>
                       </div>
 
-                      <p className="py-3 text-sm opacity-50 flex items-center justify-center">
-                        {prediction.status === "succeeded"
-                          ? ""
-                          : prediction.status}
-                      </p>
+                      {!prediction.output && (
+                        <div className="border border-gray-300 py-3 text-sm opacity-50 flex items-center justify-center aspect-square rounded-lg">
+                          {prediction.status}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
