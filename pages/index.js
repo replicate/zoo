@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import promptmaker from "promptmaker";
+import Link from "next/link";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -213,10 +214,22 @@ export default function Home() {
               <div key={model.id} className="mt-5">
                 <div className="grid grid-cols-4 gap-6 tracking-wide mb-10">
                   <div className="border-l-4 border-gray-900 pl-6 py-2">
-                    <h5 className="text-sm text-gray-500">{model.owner}</h5>
-                    <h5 className="text-xl font-medium text-gray-800">
-                      {model.name}
-                    </h5>
+                    <Link
+                      href={`https://replicate.com/${model.owner}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <h5 className="text-sm text-gray-500">{model.owner}</h5>
+                    </Link>
+                    <Link
+                      href={model.replicate_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <h5 className="text-xl font-medium text-gray-800">
+                        {model.name}
+                      </h5>
+                    </Link>
                     <p className="text-sm  text-gray-500 mt-4">
                       {model.description}
                     </p>
