@@ -157,7 +157,7 @@ export default function Home() {
   return (
     <div className="mx-auto container p-5">
       <Head>
-        <title>Zeke</title>
+        <title>🐈‍⬛ Playground</title>
       </Head>
 
       <nav>
