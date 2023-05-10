@@ -300,25 +300,25 @@ export default function Home() {
             <div className="mt-4 grid space-y-1">
               {models.map((model) => (
                 <div key={model.id} className="relative flex items-start">
-                  <div className="flex h-6 items-center">
+                  <div className="flex h-7 items-center">
                     <input
                       className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
                       type="checkbox"
+                      id={`model_input_${model.id}`}
                       value={model.id}
                       checked={model.checked}
                       onChange={handleCheckboxChange}
                     />
                   </div>
                   <div className="ml-3 text-sm leading-6">
-                    {model.checked ? (
-                      <label for="model" className="text-gray-900">
-                        {model.name}
-                      </label>
-                    ) : (
-                      <label for="model" className="text-gray-500">
-                        {model.name}
-                      </label>
-                    )}
+                    <label
+                      for={`model_input_${model.id}`}
+                      className={
+                        model.checked ? "text-gray-900" : "text-gray-500"
+                      }
+                    >
+                      {model.name}
+                    </label>
                   </div>
                 </div>
               ))}
