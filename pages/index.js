@@ -161,17 +161,17 @@ export default function Home() {
       </Head>
 
       <nav>
-        <div class="sm:flex">
-          <div class="mb-4 flex-shrink-0 sm:mb-0 sm:mr-4">
+        <div className="sm:flex">
+          <div className="mb-4 flex-shrink-0 sm:mb-0 sm:mr-4">
             <img
               src="https://github.com/cbh123/shlinked/assets/14149230/4db7f46a-51ca-462e-b6a8-86fbebb499c0"
               alt=""
               className="h-12 w-12 inline-flex"
             />
           </div>
-          <div class="flex">
-            <h4 class="text-lg items-center flex justify-center">
-              Replicate <span class="text-zinc-500 ml-1">Playground</span>
+          <div className="flex">
+            <h4 className="text-lg items-center flex justify-center">
+              Replicate <span className="text-zinc-500 ml-1">Playground</span>
             </h4>
           </div>
         </div>
@@ -212,12 +212,12 @@ export default function Home() {
             {getSelectedModels().map((model) => (
               <div key={model.id} className="mt-5">
                 <div className="grid grid-cols-4 gap-6 tracking-wide">
-                  <div class="border-l-4 border-gray-900 pl-6 py-2 mb-10">
-                    <h5 class="text-sm text-gray-500">{model.owner}</h5>
-                    <h5 class="text-xl font-medium text-gray-800">
+                  <div className="border-l-4 border-gray-900 pl-6 py-2 mb-10">
+                    <h5 className="text-sm text-gray-500">{model.owner}</h5>
+                    <h5 className="text-xl font-medium text-gray-800">
                       {model.name}
                     </h5>
-                    <p class="text-sm  text-gray-500 mt-4">
+                    <p className="text-sm  text-gray-500 mt-4">
                       {model.description}
                     </p>
 
@@ -296,11 +296,11 @@ export default function Home() {
         <div className="col-span-2 h-screen">
           <div className="h-28 text-xs"></div>
           <div>
-            <h5 class="text-lg text-gray-800">Text to Image</h5>
+            <h5 className="text-lg text-gray-800">Text to Image</h5>
             <div className="mt-4 grid space-y-1">
               {models.map((model) => (
-                <div key={model.id} class="relative flex items-start">
-                  <div class="flex h-6 items-center">
+                <div key={model.id} className="relative flex items-start">
+                  <div className="flex h-6 items-center">
                     <input
                       className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
                       type="checkbox"
@@ -309,13 +309,13 @@ export default function Home() {
                       onChange={handleCheckboxChange}
                     />
                   </div>
-                  <div class="ml-3 text-sm leading-6">
+                  <div className="ml-3 text-sm leading-6">
                     {model.checked ? (
-                      <label for="model" class="text-gray-900">
+                      <label for="model" className="text-gray-900">
                         {model.name}
                       </label>
                     ) : (
-                      <label for="model" class="text-gray-500">
+                      <label for="model" className="text-gray-500">
                         {model.name}
                       </label>
                     )}
