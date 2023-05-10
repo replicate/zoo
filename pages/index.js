@@ -179,7 +179,7 @@ export default function Home() {
 
       <div className="grid grid-cols-12 gap-x-16 mt-12">
         {/* Form + Outputs */}
-        <div className="col-span-9 h-full">
+        <div className="col-span-10 h-full">
           <div className="h-24">
             <form className="w-full" onSubmit={handleSubmit}>
               <div className="flex">
@@ -248,7 +248,7 @@ export default function Home() {
                               prediction.output[prediction.output.length - 1]
                             }
                             alt="output"
-                            className="p-6"
+                            className=""
                           />
                         </div>
                       )}
@@ -293,7 +293,7 @@ export default function Home() {
         </div>
 
         {/* Checkboxes */}
-        <div className="col-span-3 h-screen">
+        <div className="col-span-2 h-screen">
           <div className="h-28 text-xs"></div>
           <div>
             <h5 class="text-lg text-gray-800">Text to Image</h5>
