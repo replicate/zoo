@@ -224,15 +224,15 @@ export default function Home() {
                     <div className="mt-6 flex">
                       <a href={model.replicate_link}>
                         <img
-                          src="https://github.com/cbh123/shlinked/assets/14149230/705eeeaf-94b9-4ae2-b3b3-6f3121d81412"
-                          alt=""
+                          src="/replicate.png"
+                          alt="Replicate"
                           className="h-6 w-6 "
                         />
                       </a>
                       <a href={model.github_link}>
                         <img
-                          src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-                          alt=""
+                          src="/github.png"
+                          alt="GitHub"
                           className="h-6 w-6 bg-white ml-2"
                         />
                       </a>
