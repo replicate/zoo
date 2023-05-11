@@ -3,6 +3,8 @@ import Head from "next/head";
 import Image from "next/image";
 import promptmaker from "promptmaker";
 import Link from "next/link";
+import MODELS from "./models.js";
+import { v4 as uuidv4 } from "uuid";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -13,85 +15,7 @@ export default function Home() {
   const [numOutputs, setNumOutputs] = useState(3);
   const [loading, setLoading] = useState(false);
 
-  const [models, setModels] = useState([
-    {
-      id: 3,
-      owner: "stability-ai",
-      name: "stable-diffusion 1.5",
-      version:
-        "328bd9692d29d6781034e3acab8cf3fcb122161e6f5afb896a4ca9fd57090577",
-      checked: true,
-      description:
-        "A latent text-to-image diffusion model capable of generating photo-realistic images given any text input",
-      replicate_link: "https://replicate.com/stability-ai/stable-diffusion",
-      github_link: "https://github.com/replicate/cog-stable-diffusion",
-      source: "replicate",
-    },
-    {
-      id: 1,
-      owner: "stability-ai",
-      name: "stable-diffusion 2.1",
-      version:
-        "db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf",
-      checked: true,
-      description:
-        "A latent text-to-image diffusion model capable of generating photo-realistic images given any text input",
-      replicate_link: "https://replicate.com/stability-ai/stable-diffusion",
-      github_link: "https://github.com/replicate/cog-stable-diffusion",
-      source: "replicate",
-    },
-    {
-      id: 6,
-      owner: "OpenAI",
-      name: "DALL-E",
-      version: "dall-e",
-      checked: true,
-      description:
-        "DALL·E 2 is an AI system that can create realistic images and art from a description in natural language.",
-      replicate_link: "",
-      github_link: "",
-      openai_link: "https://openai.com/product/dall-e-2",
-      source: "openai",
-    },
-    {
-      id: 2,
-      owner: "ai-forever",
-      name: "kandinsky-2",
-      version:
-        "601eea49d49003e6ea75a11527209c4f510a93e2112c969d548fbb45b9c4f19f",
-      checked: true,
-      description:
-        "text2img model trained on LAION HighRes and fine-tuned on internal datasets",
-      replicate_link: "https://replicate.com/ai-forever/kandinsky-2",
-      github_link: "https://github.com/chenxwh/Kandinsky-2",
-      source: "replicate",
-    },
-    {
-      id: 4,
-      owner: "tstramer",
-      name: "material-diffusion",
-      version:
-        "a42692c54c0f407f803a0a8a9066160976baedb77c91171a01730f9b0d7beeff",
-      checked: false,
-      description:
-        "Stable diffusion fork for generating tileable outputs using v1.5 model",
-      replicate_link: "https://replicate.com/tstramer/material-diffusion",
-      github_link: "https://replicate.com/tstramer/material-diffusion",
-      source: "replicate",
-    },
-    {
-      id: 5,
-      owner: "prompthero",
-      name: "openjourney-v4",
-      version:
-        "e8818682e72a8b25895c7d90e889b712b6edfc5151f145e3606f21c1e85c65bf",
-      checked: false,
-      description: "SD 1.5 trained with +124k MJv4 images by PromptHero",
-      replicate_link: "https://replicate.com/prompthero/openjourney-v4",
-      github_link: "https://replicate.com/prompthero/openjourney-v4",
-      source: "replicate",
-    },
-  ]);
+  const [models, setModels] = useState(MODELS);
 
   function getSelectedModels() {
     return models.filter((m) => m.checked);
@@ -128,24 +52,39 @@ export default function Home() {
       // Use the model variable to generate predictions with the selected model
       // Update the API call or any other logic as needed to use the selected model
       for (let i = 0; i < numOutputs; i++) {
-        const response = await fetch("/api/predictions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            prompt: e.target.prompt.value,
-            version: model.version,
-            source: model.source,
-          }),
-        });
-        let prediction = await response.json();
+        const predictionId = uuidv4();
 
-        if (response.status !== 201) {
-          setError(prediction.detail);
-          return;
+        if (model.source == "replicate") {
+          const response = await fetch("/api/predictions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              prompt: e.target.prompt.value,
+              version: model.version,
+              source: model.source,
+            }),
+          });
+
+          let prediction = await response.json();
+
+          if (response.status !== 201) {
+            setError(prediction.detail);
+            return;
+          }
+          setPredictions((prev) => [...prev, prediction]);
+        } else if (model.source == "openai") {
+          // setup a fake prediction with a loading state, because DALL-E predictions are synchronous
+          const prediction = {
+            id: predictionId,
+            output: null,
+            status: "processing",
+            version: "dall-e",
+          };
+
+          setPredictions((prev) => [...prev, prediction]);
         }
-        setPredictions((prev) => [...prev, prediction]);
 
         const updatePrediction = async () => {
           if (model.source == "replicate") {
@@ -160,13 +99,32 @@ export default function Home() {
                 setError(prediction.detail);
                 return;
               }
-              console.log({ prediction });
               setPredictions((prev) =>
                 prev.map((item) =>
                   item.id === prediction.id ? prediction : item
                 )
               );
             }
+          } else if (model.source == "openai") {
+            const response = await fetch("/api/predictions", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                prompt: e.target.prompt.value,
+                version: model.version,
+                source: model.source,
+                predictionId: predictionId,
+              }),
+            });
+
+            let prediction = await response.json();
+            setPredictions((prev) =>
+              prev.map((item) =>
+                item.id === prediction.id ? prediction : item
+              )
+            );
           }
         };
 
@@ -184,15 +142,14 @@ export default function Home() {
       <nav>
         <div className="sm:flex">
           <div className="mb-4 flex-shrink-0 sm:mb-0 sm:mr-4">
-            <img
-              src="/replicate-black.png"
-              alt=""
-              className="h-12 w-12 inline-flex"
-            />
+            <span className="text-4xl">🦓</span>
           </div>
           <div className="flex">
-            <h4 className="text-lg items-center flex justify-center">
-              Replicate <span className="text-zinc-500 ml-1">Playground</span>
+            <h4 className="text-lg items-center flex font-bold justify-center">
+              Zoo{" "}
+              <span className="text-zinc-500 ml-1 font-light">
+                Image Playground
+              </span>
             </h4>
           </div>
         </div>
@@ -251,18 +208,20 @@ export default function Home() {
                 <div className="grid grid-cols-4 gap-6 tracking-wide mb-10">
                   <div className="border-l-4 border-gray-900 pl-6 py-2">
                     <Link
-                      href={`https://replicate.com/${model.owner}`}
+                      href={`https://replicate.com/${model.owner.toLowerCase()}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <h5 className="text-sm text-gray-500">{model.owner}</h5>
+                      <h5 className="text-sm text-gray-500 hover:text-gray-900">
+                        {model.owner}
+                      </h5>
                     </Link>
                     <Link
-                      href={model.replicate_link}
+                      href={model.url}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <h5 className="text-xl font-medium text-gray-800">
+                      <h5 className="text-xl font-medium text-gray-800 hover:text-gray-500">
                         {model.name}
                       </h5>
                     </Link>
@@ -271,20 +230,16 @@ export default function Home() {
                     </p>
 
                     <div className="mt-6 flex">
-                      <a href={model.replicate_link}>
-                        <img
-                          src="/replicate.png"
-                          alt="Replicate"
-                          className="h-6 w-6 "
-                        />
-                      </a>
-                      <a href={model.github_link}>
-                        <img
-                          src="/github.png"
-                          alt="GitHub"
-                          className="h-6 w-6 bg-white ml-2"
-                        />
-                      </a>
+                      {model.links != null &&
+                        model.links.map((link) => (
+                          <a href={link.url}>
+                            <img
+                              src={`/${link.name}.png`}
+                              alt={link.name}
+                              className="h-6 w-6 "
+                            />
+                          </a>
+                        ))}
                     </div>
                   </div>
                   {getPredictionsByVersion(model.version).map((prediction) => (
