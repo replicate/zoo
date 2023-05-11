@@ -62,6 +62,10 @@ export default function Home() {
     setError(null);
     setLoading(true);
 
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
     for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model
       // Update the API call or any other logic as needed to use the selected model
@@ -209,7 +213,7 @@ export default function Home() {
                 </div>
 
                 <div className="ml-3 mb-1.5 inline-flex">
-                  {anyPredictionsLoading() ? (
+                  {loading || anyPredictionsLoading() ? (
                     <button
                       className="h-full font-bold loading-button"
                       type="button"
@@ -266,7 +270,9 @@ export default function Home() {
                             <img
                               src={`/${link.name}.png`}
                               alt={link.name}
-                              className="h-6 w-6 "
+                              className={
+                                model.source == "openai" ? "h45 w-4" : "h-6 w-6"
+                              }
                             />
                           </a>
                         ))}
