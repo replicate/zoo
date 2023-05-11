@@ -25,6 +25,16 @@ export default function Home() {
     return predictions.filter((p) => p.version === version);
   }
 
+  function getPredictionOutput(model, prediction) {
+    if (model.source == "replicate") {
+      return prediction.output[prediction.output.length - 1];
+    } else if (model.source == "openai") {
+      return `data:image/png;base64,${
+        prediction.output[prediction.output.length - 1]
+      }`;
+    }
+  }
+
   const handleCheckboxChange = (e) => {
     const modelId = parseInt(e.target.value, 10);
 
@@ -53,6 +63,7 @@ export default function Home() {
       // Update the API call or any other logic as needed to use the selected model
       for (let i = 0; i < numOutputs; i++) {
         const predictionId = uuidv4();
+        let prediction = null;
 
         if (model.source == "replicate") {
           const response = await fetch("/api/predictions", {
@@ -67,7 +78,7 @@ export default function Home() {
             }),
           });
 
-          let prediction = await response.json();
+          prediction = await response.json();
 
           if (response.status !== 201) {
             setError(prediction.detail);
@@ -76,7 +87,7 @@ export default function Home() {
           setPredictions((prev) => [...prev, prediction]);
         } else if (model.source == "openai") {
           // setup a fake prediction with a loading state, because DALL-E predictions are synchronous
-          const prediction = {
+          prediction = {
             id: predictionId,
             output: null,
             status: "processing",
@@ -232,7 +243,7 @@ export default function Home() {
                     <div className="mt-6 flex">
                       {model.links != null &&
                         model.links.map((link) => (
-                          <a href={link.url}>
+                          <a key={`link-${model.name}`} href={link.url}>
                             <img
                               src={`/${link.name}.png`}
                               alt={link.name}
@@ -245,60 +256,47 @@ export default function Home() {
                   {getPredictionsByVersion(model.version).map((prediction) => (
                     <div className="group relative" key={prediction.id}>
                       {prediction.output && (
-                        <div className="image-wrapper rounded-lg">
-                          {model.source == "replicate" ? (
+                        <>
+                          <div className="image-wrapper rounded-lg">
                             <Image
                               fill
-                              src={
-                                prediction.output[prediction.output.length - 1]
-                              }
+                              src={getPredictionOutput(model, prediction)}
                               alt="output"
                               className="rounded-xl"
                             />
-                          ) : (
-                            <img
-                              src={`data:image/png;base64,${
-                                prediction.output[prediction.output.length - 1]
-                              }`}
-                              alt="output"
-                              className="rounded-xl"
-                            />
-                          )}
-                        </div>
-                      )}
+                          </div>
 
-                      <div className="transition duration-200 absolute inset-0 bg-white bg-opacity-90 opacity-0 hover:opacity-100">
-                        <div className="absolute z-50 group-hover:block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-3">
-                          <a
-                            href={
-                              model.source == "replicate" &&
-                              `https://replicate.com/p/${prediction.id}`
-                            }
-                            className=""
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth={1.5}
-                              stroke="currentColor"
-                              className="w-8 h-8 text-gray-900 hover:text-gray-400"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-                              />
-                            </svg>
-                          </a>
-                        </div>
-                      </div>
+                          <div className="transition duration-200 absolute inset-0 bg-white bg-opacity-90 opacity-0 hover:opacity-100">
+                            <div className="absolute z-50 group-hover:block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-3">
+                              <a
+                                href={getPredictionOutput(model, prediction)}
+                                className=""
+                                download={`${prediction.id}.png`}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth={1.5}
+                                  stroke="currentColor"
+                                  className="w-8 h-8 text-gray-900 hover:text-gray-400"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                                  />
+                                </svg>
+                              </a>
+                            </div>
+                          </div>
+                        </>
+                      )}
 
                       {!prediction.output && (
                         <div className="border border-gray-300 py-3 text-sm opacity-50 flex items-center justify-center aspect-square rounded-lg">
-                          {prediction.status}
+                          <p className="mr-1">{prediction.status}</p>{" "}
+                          <Counter />
                         </div>
                       )}
                     </div>
@@ -346,3 +344,22 @@ export default function Home() {
     </div>
   );
 }
+
+const Counter = () => {
+  const [tenthSeconds, setTenthSeconds] = useState(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTenthSeconds((tenthSeconds) => tenthSeconds + 1);
+    }, 100); // now the interval is 100ms, so it increases every tenth of a second
+
+    // cleanup function to clear the interval when the component unmounts
+    return () => clearInterval(intervalId);
+  }, []); // passing an empty array as the second argument to useEffect makes it run only on mount and unmount
+
+  return (
+    <div>
+      <p>{(tenthSeconds / 10).toFixed(1)}s</p>
+    </div>
+  );
+};

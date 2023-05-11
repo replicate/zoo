@@ -23,11 +23,12 @@ const MODELS = [
     ],
   },
   {
-    id: uuidv4(),
+    id: 1,
     owner: "stability-ai",
     name: "stable-diffusion 2.1",
     version: "db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf",
     checked: false,
+    url: "https://replicate.com/stability-ai/stable-diffusion",
     description:
       "A latent text-to-image diffusion model capable of generating photo-realistic images given any text input",
     links: [
