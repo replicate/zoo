@@ -207,7 +207,7 @@ export default function Home() {
             <span className="text-4xl">🦓</span>
           </div>
           <div className="flex w-full justify-between">
-            <div>
+            <div class="flex">
               <h4 className="text-lg items-center flex font-bold justify-center">
                 Zoo{" "}
                 <span className="text-zinc-500 ml-1 font-light">
