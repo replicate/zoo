@@ -25,6 +25,10 @@ export default function Home() {
     return predictions.filter((p) => p.version === version);
   }
 
+  function anyPredictionsLoading() {
+    return predictions.some((p) => p.output === null);
+  }
+
   function getPredictionOutput(model, prediction) {
     if (model.source == "replicate") {
       return prediction.output[prediction.output.length - 1];
@@ -205,12 +209,22 @@ export default function Home() {
                 </div>
 
                 <div className="ml-3 mb-1.5 inline-flex">
-                  <button
-                    className="button h-full font-bold hover:bg-slate-800"
-                    type="submit"
-                  >
-                    Go
-                  </button>
+                  {anyPredictionsLoading() ? (
+                    <button
+                      className="h-full font-bold loading-button"
+                      type="button"
+                      disabled
+                    >
+                      Loading...
+                    </button>
+                  ) : (
+                    <button
+                      className="button h-full font-bold hover:bg-slate-800"
+                      type="submit"
+                    >
+                      Go
+                    </button>
+                  )}
                 </div>
               </div>
             </form>

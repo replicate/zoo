@@ -19,6 +19,10 @@ input {
     @apply bg-black text-white rounded-md inline-block px-5 py-3;
 }
 
+.loading-button {
+    @apply bg-gray-500 text-white rounded-md inline-block px-5 py-3 cursor-wait;
+}
+
 .image-wrapper {
     width: 100%;
     aspect-ratio: 1 / 1;
