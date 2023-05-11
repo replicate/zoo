@@ -37,14 +37,14 @@ export default async function handler(req, res) {
       prompt: req.body.prompt,
       n: 1,
       size: "1024x1024",
-      response_format: "b64_json",
+      //   response_format: "b64_json",
     });
 
     const prediction = {
       id: req.body.predictionId,
       status: "completed",
       version: "dall-e",
-      output: [response.data.data[0].b64_json],
+      output: [response.data.data[0].url],
     };
     res.statusCode = 201;
     res.end(JSON.stringify(prediction));

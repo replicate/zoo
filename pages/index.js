@@ -28,9 +28,10 @@ export default function Home() {
     if (model.source == "replicate") {
       return prediction.output[prediction.output.length - 1];
     } else if (model.source == "openai") {
-      return `data:image/png;base64,${
-        prediction.output[prediction.output.length - 1]
-      }`;
+      return prediction.output[prediction.output.length - 1];
+      //   return `data:image/png;base64,${
+      //     prediction.output[prediction.output.length - 1]
+      //   }`;
     }
   }
 
@@ -262,13 +263,14 @@ export default function Home() {
                     <div className="group relative" key={prediction.id}>
                       {prediction.output && (
                         <>
-                          {console.log(getPredictionOutput(model, prediction))}
                           <div className="image-wrapper rounded-lg">
                             <Image
                               fill
+                              sizes="100vw"
                               src={getPredictionOutput(model, prediction)}
                               alt="output"
                               className="rounded-xl"
+                              loading="lazy"
                             />
                           </div>
 
