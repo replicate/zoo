@@ -224,7 +224,7 @@ export default function Home() {
                     data-confirm="Are you sure you want to delete your Zoo history?"
                     className="mr-4 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-red-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                   >
-                    Clear History
+                    Clear Memories
                   </button>
                   <button
                     onClick={() => setShowHistory(false)}
@@ -240,7 +240,7 @@ export default function Home() {
                   type="button"
                   className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                 >
-                  Show History
+                  Memories
                 </button>
               )}
             </div>
@@ -446,7 +446,7 @@ export default function Home() {
           <div className="mt-12 md:flex md:items-center md:justify-between">
             <div className="min-w-0 flex-1">
               <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-                History
+                Memories at the Zoo
               </h2>
             </div>
           </div>
