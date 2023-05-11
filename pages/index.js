@@ -13,7 +13,6 @@ export default function Home() {
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
   const [numOutputs, setNumOutputs] = useState(3);
-  const [loading, setLoading] = useState(false);
 
   const [models, setModels] = useState(MODELS);
 
@@ -23,10 +22,6 @@ export default function Home() {
 
   function getPredictionsByVersion(version) {
     return predictions.filter((p) => p.version === version);
-  }
-
-  function anyPredictionsLoading() {
-    return predictions.some((p) => p.output === null);
   }
 
   function getPredictionOutput(model, prediction) {
@@ -60,11 +55,6 @@ export default function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
-
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
 
     for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model
@@ -213,22 +203,12 @@ export default function Home() {
                 </div>
 
                 <div className="ml-3 mb-1.5 inline-flex">
-                  {loading || anyPredictionsLoading() ? (
-                    <button
-                      className="h-full font-bold loading-button"
-                      type="button"
-                      disabled
-                    >
-                      Loading...
-                    </button>
-                  ) : (
-                    <button
-                      className="button h-full font-bold hover:bg-slate-800"
-                      type="submit"
-                    >
-                      Go
-                    </button>
-                  )}
+                  <button
+                    className="button h-full font-bold hover:bg-slate-800"
+                    type="submit"
+                  >
+                    Go
+                  </button>
                 </div>
               </div>
             </form>
