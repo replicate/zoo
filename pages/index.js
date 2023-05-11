@@ -171,37 +171,39 @@ export default function Home() {
         <div className="col-span-10 h-full">
           <div className="h-24">
             <form className="w-full" onSubmit={handleSubmit}>
-              <div className="flex">
-                <button
-                  className="mr-4 hover:bg-gray-100 px-3 rounded-md flex justify-center items-center"
-                  type="button"
-                  onClick={() => setPrompt(promptmaker())}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-                    />
-                  </svg>
-                </button>
-                <textarea
-                  name="prompt"
-                  className="w-full border-2 p-3 rounded-md"
-                  rows="1"
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="Enter a prompt to display an image"
-                />
+              <div className="flex relative">
+                <div className="w-full h-full relative">
+                  <textarea
+                    name="prompt"
+                    className="w-full border-2 p-3 rounded-md"
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    placeholder="Enter a prompt to display an image"
+                  />
 
-                <div className="ml-3 inline-flex">
+                  <button
+                    className="absolute right-2 bottom-3 text-gray-500 hover:text-gray-900 px-1 py-2 rounded-md flex justify-center items-center"
+                    type="button"
+                    onClick={() => setPrompt(promptmaker())}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="ml-3 mb-1.5 inline-flex">
                   <button
                     className="button h-full font-bold hover:bg-slate-800"
                     type="submit"
