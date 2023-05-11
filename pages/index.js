@@ -13,6 +13,7 @@ export default function Home() {
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
   const [numOutputs, setNumOutputs] = useState(3);
+  const [history, setHistory] = useState([]);
 
   const [models, setModels] = useState([]);
 
@@ -24,16 +25,29 @@ export default function Home() {
     return predictions.filter((p) => p.version === version);
   }
 
-  function getPredictionOutput(model, prediction) {
-    if (model.source == "replicate") {
-      return prediction.output[prediction.output.length - 1];
-    } else if (model.source == "openai") {
-      return prediction.output[prediction.output.length - 1];
-      //   return `data:image/png;base64,${
-      //     prediction.output[prediction.output.length - 1]
-      //   }`;
-    }
+  function getPredictionOutput(prediction) {
+    return prediction.output[prediction.output.length - 1];
   }
+
+  const clearHistory = () => {
+    localStorage.removeItem("predictions");
+    setHistory([]);
+  };
+
+  const handleNewPrediction = (newPrediction) => {
+    // Get the current list of predictions from localStorage
+    let predictionHistory = localStorage.getItem("predictions");
+
+    // If there are already predictions saved, parse the saved list to a JavaScript array.
+    // If not, start with an empty array.
+    predictionHistory = predictionHistory ? JSON.parse(predictionHistory) : [];
+
+    // Add the new prediction to the list
+    predictionHistory.push(newPrediction);
+
+    // Save the updated list back to localStorage
+    localStorage.setItem("predictions", JSON.stringify(predictionHistory));
+  };
 
   const handleCheckboxChange = (e) => {
     const modelId = parseInt(e.target.value, 10);
@@ -118,12 +132,14 @@ export default function Home() {
                 setError(prediction.detail);
                 return;
               }
+              prediction.model = model.name;
               setPredictions((prev) =>
                 prev.map((item) =>
                   item.id === prediction.id ? prediction : item
                 )
               );
             }
+            handleNewPrediction(prediction);
           } else if (model.source == "openai") {
             const response = await fetch("/api/predictions", {
               method: "POST",
@@ -139,11 +155,14 @@ export default function Home() {
             });
 
             let prediction = await response.json();
+            prediction.model = model.name;
             setPredictions((prev) =>
               prev.map((item) =>
                 item.id === prediction.id ? prediction : item
               )
             );
+            // save to local storage
+            handleNewPrediction(prediction);
           }
         };
 
@@ -154,10 +173,18 @@ export default function Home() {
 
   useEffect(() => {
     const storedModels = localStorage.getItem("models");
+    const storedPredictions = localStorage.getItem("predictions");
+
     if (storedModels) {
       setModels(JSON.parse(storedModels));
     } else {
       setModels(MODELS);
+    }
+
+    if (storedPredictions) {
+      setHistory(JSON.parse(storedPredictions));
+    } else {
+      setHistory([]);
     }
   }, []);
 
@@ -289,7 +316,7 @@ export default function Home() {
                             <Image
                               fill
                               sizes="100vw"
-                              src={getPredictionOutput(model, prediction)}
+                              src={getPredictionOutput(prediction)}
                               alt="output"
                               className="rounded-xl"
                               loading="lazy"
@@ -299,7 +326,7 @@ export default function Home() {
                           <div className="transition duration-200 absolute inset-0 bg-white bg-opacity-90 opacity-0 hover:opacity-100">
                             <div className="absolute z-50 group-hover:block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                               <a
-                                href={getPredictionOutput(model, prediction)}
+                                href={getPredictionOutput(prediction)}
                                 className=""
                                 download={`${prediction.id}.png`}
                               >
@@ -371,6 +398,50 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <div className="md:flex md:items-center md:justify-between">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            History
+          </h2>
+        </div>
+        <div className="mt-4 flex md:ml-4 md:mt-0">
+          <button
+            onClick={() => clearHistory()}
+            type="button"
+            className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          >
+            Clear History
+          </button>
+        </div>
+      </div>
+
+      <ul
+        role="list"
+        className="mt-12 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8"
+      >
+        {history.map((prediction) => (
+          <li key={prediction.id} className="relative">
+            <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
+              <img
+                src={getPredictionOutput(prediction)}
+                alt=""
+                className="pointer-events-none object-cover group-hover:opacity-75"
+              />
+              <button
+                type="button"
+                className="absolute inset-0 focus:outline-none"
+              ></button>
+            </div>
+            <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">
+              {prediction.model}
+            </p>
+            <p className="pointer-events-none block text-sm font-medium text-gray-500">
+              {prediction.input.prompt}
+            </p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

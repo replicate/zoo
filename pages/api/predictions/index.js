@@ -45,6 +45,7 @@ export default async function handler(req, res) {
       status: "completed",
       version: "dall-e",
       output: [response.data.data[0].url],
+      input: { prompt: req.body.prompt },
     };
     res.statusCode = 201;
     res.end(JSON.stringify(prediction));
