@@ -11,6 +11,7 @@ export default function Home() {
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
   const [numOutputs, setNumOutputs] = useState(3);
+  const [loading, setLoading] = useState(false);
 
   const [models, setModels] = useState([
     {
@@ -24,6 +25,7 @@ export default function Home() {
         "A latent text-to-image diffusion model capable of generating photo-realistic images given any text input",
       replicate_link: "https://replicate.com/stability-ai/stable-diffusion",
       github_link: "https://github.com/replicate/cog-stable-diffusion",
+      source: "replicate",
     },
     {
       id: 1,
@@ -36,6 +38,20 @@ export default function Home() {
         "A latent text-to-image diffusion model capable of generating photo-realistic images given any text input",
       replicate_link: "https://replicate.com/stability-ai/stable-diffusion",
       github_link: "https://github.com/replicate/cog-stable-diffusion",
+      source: "replicate",
+    },
+    {
+      id: 6,
+      owner: "OpenAI",
+      name: "DALL-E",
+      version: "dall-e",
+      checked: true,
+      description:
+        "DALL·E 2 is an AI system that can create realistic images and art from a description in natural language.",
+      replicate_link: "",
+      github_link: "",
+      openai_link: "https://openai.com/product/dall-e-2",
+      source: "openai",
     },
     {
       id: 2,
@@ -48,6 +64,7 @@ export default function Home() {
         "text2img model trained on LAION HighRes and fine-tuned on internal datasets",
       replicate_link: "https://replicate.com/ai-forever/kandinsky-2",
       github_link: "https://github.com/chenxwh/Kandinsky-2",
+      source: "replicate",
     },
     {
       id: 4,
@@ -60,6 +77,7 @@ export default function Home() {
         "Stable diffusion fork for generating tileable outputs using v1.5 model",
       replicate_link: "https://replicate.com/tstramer/material-diffusion",
       github_link: "https://replicate.com/tstramer/material-diffusion",
+      source: "replicate",
     },
     {
       id: 5,
@@ -67,10 +85,11 @@ export default function Home() {
       name: "openjourney-v4",
       version:
         "e8818682e72a8b25895c7d90e889b712b6edfc5151f145e3606f21c1e85c65bf",
-      checked: true,
+      checked: false,
       description: "SD 1.5 trained with +124k MJv4 images by PromptHero",
       replicate_link: "https://replicate.com/prompthero/openjourney-v4",
       github_link: "https://replicate.com/prompthero/openjourney-v4",
+      source: "replicate",
     },
   ]);
 
@@ -103,6 +122,7 @@ export default function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
 
     for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model
@@ -116,9 +136,11 @@ export default function Home() {
           body: JSON.stringify({
             prompt: e.target.prompt.value,
             version: model.version,
+            source: model.source,
           }),
         });
         let prediction = await response.json();
+
         if (response.status !== 201) {
           setError(prediction.detail);
           return;
@@ -126,23 +148,25 @@ export default function Home() {
         setPredictions((prev) => [...prev, prediction]);
 
         const updatePrediction = async () => {
-          while (
-            prediction.status !== "succeeded" &&
-            prediction.status !== "failed"
-          ) {
-            await sleep(1000);
-            const response = await fetch("/api/predictions/" + prediction.id);
-            prediction = await response.json();
-            if (response.status !== 200) {
-              setError(prediction.detail);
-              return;
+          if (model.source == "replicate") {
+            while (
+              prediction.status !== "succeeded" &&
+              prediction.status !== "failed"
+            ) {
+              await sleep(1000);
+              const response = await fetch("/api/predictions/" + prediction.id);
+              prediction = await response.json();
+              if (response.status !== 200) {
+                setError(prediction.detail);
+                return;
+              }
+              console.log({ prediction });
+              setPredictions((prev) =>
+                prev.map((item) =>
+                  item.id === prediction.id ? prediction : item
+                )
+              );
             }
-            console.log({ prediction });
-            setPredictions((prev) =>
-              prev.map((item) =>
-                item.id === prediction.id ? prediction : item
-              )
-            );
           }
         };
 
@@ -267,21 +291,34 @@ export default function Home() {
                     <div className="group relative" key={prediction.id}>
                       {prediction.output && (
                         <div className="image-wrapper rounded-lg">
-                          <Image
-                            fill
-                            src={
-                              prediction.output[prediction.output.length - 1]
-                            }
-                            alt="output"
-                            className="rounded-xl"
-                          />
+                          {model.source == "replicate" ? (
+                            <Image
+                              fill
+                              src={
+                                prediction.output[prediction.output.length - 1]
+                              }
+                              alt="output"
+                              className="rounded-xl"
+                            />
+                          ) : (
+                            <img
+                              src={`data:image/png;base64,${
+                                prediction.output[prediction.output.length - 1]
+                              }`}
+                              alt="output"
+                              className="rounded-xl"
+                            />
+                          )}
                         </div>
                       )}
 
                       <div className="transition duration-200 absolute inset-0 bg-white bg-opacity-90 opacity-0 hover:opacity-100">
                         <div className="absolute z-50 group-hover:block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-3">
                           <a
-                            href={`https://replicate.com/p/${prediction.id}`}
+                            href={
+                              model.source == "replicate" &&
+                              `https://replicate.com/p/${prediction.id}`
+                            }
                             className=""
                             target="_blank"
                             rel="noreferrer"
