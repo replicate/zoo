@@ -262,6 +262,7 @@ export default function Home() {
                     <div className="group relative" key={prediction.id}>
                       {prediction.output && (
                         <>
+                          {console.log(getPredictionOutput(model, prediction))}
                           <div className="image-wrapper rounded-lg">
                             <Image
                               fill
@@ -372,7 +373,11 @@ const Counter = () => {
 export function EmptyState() {
   return (
     <div className="text-center mt-16">
-      <img className="mx-auto rounded-lg" src="./confused_bot.png" />
+      <img
+        alt="confused robot"
+        className="mx-auto rounded-lg"
+        src="./confused_bot.png"
+      />
       <h3 className="mt-12 text-sm font-semibold text-gray-900">
         No model selected!
       </h3>
