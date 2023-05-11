@@ -53,7 +53,13 @@ export default function Home() {
     setModels(updatedModels);
   };
 
-  const handleSubmit = async (e) => {
+  const onKeyDown = (e) => {
+    if (e.metaKey && e.which === 13) {
+      handleSubmit(e, prompt);
+    }
+  };
+
+  const handleSubmit = async (e, prompt) => {
     e.preventDefault();
     setError(null);
 
@@ -71,7 +77,7 @@ export default function Home() {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              prompt: e.target.prompt.value,
+              prompt: prompt,
               version: model.version,
               source: model.source,
             }),
@@ -122,7 +128,7 @@ export default function Home() {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                prompt: e.target.prompt.value,
+                prompt: prompt,
                 version: model.version,
                 source: model.source,
                 predictionId: predictionId,
@@ -169,7 +175,11 @@ export default function Home() {
         {/* Form + Outputs */}
         <div className="col-span-10 h-full">
           <div className="h-24">
-            <form className="w-full" onSubmit={handleSubmit}>
+            <form
+              onKeyDown={onKeyDown}
+              className="w-full"
+              onSubmit={(e) => handleSubmit(e, prompt)}
+            >
               <div className="flex relative">
                 <div className="w-full h-full relative">
                   <textarea
