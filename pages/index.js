@@ -533,9 +533,9 @@ export function EmptyStateHistory() {
         src="./confused_bot.png"
       />
       <h3 className="mt-12 text-sm font-semibold text-gray-900">
-        No history yet!
+        No memories yet!
       </h3>
-      <p className="mt-1 text-sm text-gray-500">Create some images first!</p>
+      <p className="mt-1 text-sm text-gray-500">Create some images first.</p>
     </div>
   );
 }
