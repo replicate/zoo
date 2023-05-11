@@ -14,7 +14,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [numOutputs, setNumOutputs] = useState(3);
 
-  const [models, setModels] = useState(MODELS);
+  const [models, setModels] = useState([]);
 
   function getSelectedModels() {
     return models.filter((m) => m.checked);
@@ -51,6 +51,9 @@ export default function Home() {
 
     // Set the new models array
     setModels(updatedModels);
+
+    // save to local storage
+    localStorage.setItem("models", JSON.stringify(updatedModels));
   };
 
   const onKeyDown = (e) => {
@@ -148,6 +151,15 @@ export default function Home() {
       }
     }
   };
+
+  useEffect(() => {
+    const storedModels = localStorage.getItem("models");
+    if (storedModels) {
+      setModels(JSON.parse(storedModels));
+    } else {
+      setModels(MODELS);
+    }
+  }, []);
 
   return (
     <div className="mx-auto container p-5">
