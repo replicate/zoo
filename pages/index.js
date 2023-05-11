@@ -428,10 +428,11 @@ export default function Home() {
                 alt=""
                 className="pointer-events-none object-cover group-hover:opacity-75"
               />
-              <button
-                type="button"
+              <a
+                href={getPredictionOutput(prediction)}
                 className="absolute inset-0 focus:outline-none"
-              ></button>
+                download={`${prediction.id}.png`}
+              />
             </div>
             <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">
               {prediction.model}
