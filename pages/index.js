@@ -267,7 +267,7 @@ export default function Home() {
                           </div>
 
                           <div className="transition duration-200 absolute inset-0 bg-white bg-opacity-90 opacity-0 hover:opacity-100">
-                            <div className="absolute z-50 group-hover:block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-3">
+                            <div className="absolute z-50 group-hover:block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                               <a
                                 href={getPredictionOutput(model, prediction)}
                                 className=""

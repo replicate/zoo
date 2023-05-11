@@ -1,6 +1,5 @@
 import Replicate from "replicate";
 import { Configuration, OpenAIApi } from "openai";
-import fs from "fs";
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
