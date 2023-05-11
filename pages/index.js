@@ -191,7 +191,7 @@ export default function Home() {
                   />
 
                   <button
-                    className="absolute right-2 top-2 text-gray-500 hover:text-gray-900 px-1 py-2 rounded-md flex justify-center items-center"
+                    className="absolute right-3.5 top-2 text-gray-500 hover:text-gray-900 px-1 py-2 rounded-md flex justify-center items-center"
                     type="button"
                     onClick={() => setPrompt(promptmaker())}
                   >
@@ -201,7 +201,7 @@ export default function Home() {
                       viewBox="0 0 24 24"
                       strokeWidth={1.5}
                       stroke="currentColor"
-                      className="w-6 h-6"
+                      className="w-5 h-5"
                     >
                       <path
                         strokeLinecap="round"
@@ -266,7 +266,7 @@ export default function Home() {
                     <div className="mt-6 flex">
                       {model.links != null &&
                         model.links.map((link) => (
-                          <a key={`link-${model.name}`} href={link.url}>
+                          <a key={uuidv4()} href={link.url}>
                             <img
                               src={`/${link.name}.png`}
                               alt={link.name}
@@ -353,7 +353,7 @@ export default function Home() {
                   </div>
                   <div className="ml-3 text-sm leading-6">
                     <label
-                      for={`model_input_${model.id}`}
+                      htmlFor={`model_input_${model.id}`}
                       className={
                         model.checked ? "text-gray-900" : "text-gray-500"
                       }
