@@ -176,13 +176,14 @@ export default function Home() {
                   <textarea
                     name="prompt"
                     className="w-full border-2 p-3 rounded-md"
+                    rows="1"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Enter a prompt to display an image"
                   />
 
                   <button
-                    className="absolute right-2 bottom-3 text-gray-500 hover:text-gray-900 px-1 py-2 rounded-md flex justify-center items-center"
+                    className="absolute right-2 top-2 text-gray-500 hover:text-gray-900 px-1 py-2 rounded-md flex justify-center items-center"
                     type="button"
                     onClick={() => setPrompt(promptmaker())}
                   >
@@ -216,6 +217,8 @@ export default function Home() {
           </div>
 
           <div>
+            {getSelectedModels().length == 0 && <EmptyState />}
+
             {getSelectedModels().map((model) => (
               <div key={model.id} className="mt-5">
                 <div className="grid grid-cols-4 gap-6 tracking-wide mb-10">
@@ -365,3 +368,15 @@ const Counter = () => {
     </div>
   );
 };
+
+export function EmptyState() {
+  return (
+    <div className="text-center mt-16">
+      <img className="mx-auto rounded-lg" src="./confused_bot.png" />
+      <h3 className="mt-12 text-sm font-semibold text-gray-900">
+        No model selected!
+      </h3>
+      <p className="mt-1 text-sm text-gray-500">Select a model on the right.</p>
+    </div>
+  );
+}
