@@ -11,7 +11,7 @@ export default function Nav() {
           <span className="text-4xl">🦓</span>
         </div>
         <div className="flex w-full justify-between">
-          <Link href="/" class="flex">
+          <Link href="/" class="flex hover:underline">
             <h4 className="text-lg items-center flex font-bold justify-center">
               Zoo{" "}
               <span className="text-zinc-500 ml-2 font-light">

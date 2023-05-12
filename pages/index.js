@@ -13,8 +13,7 @@ export default function Home() {
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
   const [numOutputs, setNumOutputs] = useState(3);
-  const [history, setHistory] = useState([]);
-
+  const [showHeader, setShowHeader] = useState(false);
   const [models, setModels] = useState([]);
 
   function getSelectedModels() {
@@ -168,18 +167,12 @@ export default function Home() {
 
   useEffect(() => {
     const storedModels = localStorage.getItem("models");
-    const storedPredictions = localStorage.getItem("predictions");
 
     if (storedModels) {
       setModels(JSON.parse(storedModels));
     } else {
       setModels(MODELS);
-    }
-
-    if (storedPredictions) {
-      setHistory(JSON.parse(storedPredictions));
-    } else {
-      setHistory([]);
+      setShowHeader(true);
     }
   }, []);
 
@@ -193,16 +186,18 @@ export default function Home() {
         ></link>
       </Head>
 
-      <div className="pt-5">
-        <div className="mx-0 max-w-7xl">
-          <div className="mx-0 max-w-3xl">
-            <p className="text-3xl font-bold tracking-tight text-gray-900">
-              Welcome to the Zoo, a playground for experimenting with text to
-              image models. To get started, enter what you want to see.
-            </p>
+      {showHeader && (
+        <div className="pt-5">
+          <div className="mx-0 max-w-7xl">
+            <div className="mx-0 max-w-3xl">
+              <p className="text-3xl font-bold tracking-tight text-gray-900">
+                Welcome to the Zoo, a playground for experimenting with text to
+                image models. To get started, enter what you want to see.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="grid grid-cols-12 gap-x-16 mt-12">
         {/* Form + Outputs */}
