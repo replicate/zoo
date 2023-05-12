@@ -74,6 +74,8 @@ export default function Home() {
     e.preventDefault();
     setError(null);
 
+    // extract prediction creation to its own function
+
     for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model
       // Update the API call or any other logic as needed to use the selected model
