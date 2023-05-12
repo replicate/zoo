@@ -335,11 +335,7 @@ export default function Home() {
                     </div>
                     {getPredictionsByVersion(model.version).length == 0 &&
                       [1, 2, 3].map((i) => (
-                        <img
-                          className="w-full h-full rounded-lg opacity-25 border-gray-500"
-                          src={`/logos/zoo${i}.png`}
-                          alt="zoo logo"
-                        />
+                        <div className="border bg-gray-50 border-gray-300 py-3 text-sm opacity-50 flex items-center justify-center aspect-square rounded-lg"></div>
                       ))}
 
                     {getPredictionsByVersion(model.version).map(
