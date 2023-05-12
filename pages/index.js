@@ -205,53 +205,6 @@ export default function Home() {
         ></link>
       </Head>
 
-      <nav>
-        <div className="sm:flex">
-          <div className="mb-4 flex-shrink-0 sm:mb-0 sm:mr-4">
-            <span className="text-4xl">🦓</span>
-          </div>
-          <div className="flex w-full justify-between">
-            <div class="flex">
-              <h4 className="text-lg items-center flex font-bold justify-center">
-                Zoo{" "}
-                <span className="text-zinc-500 ml-1 font-light">
-                  Image Playground
-                </span>
-              </h4>
-            </div>
-            <div className="">
-              {showHistory ? (
-                <>
-                  <button
-                    onClick={() => handleClearHistory()}
-                    type="button"
-                    data-confirm="Are you sure you want to delete your Zoo history?"
-                    className="mr-4 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-red-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                  >
-                    Clear Memories
-                  </button>
-                  <button
-                    onClick={() => setShowHistory(false)}
-                    type="button"
-                    className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                  >
-                    &larr; Back
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => setShowHistory(true)}
-                  type="button"
-                  className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                >
-                  Memories
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
-
       {!showHistory ? (
         <div className="grid grid-cols-12 gap-x-16 mt-12">
           {/* Form + Outputs */}
