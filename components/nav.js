@@ -8,16 +8,17 @@ export default function Nav() {
     <nav className="p-5 border-t-4 border-t-brand">
       <div className="flex">
         <Link href="/">
-          <div className="hover:animate-spin flex-shrink-0 mb-0">
-            <img className="w-18 h-12 rounded-lg" src="/zoo.png" alt="" />
+          <div className="hover:animate-spin flex-shrink-0 mb-0 mr-4">
+            <span className="text-4xl">🦓</span>
           </div>
         </Link>
         <div className="flex w-full justify-between">
           <div className="flex text-lg items-center font-bold justify-center">
-            <Link href="/">
+            <Link className="hover:underline" href="/">
               <h4>
-                <span className="invisible font-medium sm:visible ml-1">
-                  Image Playground
+                Zoo{" "}
+                <span className="invisible sm:visible text-zinc-500 ml-1 font-light">
+                  Image Playground •
                 </span>
               </h4>
             </Link>
