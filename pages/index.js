@@ -21,6 +21,8 @@ export default function Home() {
   }
 
   function getPredictionsByVersion(version) {
+    console.log("getPredictionsByVersion", version);
+    console.log(predictions.map((p) => p.version));
     return predictions.filter((p) => p.version === version);
   }
 
@@ -70,6 +72,66 @@ export default function Home() {
     }
   };
 
+  async function createReplicatePrediction(prompt, model) {
+    const response = await fetch("/api/predictions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        version: model.version,
+        source: model.source,
+      }),
+    });
+
+    let prediction = await response.json();
+
+    if (response.status !== 201) {
+      throw new Error(prediction.detail);
+    }
+
+    while (
+      prediction.status !== "succeeded" &&
+      prediction.status !== "failed"
+    ) {
+      await sleep(1000);
+      const response = await fetch("/api/predictions/" + prediction.id);
+      prediction = await response.json();
+      if (response.status !== 200) {
+        throw new Error(prediction.detail);
+      }
+    }
+
+    prediction.model = model.name;
+    prediction.source = model.source;
+
+    return prediction;
+  }
+
+  async function createDallePrediction(prompt, model) {
+    const predictionId = uuidv4();
+
+    const response = await fetch("/api/predictions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        version: model.version,
+        source: model.source,
+        predictionId: predictionId,
+      }),
+    });
+
+    let prediction = await response.json();
+    prediction.source = model.source;
+    prediction.version = model.version;
+
+    return prediction;
+  }
+
   const handleSubmit = async (e, prompt) => {
     e.preventDefault();
     setError(null);
@@ -78,89 +140,26 @@ export default function Home() {
       // Use the model variable to generate predictions with the selected model
       // Update the API call or any other logic as needed to use the selected model
       for (let i = 0; i < numOutputs; i++) {
-        const predictionId = uuidv4();
-        let prediction = null;
+        let promise = null;
 
         if (model.source == "replicate") {
-          const response = await fetch("/api/predictions", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              prompt: prompt,
-              version: model.version,
-              source: model.source,
-            }),
-          });
-
-          prediction = await response.json();
-
-          if (response.status !== 201) {
-            setError(prediction.detail);
-            return;
-          }
-          setPredictions((prev) => [...prev, prediction]);
+          promise = createReplicatePrediction(prompt, model);
         } else if (model.source == "openai") {
-          // setup a fake prediction with a loading state, because DALL-E predictions are synchronous
-          prediction = {
-            id: predictionId,
-            output: null,
-            status: "processing",
-            version: "dall-e",
-          };
-
-          setPredictions((prev) => [...prev, prediction]);
+          promise = createDallePrediction(prompt, model);
         }
 
-        const updatePrediction = async () => {
-          if (model.source == "replicate") {
-            while (
-              prediction.status !== "succeeded" &&
-              prediction.status !== "failed"
-            ) {
-              await sleep(1000);
-              const response = await fetch("/api/predictions/" + prediction.id);
-              prediction = await response.json();
-              if (response.status !== 200) {
-                setError(prediction.detail);
-                return;
-              }
-              prediction.model = model.name;
-              setPredictions((prev) =>
-                prev.map((item) =>
-                  item.id === prediction.id ? prediction : item
-                )
-              );
-            }
-            handleNewPrediction(prediction);
-          } else if (model.source == "openai") {
-            const response = await fetch("/api/predictions", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                prompt: prompt,
-                version: model.version,
-                source: model.source,
-                predictionId: predictionId,
-              }),
-            });
+        promise.model = model.name;
+        promise.source = model.source;
+        promise.version = model.version;
 
-            let prediction = await response.json();
-            prediction.model = model.name;
-            setPredictions((prev) =>
-              prev.map((item) =>
-                item.id === prediction.id ? prediction : item
-              )
-            );
-            // save to local storage
-            handleNewPrediction(prediction);
-          }
-        };
+        setPredictions((prev) => [...prev, promise]);
 
-        updatePrediction();
+        promise.then((result) => {
+          handleNewPrediction(result);
+          setPredictions((prev) =>
+            prev.map((x) => (x === promise ? result : x))
+          );
+        }); // .catch(error => setError(error.message))
       }
     }
   };
@@ -175,6 +174,8 @@ export default function Home() {
       setShowHeader(true);
     }
   }, []);
+
+  console.log(predictions);
 
   return (
     <div className="mx-auto container p-5">
@@ -342,7 +343,6 @@ export default function Home() {
 
                       {!prediction.output && (
                         <div className="border border-gray-300 py-3 text-sm opacity-50 flex items-center justify-center aspect-square rounded-lg">
-                          <p className="mr-1">{prediction.status}</p>{" "}
                           <Counter />
                         </div>
                       )}
