@@ -7,7 +7,9 @@ export default function History() {
   const [history, setHistory] = useState([]);
 
   function getPredictionOutput(prediction) {
-    return prediction.output[prediction.output.length - 1];
+    return prediction.output
+      ? prediction.output[prediction.output.length - 1]
+      : "";
   }
 
   const clearHistory = () => {
