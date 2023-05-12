@@ -9,16 +9,15 @@ export default function Nav() {
       <div className="flex">
         <Link href="/">
           <div className="hover:animate-spin flex-shrink-0 mb-0 mr-4">
-            <span className="text-4xl">🦓</span>
+            <img className="h-12 w-12 rounded-lg" src="/zoo.png" alt="" />
           </div>
         </Link>
         <div className="flex w-full justify-between">
           <div className="flex text-lg items-center font-bold justify-center">
-            <Link className="hover:underline" href="/">
+            <Link href="/">
               <h4>
-                Zoo{" "}
-                <span className="invisible sm:visible text-zinc-500 ml-1 font-light">
-                  Image Playground •
+                <span className="invisible font-medium sm:visible ml-1">
+                  Image Playground
                 </span>
               </h4>
             </Link>
