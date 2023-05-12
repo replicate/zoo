@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export default function Home() {
-  const [prompt, setPrompt] = useState(promptmaker());
+  const [prompt, setPrompt] = useState("");
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
   const [numOutputs, setNumOutputs] = useState(3);
@@ -95,9 +95,10 @@ export default function Home() {
       prediction.status !== "succeeded" &&
       prediction.status !== "failed"
     ) {
-      await sleep(1000);
+      await sleep(500);
       const response = await fetch("/api/predictions/" + prediction.id);
       prediction = await response.json();
+      console.log(prediction);
       if (response.status !== 200) {
         throw new Error(prediction.detail);
       }
@@ -157,12 +158,14 @@ export default function Home() {
 
         setPredictions((prev) => [...prev, promise]);
 
-        promise.then((result) => {
-          handleNewPrediction(result);
-          setPredictions((prev) =>
-            prev.map((x) => (x === promise ? result : x))
-          );
-        }); // .catch(error => setError(error.message))
+        promise
+          .then((result) => {
+            handleNewPrediction(result);
+            setPredictions((prev) =>
+              prev.map((x) => (x === promise ? result : x))
+            );
+          })
+          .catch((error) => setError(error.message));
       }
     }
   };
@@ -188,6 +191,8 @@ export default function Home() {
 
   useEffect(() => {
     const storedModels = localStorage.getItem("models");
+    const prompt = promptmaker();
+    setPrompt(prompt);
 
     if (storedModels && checkOrder(JSON.parse(storedModels), MODELS)) {
       setModels(JSON.parse(storedModels));
@@ -271,10 +276,10 @@ export default function Home() {
                 </div>
                 <div className="ml-3 mb-1.5 inline-flex">
                   <button
-                    className="button bg-brand h-full font-bold hover:bg-orange-600"
+                    className="button bg-brand h-full flex justify-center items-center font-bold hover:bg-orange-600"
                     type="submit"
                   >
-                    Go
+                    Go{" "}
                   </button>
                 </div>
               </div>
@@ -328,6 +333,15 @@ export default function Home() {
                           ))}
                       </div>
                     </div>
+                    {getPredictionsByVersion(model.version).length == 0 &&
+                      [1, 2, 3].map((i) => (
+                        <img
+                          className="w-full h-full rounded-lg opacity-25 border-gray-500"
+                          src={`/logos/zoo${i}.png`}
+                          alt="zoo logo"
+                        />
+                      ))}
+
                     {getPredictionsByVersion(model.version).map(
                       (prediction) => (
                         <div className="group relative" key={prediction.id}>
@@ -371,7 +385,13 @@ export default function Home() {
                             </>
                           )}
 
-                          {!prediction.output && (
+                          {!prediction.output && prediction.error && (
+                            <div className="border border-gray-300 py-3 text-sm opacity-50 flex items-center justify-center aspect-square rounded-lg">
+                              <span className="mx-12">{prediction.error}</span>
+                            </div>
+                          )}
+
+                          {!prediction.output && !prediction.error && (
                             <div className="border border-gray-300 py-3 text-sm opacity-50 flex items-center justify-center aspect-square rounded-lg">
                               <Counter />
                             </div>
@@ -445,7 +465,7 @@ const Counter = () => {
   return (
     <div>
       <time
-        class="tabular-nums"
+        className="tabular-nums"
         dateTime={`PT${(tenthSeconds / 10).toFixed(1)}S`}
       >
         {(tenthSeconds / 10).toFixed(1)}s

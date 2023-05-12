@@ -16,7 +16,7 @@ input {
 }
 
 .button {
-    @apply rounded-md px-4 sm:px-8 py-2.5 text-sm font-semibold text-white shadow-sm;
+    @apply rounded-md px-4 sm:px-8 py-2.5 font-semibold text-white shadow-sm;
 }
 
 .loading-button {
