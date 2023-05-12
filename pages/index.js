@@ -220,8 +220,7 @@ export default function Home() {
           <div className="mx-0 max-w-3xl">
             {firstTime && (
               <span className="text-2xl font-medium tracking-tight text-gray-500">
-                Welcome to the Zoo, a playground for experimenting with text to
-                image models.{" "}
+                Welcome to the Zoo, a playground for text to image models.{" "}
               </span>
             )}
             <span className="text-2xl font-medium tracking-tight text-gray-900">

@@ -14,21 +14,18 @@ export default function Nav() {
         </Link>
         <div className="flex w-full justify-between">
           <div className="flex text-lg items-center font-bold justify-center">
-            <Link className="hover:underline" href="/">
+            <Link className="hover:underline " href="/">
               <h4>
                 Zoo{" "}
-                <span className="invisible sm:visible text-zinc-500 ml-1 font-light">
+                <span className="hidden sm:inline text-zinc-500 ml-1 font-light">
                   Image Playground •
                 </span>
               </h4>
             </Link>
             <Link href="https://replicate.com?utm_source=project&utm_campaign=zoo">
-              <h4 className="hover:underline">
-                <span className="text-zinc-500 ml-2 font-light">
-                  <span className="sm:visible invisible">Powered</span> by
-                  Replicate
-                </span>
-              </h4>
+              <span className="text-zinc-500 ml-1 font-light">
+                <span className="sm:hidden inline">Powered</span> by Replicate
+              </span>
             </Link>
           </div>
 
