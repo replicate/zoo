@@ -205,6 +205,11 @@
     "@typescript-eslint/types" "5.47.1"
     "eslint-visitor-keys" "^3.3.0"
 
+"@vercel/analytics@^1.0.1":
+  "integrity" "sha512-Ux0c9qUfkcPqng3vrR0GTrlQdqNJ2JREn/2ydrVuKwM3RtMfF2mWX31Ijqo1opSjNAq6rK76PwtANw6kl6TAow=="
+  "resolved" "https://registry.npmjs.org/@vercel/analytics/-/analytics-1.0.1.tgz"
+  "version" "1.0.1"
+
 "@vercel/postgres@^0.3.0":
   "integrity" "sha512-cOC+x6qMnN54B4y0Fh0DV5LJQp2M7puIKbehQBMutY/8/zpzh+oKaQmnZb2QHn489MGOQKyRLJLgHa2P8M085Q=="
   "resolved" "https://registry.npmjs.org/@vercel/postgres/-/postgres-0.3.0.tgz"
