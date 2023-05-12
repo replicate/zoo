@@ -28,7 +28,8 @@ export default function Nav() {
             >
               <h4>
                 <span className="text-zinc-500 ml-2 font-light">
-                  Powered by Replicate
+                  <span className="sm:inline-flex hidden">Powered</span> by
+                  Replicate
                 </span>
               </h4>
             </Link>
