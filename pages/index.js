@@ -237,7 +237,7 @@ export default function Home() {
                 <div className="w-full h-full relative">
                   <textarea
                     name="prompt"
-                    className="w-full border-2 p-3 rounded-md"
+                    className="w-full border-2 p-3 pr-5 rounded-md"
                     rows="1"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
