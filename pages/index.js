@@ -207,7 +207,7 @@ export default function Home() {
           rel="icon"
           href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%2210 0 100 100%22><text y=%22.90em%22 font-size=%2290%22>🦓</text></svg>"
         ></link>
-        <meta property="og:image" content="/zoo_og.png" />
+        <meta property="og:image" content="/og.png" />
       </Head>
 
       <div className="pt-2">
