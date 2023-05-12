@@ -7,12 +7,14 @@ export default function Nav() {
   return (
     <nav className="p-5 border-t-4 border-t-brand">
       <div className="flex">
-        <div className="flex-shrink-0 mb-0 mr-4">
-          <span className="text-4xl">🦓</span>
-        </div>
+        <Link href="/">
+          <div className="flex-shrink-0 mb-0 mr-4">
+            <span className="text-4xl">🦓</span>
+          </div>
+        </Link>
         <div className="flex w-full justify-between">
           <div className="flex text-lg items-center font-bold justify-center">
-            <Link href="/">
+            <Link href="/" className="hover:underline">
               <h4>
                 Zoo{" "}
                 <span className="text-zinc-500 ml-1 font-light">

@@ -16,7 +16,7 @@ input {
 }
 
 .button {
-    @apply bg-black text-white rounded-md inline-block px-5 py-3;
+    @apply rounded-md px-5 py-2.5 text-sm font-semibold text-white shadow-sm;
 }
 
 .loading-button {

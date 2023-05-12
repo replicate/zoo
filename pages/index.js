@@ -13,7 +13,7 @@ export default function Home() {
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
   const [numOutputs, setNumOutputs] = useState(3);
-  const [showHeader, setShowHeader] = useState(false);
+  const [firstTime, setFirstTime] = useState(false);
   const [models, setModels] = useState([]);
 
   function getSelectedModels() {
@@ -135,6 +135,7 @@ export default function Home() {
   const handleSubmit = async (e, prompt) => {
     e.preventDefault();
     setError(null);
+    setFirstTime(false);
 
     // extract prediction creation to its own function
 
@@ -192,7 +193,7 @@ export default function Home() {
       setModels(JSON.parse(storedModels));
     } else {
       setModels(MODELS);
-      setShowHeader(true);
+      setFirstTime(true);
     }
   }, []);
 
@@ -209,20 +210,18 @@ export default function Home() {
         <meta property="og:image" content="/zoo_og.png" />
       </Head>
 
-      {showHeader && (
-        <div className="pt-5">
-          <div className="mx-0 max-w-7xl">
-            <div className="mx-0 max-w-3xl">
-              <p className="text-3xl font-bold tracking-tight text-gray-900">
-                Welcome to the Zoo, a playground for experimenting with text to
-                image models. To get started, enter what you want to see.
-              </p>
-            </div>
+      <div className="pt-2">
+        <div className="mx-0 max-w-7xl">
+          <div className="mx-0 max-w-3xl">
+            <p className="text-2xl font-medium tracking-tight text-gray-900">
+              Welcome to the Zoo, a playground for experimenting with text to
+              image models. What do you want to see?
+            </p>
           </div>
         </div>
-      )}
+      </div>
 
-      <div className="grid grid-cols-12 gap-x-16 mt-12">
+      <div className="grid grid-cols-12 gap-x-16 mt-4">
         {/* Form + Outputs */}
 
         <div className="col-span-10 h-full">
@@ -237,7 +236,7 @@ export default function Home() {
                 <div className="w-full h-full relative">
                   <textarea
                     name="prompt"
-                    className="w-full border-2 p-3 pr-5 rounded-md"
+                    className="w-full text-lg border-2 p-3 pr-5 rounded-md ring-brand outline-brand"
                     rows="1"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
@@ -267,7 +266,7 @@ export default function Home() {
                 </div>
                 <div className="ml-3 mb-1.5 inline-flex">
                   <button
-                    className="button h-full font-bold hover:bg-slate-800"
+                    className="button bg-brand h-full font-bold hover:bg-orange-600"
                     type="submit"
                   >
                     Go
@@ -277,116 +276,122 @@ export default function Home() {
             </form>
           </div>
 
-          <div>
-            {getSelectedModels().length == 0 && <EmptyState />}
+          {!firstTime && (
+            <div className="">
+              {getSelectedModels().length == 0 && <EmptyState />}
 
-            {getSelectedModels().map((model) => (
-              <div key={model.id} className="mt-5">
-                <div className="grid grid-cols-4 gap-6 tracking-wide mb-10">
-                  <div className="border-l-4 border-gray-900 pl-6 py-2">
-                    <Link
-                      href={`https://replicate.com/${model.owner.toLowerCase()}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <h5 className="text-sm text-gray-500 hover:text-gray-900">
-                        {model.owner}
-                      </h5>
-                    </Link>
-                    <Link
-                      href={model.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <h5 className="text-xl font-medium text-gray-800 hover:text-gray-500">
-                        {model.name}
-                      </h5>
-                    </Link>
-                    <p className="text-sm  text-gray-500 mt-4">
-                      {model.description}
-                    </p>
+              {getSelectedModels().map((model) => (
+                <div key={model.id} className="mt-5">
+                  <div className="grid grid-cols-4 gap-6 tracking-wide mb-10">
+                    <div className="border-l-4 border-gray-900 pl-6 py-2">
+                      <Link
+                        href={`https://replicate.com/${model.owner.toLowerCase()}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <h5 className="text-sm text-gray-500 hover:text-gray-900">
+                          {model.owner}
+                        </h5>
+                      </Link>
+                      <Link
+                        href={model.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <h5 className="text-xl font-medium text-gray-800 hover:text-gray-500">
+                          {model.name}
+                        </h5>
+                      </Link>
+                      <p className="text-sm  text-gray-500 mt-4">
+                        {model.description}
+                      </p>
 
-                    <div className="mt-6 flex">
-                      {model.links != null &&
-                        model.links.map((link) => (
-                          <a key={`${model.id}-${link.url}`} href={link.url}>
-                            <img
-                              src={`/${link.name}.png`}
-                              alt={link.name}
-                              className={
-                                model.source == "openai" ? "h45 w-4" : "h-6 w-6"
-                              }
-                            />
-                          </a>
-                        ))}
+                      <div className="mt-6 flex">
+                        {model.links != null &&
+                          model.links.map((link) => (
+                            <a key={`${model.id}-${link.url}`} href={link.url}>
+                              <img
+                                src={`/${link.name}.png`}
+                                alt={link.name}
+                                className={
+                                  model.source == "openai"
+                                    ? "h45 w-4"
+                                    : "h-6 w-6"
+                                }
+                              />
+                            </a>
+                          ))}
+                      </div>
                     </div>
-                  </div>
-                  {getPredictionsByVersion(model.version).map((prediction) => (
-                    <div className="group relative" key={prediction.id}>
-                      {prediction.output && (
-                        <>
-                          <div className="image-wrapper rounded-lg">
-                            <Image
-                              fill
-                              sizes="100vw"
-                              src={getPredictionOutput(prediction)}
-                              alt="output"
-                              className="rounded-xl"
-                              loading="lazy"
-                            />
-                          </div>
+                    {getPredictionsByVersion(model.version).map(
+                      (prediction) => (
+                        <div className="group relative" key={prediction.id}>
+                          {prediction.output && (
+                            <>
+                              <div className="image-wrapper rounded-lg">
+                                <Image
+                                  fill
+                                  sizes="100vw"
+                                  src={getPredictionOutput(prediction)}
+                                  alt="output"
+                                  className="rounded-xl"
+                                  loading="lazy"
+                                />
+                              </div>
 
-                          <div className="transition duration-200 absolute inset-0 bg-white bg-opacity-90 opacity-0 hover:opacity-100">
-                            <div className="absolute z-50 group-hover:block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                              <a
-                                href={getPredictionOutput(prediction)}
-                                className=""
-                                download={`${prediction.id}.png`}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth={1.5}
-                                  stroke="currentColor"
-                                  className="w-8 h-8 text-gray-900 hover:text-gray-400"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-                                  />
-                                </svg>
-                              </a>
+                              <div className="transition duration-200 absolute inset-0 bg-white bg-opacity-90 opacity-0 hover:opacity-100">
+                                <div className="absolute z-50 group-hover:block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                  <a
+                                    href={getPredictionOutput(prediction)}
+                                    className=""
+                                    download={`${prediction.id}.png`}
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      strokeWidth={1.5}
+                                      stroke="currentColor"
+                                      className="w-8 h-8 text-gray-900 hover:text-gray-400"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                                      />
+                                    </svg>
+                                  </a>
+                                </div>
+                              </div>
+                            </>
+                          )}
+
+                          {!prediction.output && (
+                            <div className="border border-gray-300 py-3 text-sm opacity-50 flex items-center justify-center aspect-square rounded-lg">
+                              <Counter />
                             </div>
-                          </div>
-                        </>
-                      )}
-
-                      {!prediction.output && (
-                        <div className="border border-gray-300 py-3 text-sm opacity-50 flex items-center justify-center aspect-square rounded-lg">
-                          <Counter />
+                          )}
                         </div>
-                      )}
-                    </div>
-                  ))}
+                      )
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Checkboxes */}
         <div className="col-span-2 h-screen">
           <div className="h-28 text-xs"></div>
           <div>
-            <h5 className="text-lg text-gray-800">Text to Image</h5>
+            <h5 className="text-lg text-gray-800 font-bold">Models</h5>
             <div className="mt-4 grid space-y-1">
               {models.map((model) => (
                 <div key={model.id} className="relative flex items-start">
                   <div className="flex h-7 items-center">
                     <input
-                      className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                      className="h-4 w-4 rounded accent-brand border-gray-300 focus:ring-indigo-600"
                       type="checkbox"
                       id={`model_input_${model.id}`}
                       value={model.id}
