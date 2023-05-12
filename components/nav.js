@@ -5,7 +5,7 @@ export default function Nav() {
   const router = useRouter();
 
   return (
-    <nav class="p-5 container">
+    <nav class="p-5">
       <div className="flex">
         <div className="flex-shrink-0 mb-0 mr-4">
           <span className="text-4xl">🦓</span>
