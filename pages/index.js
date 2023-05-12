@@ -166,10 +166,29 @@ export default function Home() {
     }
   };
 
+  function checkOrder(list1, list2) {
+    // Check if both lists are of the same length
+    if (list1.length !== list2.length) {
+      return false;
+    }
+
+    // Check if names are in the same order
+    for (let i = 0; i < list1.length; i++) {
+      if (list1[i].name !== list2[i].name) {
+        return false;
+      }
+    }
+
+    // If we made it here, the names are in the same order
+    return true;
+  }
+
+  let l;
+
   useEffect(() => {
     const storedModels = localStorage.getItem("models");
 
-    if (storedModels && JSON.parse(storedModels).length == MODELS.length) {
+    if (storedModels && checkOrder(JSON.parse(storedModels), MODELS)) {
       setModels(JSON.parse(storedModels));
     } else {
       setModels(MODELS);
@@ -408,7 +427,10 @@ const Counter = () => {
 
   return (
     <div>
-      <time class="tabular-nums" dateTime={`PT${(tenthSeconds / 10).toFixed(1)}S`}>
+      <time
+        class="tabular-nums"
+        dateTime={`PT${(tenthSeconds / 10).toFixed(1)}S`}
+      >
         {(tenthSeconds / 10).toFixed(1)}s
       </time>
     </div>
