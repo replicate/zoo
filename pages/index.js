@@ -504,7 +504,7 @@ const Counter = () => {
 
   return (
     <div>
-      <time>
+      <time dateTime={`PT${(tenthSeconds / 10).toFixed(1)}S`}>
         {(tenthSeconds / 10).toFixed(1)}s
       </time>
     </div>
