@@ -14,8 +14,8 @@ export default function Nav() {
           <Link href="/" class="flex">
             <h4 className="text-lg items-center flex font-bold justify-center">
               Zoo{" "}
-              <span className="text-zinc-500 ml-1 font-light">
-                Image Playground
+              <span className="text-zinc-500 ml-2 font-light">
+                Image Playground • Powered by Replicate
               </span>
             </h4>
           </Link>

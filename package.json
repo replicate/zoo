@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@next/font": "13.0.7",
+    "@prisma/client": "^4.14.0",
     "@vercel/postgres": "^0.3.0",
     "eslint": "8.29.0",
     "eslint-config-next": "13.0.7",

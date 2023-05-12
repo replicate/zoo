@@ -3,7 +3,7 @@ import Head from "next/head";
 import Image from "next/image";
 import promptmaker from "promptmaker";
 import Link from "next/link";
-import MODELS from "../src/models.js";
+import MODELS from "../lib/models.js";
 import { v4 as uuidv4 } from "uuid";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

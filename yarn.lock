@@ -113,6 +113,18 @@
     "tiny-glob" "^0.2.9"
     "tslib" "^2.4.0"
 
+"@prisma/client@^4.14.0":
+  "integrity" "sha512-MK/XaA2sFdfaOa7I9MjNKz6dxeIEdeZlnpNRoF2w3JuRLlFJLkpp6cD3yaqw2nUUhbrn3Iqe3ZpVV+VuGGil7Q=="
+  "resolved" "https://registry.npmjs.org/@prisma/client/-/client-4.14.0.tgz"
+  "version" "4.14.0"
+  dependencies:
+    "@prisma/engines-version" "4.14.0-67.d9a4c5988f480fa576d43970d5a23641aa77bc9c"
+
+"@prisma/engines-version@4.14.0-67.d9a4c5988f480fa576d43970d5a23641aa77bc9c":
+  "integrity" "sha512-3jum8/YSudeSN0zGW5qkpz+wAN2V/NYCQ+BPjvHYDfWatLWlQkqy99toX0GysDeaUoBIJg1vaz2yKqiA3CFcQw=="
+  "resolved" "https://registry.npmjs.org/@prisma/engines-version/-/engines-version-4.14.0-67.d9a4c5988f480fa576d43970d5a23641aa77bc9c.tgz"
+  "version" "4.14.0-67.d9a4c5988f480fa576d43970d5a23641aa77bc9c"
+
 "@prisma/engines@4.14.0":
   "integrity" "sha512-PDNlhP/1vyTgmNyiucGqGCdXIp7HIkkvKO50si3y3PcceeHvqtiKPaH1iJdz63jCWMVMbj2MElSxXPOeBvEVIQ=="
   "resolved" "https://registry.npmjs.org/@prisma/engines/-/engines-4.14.0.tgz"
@@ -1795,7 +1807,7 @@
   "resolved" "https://registry.npmjs.org/prelude-ls/-/prelude-ls-1.2.1.tgz"
   "version" "1.2.1"
 
-"prisma@^4.14.0":
+"prisma@*", "prisma@^4.14.0":
   "integrity" "sha512-+5dMl1uxMQb4RepndY6AwR9xi1cDcaGFICu+ws6/Nmgt93mFPNj8tYxSfTdmfg+rkNrUId9rk/Ac2vTgLe/oXA=="
   "resolved" "https://registry.npmjs.org/prisma/-/prisma-4.14.0.tgz"
   "version" "4.14.0"
