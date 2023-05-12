@@ -504,7 +504,9 @@ const Counter = () => {
 
   return (
     <div>
-      <p>{(tenthSeconds / 10).toFixed(1)}s</p>
+      <time>
+        {(tenthSeconds / 10).toFixed(1)}s
+      </time>
     </div>
   );
 };
