@@ -288,7 +288,7 @@ export default function Home() {
               {getSelectedModels().map((model) => (
                 <div key={model.id} className="mt-5">
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 tracking-wide mb-10">
-                    <div className="border-l-4 border-gray-900 pl-6 py-2">
+                    <div className="border-l-4 border-gray-900 pl-5 md:pl-6 py-2">
                       <Link
                         href={`https://replicate.com/${model.owner.toLowerCase()}`}
                         target="_blank"
@@ -307,11 +307,11 @@ export default function Home() {
                           {model.name}
                         </h5>
                       </Link>
-                      <p className="text-xs md:text-sm text-gray-500 mt-4">
+                      <p className="text-xs md:text-sm text-gray-500 mt-2 md:mt-4">
                         {model.description}
                       </p>
 
-                      <div className="mt-6 flex">
+                      <div className="mt-2 -ml-1 md:mt-6 flex">
                         {model.links != null &&
                           model.links.map((link) => (
                             <a key={`${model.id}-${link.url}`} href={link.url}>
@@ -320,7 +320,7 @@ export default function Home() {
                                 alt={link.name}
                                 className={
                                   model.source == "openai"
-                                    ? "h45 w-4"
+                                    ? "h-4 w-4"
                                     : "h-6 w-6"
                                 }
                               />
