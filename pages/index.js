@@ -504,7 +504,7 @@ const Counter = () => {
 
   return (
     <div>
-      <time dateTime={`PT${(tenthSeconds / 10).toFixed(1)}S`}>
+      <time class="tabular-nums" dateTime={`PT${(tenthSeconds / 10).toFixed(1)}S`}>
         {(tenthSeconds / 10).toFixed(1)}s
       </time>
     </div>
