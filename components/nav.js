@@ -8,8 +8,8 @@ export default function Nav() {
     <nav className="p-5 border-t-4 border-t-brand">
       <div className="flex">
         <Link href="/">
-          <div className="hover:animate-spin flex-shrink-0 mb-0 mr-4">
-            <img className="h-12 w-12 rounded-lg" src="/zoo.png" alt="" />
+          <div className="hover:animate-spin flex-shrink-0 mb-0">
+            <img className="w-18 h-12 rounded-lg" src="/zoo.png" alt="" />
           </div>
         </Link>
         <div className="flex w-full justify-between">
