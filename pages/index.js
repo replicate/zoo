@@ -336,7 +336,7 @@ export default function Home() {
                     {getPredictionsByVersion(model.version).length == 0 &&
                       [1, 2, 3].map((i) => (
                         <div
-                          key={i}
+                          key={`model-${model.version}-${i}`}
                           className="border bg-gray-50 border-gray-300 py-3 text-sm opacity-50 flex items-center justify-center aspect-square rounded-lg"
                         ></div>
                       ))}
