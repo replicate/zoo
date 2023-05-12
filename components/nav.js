@@ -11,14 +11,27 @@ export default function Nav() {
           <span className="text-4xl">🦓</span>
         </div>
         <div className="flex w-full justify-between">
-          <Link href="/" class="flex hover:underline">
-            <h4 className="text-lg items-center flex font-bold justify-center">
-              Zoo{" "}
-              <span className="text-zinc-500 ml-2 font-light">
-                Image Playground • Powered by Replicate
-              </span>
-            </h4>
-          </Link>
+          <div className="flex">
+            <Link href="/">
+              <h4 className="text-lg items-center flex font-bold justify-center">
+                Zoo{" "}
+                <span className="text-zinc-500 ml-2 font-light">
+                  Image Playground •
+                </span>
+              </h4>
+            </Link>
+            <Link
+              className="hover:underline"
+              href="https://replicate.com?utm_source=project&utm_campaign=zoo"
+            >
+              <h4 className="text-lg items-center flex font-bold justify-center">
+                <span className="text-zinc-500 ml-2 font-light">
+                  Powered by Replicate
+                </span>
+              </h4>
+            </Link>
+          </div>
+
           <div className="">
             {router.pathname == "/memories" ? (
               <>
