@@ -49,45 +49,50 @@ export default function History() {
           </div>
         </div>
 
-        {history.length == 0 && <EmptyStateHistory />}
-
-        <ul
-          role="list"
-          className="mt-12 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8"
-        >
-          {history.reverse().map((prediction) => (
-            <li key={prediction.id} className="relative">
-              <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
-                <img
-                  src={getPredictionOutput(prediction)}
-                  alt=""
-                  className="pointer-events-none object-cover group-hover:opacity-75"
-                />
-                <a
-                  href={getPredictionOutput(prediction)}
-                  className="absolute inset-0 focus:outline-none"
-                  download={`${prediction.id}.png`}
-                />
-              </div>
-              <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">
-                {prediction.model}
-              </p>
-              <p className="pointer-events-none block text-sm font-medium text-gray-500">
-                {prediction.input.prompt}
-              </p>
-            </li>
-          ))}
-        </ul>
-
-        <div className="mt-12">
-          <button
-            type="button"
-            data-confirm="Are you sure you want to delete your Zoo history?"
-            className="mr-4 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-red-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-          >
-            Clear Memories
-          </button>
-        </div>
+        {history.length == 0 ? (
+          <EmptyStateHistory />
+        ) : (
+          <>
+            {" "}
+            <ul
+              role="list"
+              className="mt-12 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8"
+            >
+              {history.reverse().map((prediction) => (
+                <li key={prediction.id} className="relative">
+                  <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
+                    <img
+                      src={getPredictionOutput(prediction)}
+                      alt=""
+                      className="pointer-events-none object-cover group-hover:opacity-75"
+                    />
+                    <a
+                      href={getPredictionOutput(prediction)}
+                      className="absolute inset-0 focus:outline-none"
+                      download={`${prediction.id}.png`}
+                    />
+                  </div>
+                  <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">
+                    {prediction.model}
+                  </p>
+                  <p className="pointer-events-none block text-sm font-medium text-gray-500">
+                    {prediction.input.prompt}
+                  </p>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-12">
+              <button
+                onClick={() => handleClearHistory()}
+                type="button"
+                data-confirm="Are you sure you want to delete your Zoo history?"
+                className="mr-4 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-red-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+              >
+                Clear Memories
+              </button>
+            </div>
+          </>
+        )}
       </>
     </div>
   );

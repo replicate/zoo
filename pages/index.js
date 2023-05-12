@@ -30,11 +30,6 @@ export default function Home() {
     return prediction.output[prediction.output.length - 1];
   }
 
-  const clearHistory = () => {
-    localStorage.removeItem("predictions");
-    setHistory([]);
-  };
-
   const handleNewPrediction = (newPrediction) => {
     // Get the current list of predictions from localStorage
     let predictionHistory = localStorage.getItem("predictions");
@@ -48,12 +43,6 @@ export default function Home() {
 
     // Save the updated list back to localStorage
     localStorage.setItem("predictions", JSON.stringify(predictionHistory));
-  };
-
-  const handleClearHistory = (e) => {
-    if (window.confirm("Do you really want to clear your Zoo history?")) {
-      clearHistory();
-    }
   };
 
   const handleCheckboxChange = (e) => {
