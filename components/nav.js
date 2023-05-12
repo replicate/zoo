@@ -17,7 +17,7 @@ export default function Nav() {
             <Link href="/" className="hover:underline">
               <h4>
                 Zoo{" "}
-                <span className="text-zinc-500 ml-1 font-light">
+                <span className="hidden sm:inline-block text-zinc-500 ml-1 font-light">
                   Image Playground •
                 </span>
               </h4>
@@ -27,7 +27,7 @@ export default function Nav() {
               href="https://replicate.com?utm_source=project&utm_campaign=zoo"
             >
               <h4>
-                <span className="text-zinc-500 ml-1 font-light">
+                <span className="text-zinc-500 ml-2 font-light">
                   Powered by Replicate
                 </span>
               </h4>

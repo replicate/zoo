@@ -213,15 +213,20 @@ export default function Home() {
       <div className="pt-2">
         <div className="mx-0 max-w-7xl">
           <div className="mx-0 max-w-3xl">
-            <p className="text-2xl font-medium tracking-tight text-gray-900">
-              Welcome to the Zoo, a playground for experimenting with text to
-              image models. What do you want to see?
-            </p>
+            {firstTime && (
+              <span className="text-2xl font-medium tracking-tight text-gray-500">
+                Welcome to the Zoo, a playground for experimenting with text to
+                image models.{" "}
+              </span>
+            )}
+            <span className="text-2xl font-medium tracking-tight text-gray-900">
+              What do you want to see?
+            </span>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-x-16 mt-4">
+      <div className="md:grid grid-cols-12 gap-x-16 mt-2">
         {/* Form + Outputs */}
 
         <div className="col-span-10 h-full">
@@ -236,8 +241,8 @@ export default function Home() {
                 <div className="w-full h-full relative">
                   <textarea
                     name="prompt"
-                    className="w-full text-lg border-2 p-3 pr-5 rounded-md ring-brand outline-brand"
-                    rows="1"
+                    className="w-full border-2 p-3 pr-12 text-sm md:text-base rounded-md ring-brand outline-brand"
+                    rows="2"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Enter a prompt to display an image"
@@ -282,14 +287,14 @@ export default function Home() {
 
               {getSelectedModels().map((model) => (
                 <div key={model.id} className="mt-5">
-                  <div className="grid grid-cols-4 gap-6 tracking-wide mb-10">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 tracking-wide mb-10">
                     <div className="border-l-4 border-gray-900 pl-6 py-2">
                       <Link
                         href={`https://replicate.com/${model.owner.toLowerCase()}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <h5 className="text-sm text-gray-500 hover:text-gray-900">
+                        <h5 className="text-xs md:text-sm text-gray-500 hover:text-gray-900">
                           {model.owner}
                         </h5>
                       </Link>
@@ -298,11 +303,11 @@ export default function Home() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <h5 className="text-xl font-medium text-gray-800 hover:text-gray-500">
+                        <h5 className="text-base md:text-xl font-medium text-gray-800 hover:text-gray-500">
                           {model.name}
                         </h5>
                       </Link>
-                      <p className="text-sm  text-gray-500 mt-4">
+                      <p className="text-xs md:text-sm text-gray-500 mt-4">
                         {model.description}
                       </p>
 
@@ -381,43 +386,49 @@ export default function Home() {
           )}
         </div>
 
-        {/* Checkboxes */}
-        <div className="col-span-2 h-screen">
-          <div className="h-28 text-xs"></div>
-          <div>
-            <h5 className="text-lg text-gray-800 font-bold">Models</h5>
-            <div className="mt-4 grid space-y-1">
-              {models.map((model) => (
-                <div key={model.id} className="relative flex items-start">
-                  <div className="flex h-7 items-center">
-                    <input
-                      className="h-4 w-4 rounded accent-brand border-gray-300 focus:ring-indigo-600"
-                      type="checkbox"
-                      id={`model_input_${model.id}`}
-                      value={model.id}
-                      checked={model.checked}
-                      onChange={handleCheckboxChange}
-                    />
-                  </div>
-                  <div className="ml-3 text-sm leading-6">
-                    <label
-                      htmlFor={`model_input_${model.id}`}
-                      className={
-                        model.checked ? "text-gray-900" : "text-gray-500"
-                      }
-                    >
-                      {model.name}
-                    </label>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <Checkboxes
+          models={models}
+          handleCheckboxChange={handleCheckboxChange}
+          className={"mt-28"}
+        />
       </div>
     </div>
   );
 }
+
+const Checkboxes = ({ models, handleCheckboxChange, className }) => {
+  return (
+    <div className={`col-span-2 mb-28 ${className}`}>
+      <div>
+        <h5 className="text-lg text-gray-800 font-bold">Models</h5>
+        <div className="mt-4 grid space-y-1">
+          {models.map((model) => (
+            <div key={model.id} className="relative flex items-start">
+              <div className="flex h-7 items-center">
+                <input
+                  className="h-4 w-4 rounded accent-brand border-gray-300 focus:ring-indigo-600"
+                  type="checkbox"
+                  id={`model_input_${model.id}`}
+                  value={model.id}
+                  checked={model.checked}
+                  onChange={handleCheckboxChange}
+                />
+              </div>
+              <div className="ml-3 text-xs md:text-sm leading-6">
+                <label
+                  htmlFor={`model_input_${model.id}`}
+                  className={model.checked ? "text-gray-900" : "text-gray-500"}
+                >
+                  {model.name}
+                </label>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Counter = () => {
   const [tenthSeconds, setTenthSeconds] = useState(0);
