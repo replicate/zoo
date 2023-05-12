@@ -289,7 +289,7 @@ export default function Home() {
                     <div className="mt-6 flex">
                       {model.links != null &&
                         model.links.map((link) => (
-                          <a key={uuidv4()} href={link.url}>
+                          <a key={`${model.id}-${link.url}`} href={link.url}>
                             <img
                               src={`/${link.name}.png`}
                               alt={link.name}
