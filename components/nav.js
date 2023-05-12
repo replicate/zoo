@@ -11,11 +11,11 @@ export default function Nav() {
           <span className="text-4xl">🦓</span>
         </div>
         <div className="flex w-full justify-between">
-          <div className="flex">
+          <div className="flex text-lg items-center font-bold justify-center">
             <Link href="/">
-              <h4 className="text-lg items-center flex font-bold justify-center">
+              <h4>
                 Zoo{" "}
-                <span className="text-zinc-500 ml-2 font-light">
+                <span className="text-zinc-500 ml-1 font-light">
                   Image Playground •
                 </span>
               </h4>
@@ -24,8 +24,8 @@ export default function Nav() {
               className="hover:underline"
               href="https://replicate.com?utm_source=project&utm_campaign=zoo"
             >
-              <h4 className="text-lg items-center flex font-bold justify-center">
-                <span className="text-zinc-500 ml-2 font-light">
+              <h4>
+                <span className="text-zinc-500 ml-1 font-light">
                   Powered by Replicate
                 </span>
               </h4>
