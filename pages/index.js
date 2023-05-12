@@ -192,8 +192,21 @@ export default function Home() {
           href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%2210 0 100 100%22><text y=%22.90em%22 font-size=%2290%22>🦓</text></svg>"
         ></link>
       </Head>
+
+      <div className="pt-5">
+        <div className="mx-0 max-w-7xl">
+          <div className="mx-0 max-w-3xl">
+            <p className="text-3xl font-bold tracking-tight text-gray-900">
+              Welcome to the Zoo, a playground for experimenting with text to
+              image models. To get started, enter what you want to see.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-12 gap-x-16 mt-12">
         {/* Form + Outputs */}
+
         <div className="col-span-10 h-full">
           <div className="h-24">
             <form
@@ -201,7 +214,8 @@ export default function Home() {
               className="w-full"
               onSubmit={(e) => handleSubmit(e, prompt)}
             >
-              <div className="flex relative">
+              <div className="flex relative mt-2">
+                {" "}
                 <div className="w-full h-full relative">
                   <textarea
                     name="prompt"
@@ -233,7 +247,6 @@ export default function Home() {
                     </svg>
                   </button>
                 </div>
-
                 <div className="ml-3 mb-1.5 inline-flex">
                   <button
                     className="button h-full font-bold hover:bg-slate-800"
