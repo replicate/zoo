@@ -8,27 +8,24 @@ export default function Nav() {
     <nav className="p-5 border-t-4 border-t-brand">
       <div className="flex">
         <Link href="/">
-          <div className="flex-shrink-0 mb-0 mr-4">
+          <div className="hover:animate-spin flex-shrink-0 mb-0 mr-4">
             <span className="text-4xl">🦓</span>
           </div>
         </Link>
         <div className="flex w-full justify-between">
           <div className="flex text-lg items-center font-bold justify-center">
-            <Link href="/" className="hover:underline">
+            <Link className="hover:underline" href="/">
               <h4>
                 Zoo{" "}
-                <span className="hidden sm:inline-block text-zinc-500 ml-1 font-light">
+                <span className="invisible sm:visible text-zinc-500 ml-1 font-light">
                   Image Playground •
                 </span>
               </h4>
             </Link>
-            <Link
-              className="hover:underline"
-              href="https://replicate.com?utm_source=project&utm_campaign=zoo"
-            >
-              <h4>
+            <Link href="https://replicate.com?utm_source=project&utm_campaign=zoo">
+              <h4 className="hover:underline">
                 <span className="text-zinc-500 ml-2 font-light">
-                  <span className="sm:inline-flex hidden">Powered</span> by
+                  <span className="sm:visible invisible">Powered</span> by
                   Replicate
                 </span>
               </h4>
