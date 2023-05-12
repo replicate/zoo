@@ -170,7 +170,7 @@ export default function Home() {
   useEffect(() => {
     const storedModels = localStorage.getItem("models");
 
-    if (storedModels && storedModels.length == MODELS.length) {
+    if (storedModels && JSON.parse(storedModels).length == MODELS.length) {
       setModels(JSON.parse(storedModels));
     } else {
       setModels(MODELS);
