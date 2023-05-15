@@ -346,14 +346,14 @@ export default function Home() {
 
                     {/* Row for predictions */}
                     <div className="flex w-full overflow-x-auto space-x-6">
-                      {getPredictionsByVersion(model.version).map(
-                        (prediction) => (
+                      {getPredictionsByVersion(model.version)
+                        .reverse()
+                        .map((prediction) => (
                           <Prediction
                             key={prediction.id}
                             prediction={prediction}
                           />
-                        )
-                      )}
+                        ))}
                     </div>
                   </div>
                 </div>
