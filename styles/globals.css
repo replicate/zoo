@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+.animate-drop {
+    animation-duration: 0.5s;
+    animation-name: animate-drop;
+    animation-delay: 0.5s;
+    animation-fill-mode: backwards;
+}
+
+@keyframes animate-drop {
+    0% { opacity: 0; transform: translateY(-400px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+
+
 input {
     @apply border;
     @apply border-solid;

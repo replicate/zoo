@@ -74,7 +74,7 @@ export default async function handler(req, res) {
     });
 
     const prediction = {
-      id: req.body.predictionId,
+      id: req.body.id,
       status: "completed",
       version: "dall-e",
       output: [response.data.data[0].url],

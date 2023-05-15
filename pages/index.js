@@ -19,10 +19,12 @@ export default function Home({ submissionPredictions }) {
   const [firstTime, setFirstTime] = useState(false);
   const [models, setModels] = useState([]);
   const [anonId, setAnonId] = useState(null);
-  const [submissionId, setSubmissionId] = useState(null);
 
   function getPromptFromPredictions(predictions) {
-    return predictions.find((p) => p.status === "succeeded").input.prompt;
+    if (predictions.length == 0) {
+      return "";
+    }
+    return predictions[0].input.prompt;
   }
 
   function getModelsFromPredictions(predictions) {
@@ -94,12 +96,12 @@ export default function Home({ submissionPredictions }) {
       }),
     });
     let submission = await response.json();
-    console.log("submission", submission);
     router.query.id = id;
     router.push(router);
+    return id;
   }
 
-  async function postPrediction(prompt, model) {
+  async function postPrediction(prompt, model, submissionId) {
     return fetch("/api/predictions", {
       method: "POST",
       headers: {
@@ -112,7 +114,7 @@ export default function Home({ submissionPredictions }) {
         model: model.name,
         anon_id: anonId,
         submission_id: submissionId,
-        ...(model.source == "openai" && { predictionId: uuidv4() }),
+        ...(model.source == "openai" && { id: uuidv4() }),
         ...(model.source == "openai" && {
           created_at: new Date().toISOString(),
         }),
@@ -120,8 +122,8 @@ export default function Home({ submissionPredictions }) {
     });
   }
 
-  async function createReplicatePrediction(prompt, model) {
-    const response = await postPrediction(prompt, model);
+  async function createReplicatePrediction(prompt, model, submissionId) {
+    const response = await postPrediction(prompt, model, submissionId);
     let prediction = await response.json();
 
     if (response.status !== 201) {
@@ -147,8 +149,8 @@ export default function Home({ submissionPredictions }) {
     return prediction;
   }
 
-  async function createDallePrediction(prompt, model) {
-    const response = await postPrediction(prompt, model);
+  async function createDallePrediction(prompt, model, submissionId) {
+    const response = await postPrediction(prompt, model, submissionId);
 
     let prediction = await response.json();
     prediction.source = model.source;
@@ -162,7 +164,6 @@ export default function Home({ submissionPredictions }) {
     setError(null);
     setFirstTime(false);
     const submissionId = uuidv4();
-    setSubmissionId(submissionId);
     createSubmission(submissionId, predictions);
 
     for (const model of getSelectedModels()) {
@@ -172,9 +173,9 @@ export default function Home({ submissionPredictions }) {
         let promise = null;
 
         if (model.source == "replicate") {
-          promise = createReplicatePrediction(prompt, model);
+          promise = createReplicatePrediction(prompt, model, submissionId);
         } else if (model.source == "openai") {
-          promise = createDallePrediction(prompt, model);
+          promise = createDallePrediction(prompt, model, submissionId);
         }
 
         promise.model = model.name;
@@ -333,14 +334,6 @@ export default function Home({ submissionPredictions }) {
           </div>
 
           <div className="-mt-2">
-            {predictions.length > 0 && (
-              <Link
-                href={`/memories/${id}`}
-                className="hover:bg-gray-50 flex justify-center items-center rounded-md px-4 sm:px-8 py-2 text-sm font-medium text-gray-700 shadow-sm border"
-              >
-                Copy Link to Generations
-              </Link>
-            )}
             {getSelectedModels().length == 0 && <EmptyState />}
 
             {getSelectedModels().map((model) => (
@@ -487,7 +480,6 @@ export async function getServerSideProps({ req }) {
   const submissionId = req.url.split("?id=")[1];
   const baseUrl = `${protocol}://${req.headers.host}`;
   let submissionPredictions = [];
-  console.log("submission id", submissionId);
 
   if (submissionId) {
     const response = await fetch(`${baseUrl}/api/submissions/${submissionId}`, {
