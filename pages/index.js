@@ -21,18 +21,30 @@ export default function Home({ submissionPredictions }) {
   const [anonId, setAnonId] = useState(null);
   const [submissionId, setSubmissionId] = useState(null);
 
-  function getPromptFromPredictions() {
-    const prediction = predictions.find((p) => p.status === "succeeded");
-    return prediction ? prediction.input.prompt : "";
+  function getPromptFromPredictions(predictions) {
+    return predictions.find((p) => p.status === "succeeded").input.prompt;
   }
 
-  function getModelsFromPredictions() {
+  function getModelsFromPredictions(predictions) {
     return predictions.map((p) => p.model);
   }
 
-  function getModelsFromModelNames(modelNames) {
-    return MODELS.filter((m) => modelNames.includes(m.name));
-  }
+  const updateCheckedModels = (modelNames) => {
+    // Create a new array where each model's `checked` value is updated
+    const updatedModels = MODELS.map((model) => {
+      // If the model's name is in the list of names, set `checked` to true, else set it to false
+      return {
+        ...model,
+        checked: modelNames.includes(model.name),
+      };
+    });
+
+    console.log(modelNames);
+    console.log("models", updatedModels);
+
+    // Update the state with the new array
+    setModels(updatedModels);
+  };
 
   function getSelectedModels() {
     return models.filter((m) => m.checked);
@@ -205,21 +217,24 @@ export default function Home({ submissionPredictions }) {
 
     if (id) {
       setPredictions(submissionPredictions);
-      const modelNames = getModelsFromPredictions();
-      const submissionModels = getModelsFromModelNames(modelNames);
-      const submissionPrompt = getPromptFromPredictions();
+
+      // get the model names from the predictions, and update which ones are checked
+      const modelNames = getModelsFromPredictions(submissionPredictions);
+      updateCheckedModels(modelNames);
+
+      // get the prompt from the predictions, and update the prompt
+      const submissionPrompt = getPromptFromPredictions(submissionPredictions);
       setPrompt(submissionPrompt);
-      setModels(submissionModels);
     } else {
       const prompt = promptmaker({ flavors: null });
       setPrompt(prompt);
-    }
 
-    if (storedModels && checkOrder(JSON.parse(storedModels), MODELS)) {
-      setModels(JSON.parse(storedModels));
-    } else {
-      setModels(MODELS);
-      setFirstTime(true);
+      if (storedModels && checkOrder(JSON.parse(storedModels), MODELS)) {
+        setModels(JSON.parse(storedModels));
+      } else {
+        setModels(MODELS);
+        setFirstTime(true);
+      }
     }
 
     if (!anonId) {
