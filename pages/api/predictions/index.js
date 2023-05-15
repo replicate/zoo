@@ -1,19 +1,12 @@
-import Replicate from "replicate";
 import { Configuration, OpenAIApi } from "openai";
 import upsertPrediction from "../../../lib/upsertPrediction";
 import packageData from "../../../package.json";
 
 const REPLICATE_API_HOST = "https://api.replicate.com";
 
-// const WEBHOOK_HOST = process.env.VERCEL_URL
-//   ? `https://${process.env.VERCEL_URL}`
-//   : process.env.NGROK_HOST;
-const WEBHOOK_HOST =
-  "https://fb2d-2600-1017-b42a-8d11-546c-a357-2a14-8073.ngrok-free.app";
-
-const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN,
-});
+const WEBHOOK_HOST = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : process.env.NGROK_HOST;
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -25,6 +18,12 @@ export default async function handler(req, res) {
   if (!process.env.REPLICATE_API_TOKEN) {
     throw new Error(
       "The REPLICATE_API_TOKEN environment variable is not set. See README.md for instructions on how to set it."
+    );
+  }
+
+  if (!WEBHOOK_HOST) {
+    throw new Error(
+      "WEBHOOK HOST is not set. If you're on local, make sure you set it to an ngrok url. If this doesn't exist, replicate predictions won't save to DB."
     );
   }
 
