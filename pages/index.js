@@ -336,7 +336,10 @@ export default function Home() {
                     <div className="flex w-full overflow-x-auto space-x-6">
                       {getPredictionsByVersion(model.version).map(
                         (prediction) => (
-                          <Prediction prediction={prediction} />
+                          <Prediction
+                            key={prediction.id}
+                            prediction={prediction}
+                          />
                         )
                       )}
                     </div>
