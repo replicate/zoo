@@ -15,8 +15,7 @@ export default function Home() {
   const [numOutputs, setNumOutputs] = useState(1);
   const [firstTime, setFirstTime] = useState(false);
   const [models, setModels] = useState([]);
-  const placeholder = new Array(numOutputs).fill(null);
-  const lastRender = useRef(null);
+  const [anonID, setAnonID] = useState(null);
 
   function getSelectedModels() {
     return models.filter((m) => m.checked);
@@ -81,6 +80,7 @@ export default function Home() {
         version: model.version,
         source: model.source,
         model: model.name,
+        anonID: anonID,
       }),
     });
 
@@ -123,6 +123,7 @@ export default function Home() {
         source: model.source,
         model: model.name,
         predictionId: predictionId,
+        anonID: anonID,
       }),
     });
 
@@ -187,9 +188,8 @@ export default function Home() {
     return true;
   }
 
-  let l;
-
   useEffect(() => {
+    const anonID = localStorage.getItem("anonID");
     const storedModels = localStorage.getItem("models");
     const prompt = promptmaker({ flavors: null });
     setPrompt(prompt);
@@ -199,6 +199,15 @@ export default function Home() {
     } else {
       setModels(MODELS);
       setFirstTime(true);
+    }
+
+    if (!anonID) {
+      const uuid = uuidv4();
+      localStorage.setItem("anonID", uuid);
+      setAnonID(uuid);
+    } else {
+      console.log("returning user", anonID);
+      setAnonID(anonID);
     }
   }, []);
 

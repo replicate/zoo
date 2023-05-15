@@ -64,6 +64,7 @@ export default async function handler(req, res) {
 
 async function insertDB(prediction, req) {
   const predictionObject = {
+    anon_id: req.body.anonID,
     uuid: prediction.id,
     input: prediction.input,
     output: prediction.output,

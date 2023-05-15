@@ -29,7 +29,5 @@ export default async function handler(req, res) {
     .from("predictions")
     .upsert([predictionObject], { onConflict: "uuid" });
 
-  console.log(data, error);
-
   res.end(JSON.stringify(prediction));
 }
