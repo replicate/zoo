@@ -1,6 +1,9 @@
 import Replicate from "replicate";
 import { Configuration, OpenAIApi } from "openai";
 import upsertPrediction from "../../../lib/upsertPrediction";
+import packageData from "../../../package.json";
+
+const REPLICATE_API_HOST = "https://api.replicate.com";
 
 // const WEBHOOK_HOST = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`
@@ -25,23 +28,43 @@ export default async function handler(req, res) {
     );
   }
 
-  console.log("BODY", req.body);
-
   if (req.body.source == "replicate") {
     console.log("host", WEBHOOK_HOST);
-    const prediction = await replicate.predictions.create({
+
+    const searchParams = new URLSearchParams({
+      submission_id: req.body.submission_id,
+      model: req.body.model,
+      anon_id: req.body.anon_id,
+      source: req.body.source,
+    });
+
+    const body = JSON.stringify({
       input: { prompt: req.body.prompt },
       version: req.body.version,
-      webhook: `${WEBHOOK_HOST}/api/replicate-webhook?submission_id=${req.body.submissionId}&model=${req.body.model}&source=${req.body.source}&anonID=${req.body.anonID}`,
+      webhook: `${WEBHOOK_HOST}/api/replicate-webhook?${searchParams}`,
       webhook_events_filter: ["start", "completed"],
     });
 
-    if (prediction?.error) {
+    const headers = {
+      Authorization: `Token ${process.env.REPLICATE_API_TOKEN}`,
+      "Content-Type": "application/json",
+      "User-Agent": `${packageData.name}/${packageData.version}`,
+    };
+
+    const response = await fetch(`${REPLICATE_API_HOST}/v1/predictions`, {
+      method: "POST",
+      headers,
+      body,
+    });
+
+    if (response.status !== 201) {
+      let error = await response.json();
       res.statusCode = 500;
-      res.end(JSON.stringify({ detail: prediction.error }));
+      res.end(JSON.stringify({ detail: error.detail }));
       return;
     }
 
+    const prediction = await response.json();
     res.statusCode = 201;
     res.end(JSON.stringify(prediction));
   } else if (req.body.source == "openai") {
