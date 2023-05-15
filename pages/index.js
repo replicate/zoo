@@ -124,6 +124,7 @@ export default function Home() {
         model: model.name,
         predictionId: predictionId,
         anonID: anonID,
+        created_at: new Date().toISOString(),
       }),
     });
 
