@@ -85,7 +85,7 @@ export default function History() {
                 </li>
               ))}
             </ul>
-            <div className="mt-12">
+            {/* <div className="mt-12">
               <button
                 onClick={() => handleClearHistory()}
                 type="button"
@@ -94,7 +94,7 @@ export default function History() {
               >
                 Clear Memories
               </button>
-            </div>
+            </div> */}
           </>
         )}
       </>
