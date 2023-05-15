@@ -293,7 +293,7 @@ export default function Home() {
                     {/* Model description */}
                     <div className="w-72 border-l-4 border-gray-900 pl-5 md:pl-6 py-2">
                       <Link
-                        href={`https://replicate.com/${model.owner.toLowerCase()}`}
+                        href={`https://replicate.com/${model.owner.toLowerCase()}?utm_source=project&utm_campaign=zoo`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
