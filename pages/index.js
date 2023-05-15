@@ -69,7 +69,7 @@ export default function Home() {
     }
   };
 
-  async function createReplicatePrediction(prompt, model) {
+  async function createReplicatePrediction(prompt, model, submissionID) {
     const response = await fetch("/api/predictions", {
       method: "POST",
       headers: {
@@ -81,6 +81,7 @@ export default function Home() {
         source: model.source,
         model: model.name,
         anonID: anonID,
+        submissionID: submissionID,
       }),
     });
 
@@ -125,6 +126,7 @@ export default function Home() {
         predictionId: predictionId,
         anonID: anonID,
         created_at: new Date().toISOString(),
+        submissionID: submissionID,
       }),
     });
 
@@ -139,6 +141,7 @@ export default function Home() {
     e.preventDefault();
     setError(null);
     setFirstTime(false);
+    const submissionID = uuidv4();
 
     // extract prediction creation to its own function
 
@@ -149,9 +152,9 @@ export default function Home() {
         let promise = null;
 
         if (model.source == "replicate") {
-          promise = createReplicatePrediction(prompt, model);
+          promise = createReplicatePrediction(prompt, model, submissionID);
         } else if (model.source == "openai") {
-          promise = createDallePrediction(prompt, model);
+          promise = createDallePrediction(prompt, model, submissionID);
         }
 
         promise.model = model.name;
