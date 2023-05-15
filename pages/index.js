@@ -72,8 +72,8 @@ export default function Home() {
     console.log(submission);
   }
 
-  async function createReplicatePrediction(prompt, model) {
-    const response = await fetch("/api/predictions", {
+  async function postPrediction(prompt, model) {
+    return fetch("/api/predictions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -84,9 +84,17 @@ export default function Home() {
         source: model.source,
         model: model.name,
         anonID: anonID,
+        submissionID: submissionID,
+        ...(model.source == "openai" && { predictionId: uuidv4() }),
+        ...(model.source == "openai" && {
+          created_at: new Date().toISOString(),
+        }),
       }),
     });
+  }
 
+  async function createReplicatePrediction(prompt, model) {
+    const response = await postPrediction(prompt, model);
     let prediction = await response.json();
 
     if (response.status !== 201) {
@@ -113,23 +121,7 @@ export default function Home() {
   }
 
   async function createDallePrediction(prompt, model) {
-    const predictionId = uuidv4();
-
-    const response = await fetch("/api/predictions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt: prompt,
-        version: model.version,
-        source: model.source,
-        model: model.name,
-        predictionId: predictionId,
-        anonID: anonID,
-        created_at: new Date().toISOString(),
-      }),
-    });
+    const response = await postPrediction(prompt, model);
 
     let prediction = await response.json();
     prediction.source = model.source;
@@ -142,8 +134,6 @@ export default function Home() {
     e.preventDefault();
     setError(null);
     setFirstTime(false);
-    // const submissionID = uuidv4();
-    // setSubmissionID(submissionID);
 
     for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model

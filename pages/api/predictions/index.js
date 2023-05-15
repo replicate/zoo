@@ -1,11 +1,10 @@
 import Replicate from "replicate";
 import { Configuration, OpenAIApi } from "openai";
-import { createClient } from "@supabase/supabase-js";
-import { v4 as uuidv4 } from "uuid";
+import upsertPrediction from "../../../lib/upsertPrediction";
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const WEBHOOK_HOST = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : process.env.NGROK_HOST;
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
@@ -24,10 +23,12 @@ export default async function handler(req, res) {
   }
 
   if (req.body.source == "replicate") {
+    console.log("host", WEBHOOK_HOST);
     const prediction = await replicate.predictions.create({
-      // This is the text prompt that will be submitted by a form on the frontend
       input: { prompt: req.body.prompt },
       version: req.body.version,
+      webhook: `${WEBHOOK_HOST}/api/replicate-webhook?submission_id=${req.body.submissionId}&model=${req.body.model}&source=${req.body.source}&anonID=${req.body.anonID}`,
+      webhook_events_filter: ["start", "completed"],
     });
 
     if (prediction?.error) {
@@ -36,7 +37,12 @@ export default async function handler(req, res) {
       return;
     }
 
-    insertDB(prediction, req);
+    // upsertPrediction(
+    //   prediction,
+    //   req.body.model,
+    //   req.body.source,
+    //   req.body.anonID
+    // );
 
     res.statusCode = 201;
     res.end(JSON.stringify(prediction));
@@ -56,33 +62,17 @@ export default async function handler(req, res) {
       model: req.body.model,
       inserted_at: new Date(),
       created_at: new Date(),
+      submissionId: req.body.submissionId,
     };
 
-    insertDB(prediction, req);
+    upsertPrediction(
+      prediction,
+      req.body.model,
+      req.body.source,
+      req.body.anonID
+    );
 
     res.statusCode = 201;
     res.end(JSON.stringify(prediction));
   }
-}
-
-async function insertDB(prediction, req) {
-  const predictionObject = {
-    anon_id: req.body.anonID,
-    uuid: prediction.id,
-    input: prediction.input,
-    output: prediction.output,
-    status: prediction.status,
-    created_at: prediction.created_at,
-    started_at: prediction.started_at,
-    completed_at: prediction.completed_at,
-    version: prediction.version,
-    metrics: prediction.metrics,
-    error: prediction.error,
-    model: req.body.model,
-    source: req.body.source,
-  };
-
-  const { data, error } = await supabase
-    .from("predictions")
-    .upsert([predictionObject], { onConflict: "uuid" });
 }
