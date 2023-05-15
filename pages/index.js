@@ -5,10 +5,13 @@ import promptmaker from "promptmaker";
 import Link from "next/link";
 import MODELS from "../lib/models.js";
 import { v4 as uuidv4 } from "uuid";
+import { useRouter } from "next/router";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export default function Home() {
+export default function Home({ submissionPredictions }) {
+  const router = useRouter();
+  const { id } = router.query;
   const [prompt, setPrompt] = useState("");
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
@@ -17,6 +20,19 @@ export default function Home() {
   const [models, setModels] = useState([]);
   const [anonId, setAnonId] = useState(null);
   const [submissionId, setSubmissionId] = useState(null);
+
+  function getPromptFromPredictions() {
+    const prediction = predictions.find((p) => p.status === "succeeded");
+    return prediction ? prediction.input.prompt : "";
+  }
+
+  function getModelsFromPredictions() {
+    return predictions.map((p) => p.model);
+  }
+
+  function getModelsFromModelNames(modelNames) {
+    return MODELS.filter((m) => modelNames.includes(m.name));
+  }
 
   function getSelectedModels() {
     return models.filter((m) => m.checked);
@@ -62,11 +78,13 @@ export default function Home() {
       },
       body: JSON.stringify({
         id: id,
-        predictionIDs: predictions.map((p) => p.id),
         prompt: prompt,
       }),
     });
     let submission = await response.json();
+    console.log("submission", submission);
+    router.query.id = id;
+    router.push(router);
   }
 
   async function postPrediction(prompt, model) {
@@ -131,6 +149,9 @@ export default function Home() {
     e.preventDefault();
     setError(null);
     setFirstTime(false);
+    const submissionId = uuidv4();
+    setSubmissionId(submissionId);
+    createSubmission(submissionId, predictions);
 
     for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model
@@ -181,11 +202,18 @@ export default function Home() {
   useEffect(() => {
     const anonId = localStorage.getItem("anonId");
     const storedModels = localStorage.getItem("models");
-    const prompt = promptmaker({ flavors: null });
-    const submissionId = uuidv4();
-    setSubmissionId(submissionId);
 
-    setPrompt(prompt);
+    if (id) {
+      setPredictions(submissionPredictions);
+      const modelNames = getModelsFromPredictions();
+      const submissionModels = getModelsFromModelNames(modelNames);
+      const submissionPrompt = getPromptFromPredictions();
+      setPrompt(submissionPrompt);
+      setModels(submissionModels);
+    } else {
+      const prompt = promptmaker({ flavors: null });
+      setPrompt(prompt);
+    }
 
     if (storedModels && checkOrder(JSON.parse(storedModels), MODELS)) {
       setModels(JSON.parse(storedModels));
@@ -203,12 +231,6 @@ export default function Home() {
       setAnonId(anonId);
     }
   }, []);
-
-  useEffect(() => {
-    if (predictions.length != 0) {
-      createSubmission(submissionId, predictions);
-    }
-  }, [predictions]);
 
   console.log(predictions);
 
@@ -295,79 +317,75 @@ export default function Home() {
             </form>
           </div>
 
-          {!firstTime && (
-            <div className="-mt-2">
-              {submissionId && predictions.length > 0 && (
-                <Link
-                  href={`/memories/${submissionId}`}
-                  className="hover:bg-gray-50 flex justify-center items-center rounded-md px-4 sm:px-8 py-2 text-sm font-medium text-gray-700 shadow-sm border"
-                >
-                  Copy Link to Generations
-                </Link>
-              )}
-              {getSelectedModels().length == 0 && <EmptyState />}
+          <div className="-mt-2">
+            {predictions.length > 0 && (
+              <Link
+                href={`/memories/${id}`}
+                className="hover:bg-gray-50 flex justify-center items-center rounded-md px-4 sm:px-8 py-2 text-sm font-medium text-gray-700 shadow-sm border"
+              >
+                Copy Link to Generations
+              </Link>
+            )}
+            {getSelectedModels().length == 0 && <EmptyState />}
 
-              {getSelectedModels().map((model) => (
-                <div key={model.id} className="mt-5">
-                  <div className="flex gap-6 tracking-wide mb-10">
-                    {/* Model description */}
-                    <div className="w-72 border-l-4 border-gray-900 pl-5 md:pl-6 py-2">
-                      <Link
-                        href={`https://replicate.com/${model.owner.toLowerCase()}?utm_source=project&utm_campaign=zoo`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <h5 className="text-xs md:text-sm text-gray-500 hover:text-gray-900">
-                          {model.owner}
-                        </h5>
-                      </Link>
-                      <Link
-                        href={model.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <h5 className="text-base md:text-xl font-medium text-gray-800 hover:text-gray-500">
-                          {model.name}
-                        </h5>
-                      </Link>
-                      <p className="text-xs md:text-sm text-gray-500 mt-2 md:mt-4">
-                        {model.description}
-                      </p>
+            {getSelectedModels().map((model) => (
+              <div key={model.id} className="mt-5">
+                <div className="flex gap-6 tracking-wide mb-10">
+                  {/* Model description */}
+                  <div className="w-72 border-l-4 border-gray-900 pl-5 md:pl-6 py-2">
+                    <Link
+                      href={`https://replicate.com/${model.owner.toLowerCase()}?utm_source=project&utm_campaign=zoo`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <h5 className="text-xs md:text-sm text-gray-500 hover:text-gray-900">
+                        {model.owner}
+                      </h5>
+                    </Link>
+                    <Link
+                      href={model.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <h5 className="text-base md:text-xl font-medium text-gray-800 hover:text-gray-500">
+                        {model.name}
+                      </h5>
+                    </Link>
+                    <p className="text-xs md:text-sm text-gray-500 mt-2 md:mt-4">
+                      {model.description}
+                    </p>
 
-                      <div className="mt-2 -ml-1 md:mt-6 flex">
-                        {model.links != null &&
-                          model.links.map((link) => (
-                            <a key={`${model.id}-${link.url}`} href={link.url}>
-                              <img
-                                src={`/${link.name}.png`}
-                                alt={link.name}
-                                className={
-                                  model.source == "openai"
-                                    ? "h-4 w-4"
-                                    : "h-6 w-6"
-                                }
-                              />
-                            </a>
-                          ))}
-                      </div>
-                    </div>
-
-                    {/* Row for predictions */}
-                    <div className="flex w-full overflow-x-auto space-x-6">
-                      {getPredictionsByVersion(model.version)
-                        .reverse()
-                        .map((prediction) => (
-                          <Prediction
-                            key={prediction.id}
-                            prediction={prediction}
-                          />
+                    <div className="mt-2 -ml-1 md:mt-6 flex">
+                      {model.links != null &&
+                        model.links.map((link) => (
+                          <a key={`${model.id}-${link.url}`} href={link.url}>
+                            <img
+                              src={`/${link.name}.png`}
+                              alt={link.name}
+                              className={
+                                model.source == "openai" ? "h-4 w-4" : "h-6 w-6"
+                              }
+                            />
+                          </a>
                         ))}
                     </div>
                   </div>
+
+                  {/* Row for predictions */}
+                  <div className="flex w-full overflow-x-auto space-x-6">
+                    {getPredictionsByVersion(model.version)
+                      .reverse()
+                      .map((prediction) => (
+                        <Prediction
+                          key={prediction.id}
+                          prediction={prediction}
+                        />
+                      ))}
+                  </div>
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
         </div>
 
         <Checkboxes
@@ -443,4 +461,24 @@ export function EmptyStateHistory() {
       <p className="mt-1 text-sm text-gray-500">Create some images first.</p>
     </div>
   );
+}
+
+// Use getServerSideProps to force Next.js to render the page on the server,
+// so the OpenGraph meta tags will have the proper URL at render time.
+export async function getServerSideProps({ req }) {
+  // Hack to get the protocol and host from headers:
+  // https://github.com/vercel/next.js/discussions/44527
+  const protocol = req.headers.referer?.split("://")[0] || "http";
+  const submissionId = req.url.split("?id=")[1];
+  const baseUrl = `${protocol}://${req.headers.host}`;
+  let submissionPredictions = [];
+  console.log("submission id", submissionId);
+
+  if (submissionId) {
+    const response = await fetch(`${baseUrl}/api/submissions/${submissionId}`, {
+      method: "GET",
+    });
+    submissionPredictions = await response.json();
+  }
+  return { props: { baseUrl, submissionPredictions } };
 }

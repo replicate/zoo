@@ -11,5 +11,12 @@ export default async function handler(req, res) {
     .eq("submission_id", req.query.id)
     .order("created_at", { ascending: false });
 
+  console.log(data);
+
+  if (error) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+
   res.end(JSON.stringify(data));
 }
