@@ -44,7 +44,7 @@ export default function History() {
         ></link>
       </Head>
       <>
-        <div className="mt-12 md:flex md:items-center md:justify-between">
+        <div className="mt-6 md:flex md:items-center md:justify-between">
           <div className="min-w-0 flex-1">
             <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
               Memories at the Zoo
@@ -73,6 +73,8 @@ export default function History() {
                       href={getPredictionOutput(prediction)}
                       className="absolute inset-0 focus:outline-none"
                       download={`${prediction.id}.png`}
+                      rel="noopener noreferrer"
+                      target="_blank"
                     />
                   </div>
                   <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">

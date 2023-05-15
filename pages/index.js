@@ -142,10 +142,8 @@ export default function Home() {
     e.preventDefault();
     setError(null);
     setFirstTime(false);
-    const submissionID = uuidv4();
-    setSubmissionID(submissionID);
-
-    // extract prediction creation to its own function
+    // const submissionID = uuidv4();
+    // setSubmissionID(submissionID);
 
     for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model
@@ -174,8 +172,6 @@ export default function Home() {
           .catch((error) => setError(error.message));
       }
     }
-
-    createSubmission(submissionID, predictions);
   };
 
   function checkOrder(list1, list2) {
@@ -199,6 +195,9 @@ export default function Home() {
     const anonID = localStorage.getItem("anonID");
     const storedModels = localStorage.getItem("models");
     const prompt = promptmaker({ flavors: null });
+    const submissionID = uuidv4();
+    setSubmissionID(submissionID);
+
     setPrompt(prompt);
 
     if (storedModels && checkOrder(JSON.parse(storedModels), MODELS)) {
@@ -217,6 +216,12 @@ export default function Home() {
       setAnonID(anonID);
     }
   }, []);
+
+  useEffect(() => {
+    if (predictions.length != 0) {
+      createSubmission(submissionID, predictions);
+    }
+  }, [predictions]);
 
   console.log(predictions);
 
