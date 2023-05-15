@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
 
 export default function History() {
   const [history, setHistory] = useState([]);
+  const [anonID, setAnonID] = useState(null);
 
   function getPredictionOutput(prediction) {
     return prediction.output
@@ -23,14 +22,17 @@ export default function History() {
     }
   };
 
-  useEffect(() => {
-    const storedPredictions = localStorage.getItem("predictions");
+  const getAndSetHistory = async (anonID) => {
+    const response = await fetch("/api/users/" + anonID);
+    const history = await response.json();
+    console.log("bloop", history);
+    setHistory(history);
+  };
 
-    if (storedPredictions) {
-      setHistory(JSON.parse(storedPredictions));
-    } else {
-      setHistory([]);
-    }
+  useEffect(() => {
+    const anonID = localStorage.getItem("anonID");
+    setAnonID(anonID);
+    getAndSetHistory(anonID);
   }, []);
 
   return (
@@ -60,7 +62,7 @@ export default function History() {
               role="list"
               className="mt-12 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8"
             >
-              {history.reverse().map((prediction) => (
+              {history.map((prediction) => (
                 <li key={prediction.id} className="relative">
                   <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
                     <img

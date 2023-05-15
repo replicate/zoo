@@ -53,6 +53,8 @@ export default async function handler(req, res) {
       output: [response.data.data[0].url],
       input: { prompt: req.body.prompt },
       model: req.body.model,
+      inserted_at: new Date(),
+      created_at: new Date(),
     };
 
     insertDB(prediction, req);
