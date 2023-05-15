@@ -80,7 +80,6 @@ async function insertDB(prediction, req) {
     error: prediction.error,
     model: req.body.model,
     source: req.body.source,
-    submission_id: req.body.submissionID,
   };
 
   const { data, error } = await supabase

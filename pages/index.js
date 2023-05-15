@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import Prediction from "../components/prediction";
 import Head from "next/head";
-import Image from "next/image";
 import promptmaker from "promptmaker";
 import Link from "next/link";
 import MODELS from "../lib/models.js";
@@ -16,6 +16,7 @@ export default function Home() {
   const [firstTime, setFirstTime] = useState(false);
   const [models, setModels] = useState([]);
   const [anonID, setAnonID] = useState(null);
+  const [submissionID, setSubmissionID] = useState(null);
 
   function getSelectedModels() {
     return models.filter((m) => m.checked);
@@ -26,21 +27,6 @@ export default function Home() {
     console.log(predictions.map((p) => p.version));
     return predictions.filter((p) => p.version === version);
   }
-
-  const handleNewPrediction = (newPrediction) => {
-    // Get the current list of predictions from localStorage
-    let predictionHistory = localStorage.getItem("predictions");
-
-    // If there are already predictions saved, parse the saved list to a JavaScript array.
-    // If not, start with an empty array.
-    predictionHistory = predictionHistory ? JSON.parse(predictionHistory) : [];
-
-    // Add the new prediction to the list
-    predictionHistory.push(newPrediction);
-
-    // Save the updated list back to localStorage
-    localStorage.setItem("predictions", JSON.stringify(predictionHistory));
-  };
 
   const handleCheckboxChange = (e) => {
     const modelId = parseInt(e.target.value, 10);
@@ -69,7 +55,24 @@ export default function Home() {
     }
   };
 
-  async function createReplicatePrediction(prompt, model, submissionID) {
+  async function createSubmission(id, predictions) {
+    console.log("predictions", predictions);
+    const response = await fetch("/api/submissions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: id,
+        predictionIDs: predictions.map((p) => p.id),
+        prompt: prompt,
+      }),
+    });
+    let submission = await response.json();
+    console.log(submission);
+  }
+
+  async function createReplicatePrediction(prompt, model) {
     const response = await fetch("/api/predictions", {
       method: "POST",
       headers: {
@@ -81,7 +84,6 @@ export default function Home() {
         source: model.source,
         model: model.name,
         anonID: anonID,
-        submissionID: submissionID,
       }),
     });
 
@@ -126,7 +128,6 @@ export default function Home() {
         predictionId: predictionId,
         anonID: anonID,
         created_at: new Date().toISOString(),
-        submissionID: submissionID,
       }),
     });
 
@@ -142,6 +143,7 @@ export default function Home() {
     setError(null);
     setFirstTime(false);
     const submissionID = uuidv4();
+    setSubmissionID(submissionID);
 
     // extract prediction creation to its own function
 
@@ -152,9 +154,9 @@ export default function Home() {
         let promise = null;
 
         if (model.source == "replicate") {
-          promise = createReplicatePrediction(prompt, model, submissionID);
+          promise = createReplicatePrediction(prompt, model);
         } else if (model.source == "openai") {
-          promise = createDallePrediction(prompt, model, submissionID);
+          promise = createDallePrediction(prompt, model);
         }
 
         promise.model = model.name;
@@ -165,7 +167,6 @@ export default function Home() {
 
         promise
           .then((result) => {
-            handleNewPrediction(result);
             setPredictions((prev) =>
               prev.map((x) => (x === promise ? result : x))
             );
@@ -173,6 +174,8 @@ export default function Home() {
           .catch((error) => setError(error.message));
       }
     }
+
+    createSubmission(submissionID, predictions);
   };
 
   function checkOrder(list1, list2) {
@@ -293,6 +296,15 @@ export default function Home() {
                   >
                     Go{" "}
                   </button>
+                  {submissionID && (
+                    <Link
+                      href={`/memories/${submissionID}`}
+                      className="ml-3 button bg-brand h-full flex justify-center items-center font-bold hover:bg-orange-600"
+                      type="submit"
+                    >
+                      Share
+                    </Link>
+                  )}
                 </div>
               </div>
             </form>
@@ -375,77 +387,6 @@ export default function Home() {
   );
 }
 
-const Prediction = ({ prediction }) => {
-  const myRef = useRef(null);
-
-  function getPredictionOutput(prediction) {
-    return prediction.output[prediction.output.length - 1];
-  }
-
-  useEffect(() => {
-    myRef.current.scrollIntoView();
-  }, []);
-  return (
-    <div
-      ref={myRef}
-      className="aspect-square group relative"
-      key={prediction.id}
-    >
-      {prediction.output && (
-        <>
-          <div className="image-wrapper rounded-lg">
-            <Image
-              fill
-              sizes="100vw"
-              src={getPredictionOutput(prediction)}
-              alt="output"
-              className="rounded-xl"
-              loading="lazy"
-            />
-          </div>
-
-          <div className="transition duration-200 absolute inset-0 bg-white bg-opacity-90 opacity-0 hover:opacity-100">
-            <div className="absolute z-50 group-hover:block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <a
-                href={getPredictionOutput(prediction)}
-                className=""
-                download={`${prediction.id}.png`}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-8 h-8 text-gray-900 hover:text-gray-400"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-                  />
-                </svg>
-              </a>
-            </div>
-          </div>
-        </>
-      )}
-
-      {!prediction.output && prediction.error && (
-        <div className="border border-gray-300 py-3 text-sm opacity-50 flex items-center justify-center aspect-square rounded-lg">
-          <span className="mx-12">{prediction.error}</span>
-        </div>
-      )}
-
-      {!prediction.output && !prediction.error && (
-        <div className="border border-gray-300 py-3 text-sm opacity-50 flex items-center justify-center aspect-square rounded-lg">
-          <Counter />
-        </div>
-      )}
-    </div>
-  );
-};
-
 const Checkboxes = ({ models, handleCheckboxChange, className }) => {
   return (
     <div className={`col-span-2 mb-28 ${className}`}>
@@ -476,30 +417,6 @@ const Checkboxes = ({ models, handleCheckboxChange, className }) => {
           ))}
         </div>
       </div>
-    </div>
-  );
-};
-
-const Counter = () => {
-  const [tenthSeconds, setTenthSeconds] = useState(0);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setTenthSeconds((tenthSeconds) => tenthSeconds + 1);
-    }, 100); // now the interval is 100ms, so it increases every tenth of a second
-
-    // cleanup function to clear the interval when the component unmounts
-    return () => clearInterval(intervalId);
-  }, []); // passing an empty array as the second argument to useEffect makes it run only on mount and unmount
-
-  return (
-    <div>
-      <time
-        className="tabular-nums"
-        dateTime={`PT${(tenthSeconds / 10).toFixed(1)}S`}
-      >
-        {(tenthSeconds / 10).toFixed(1)}s
-      </time>
     </div>
   );
 };
