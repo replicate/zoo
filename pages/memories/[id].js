@@ -14,10 +14,17 @@ export default function Submissions({ predictions, prompt }) {
         </h5>
       </div>
       <p className="mt-4 text-gray-500">
-        These outputs were created by Zoo, an image playground by Replicate.
+        These outputs were created by Zoo, an image playground by{" "}
+        <Link
+          href="https://replicate.com?utm_source=project&utm_campaign=zoo"
+          className="hover:underline font-semibold"
+        >
+          Replicate
+        </Link>
+        .
         <Link
           href="/"
-          className="text-brand font-bold hover:text-orange-500 pl-2"
+          className="text-brand font-bold hover:underline hover:text-orange-500 pl-2"
         >
           Run it yourself!
         </Link>

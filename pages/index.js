@@ -299,10 +299,9 @@ export default function Home() {
                   {submissionID && (
                     <Link
                       href={`/memories/${submissionID}`}
-                      className="ml-3 button bg-brand h-full flex justify-center items-center font-bold hover:bg-orange-600"
-                      type="submit"
+                      className="ml-3 hover:bg-gray-50 h-full flex justify-center items-center rounded-md px-4 sm:px-8 py-2.5 font-semibold text-black shadow-sm border"
                     >
-                      Share
+                      Copy Link
                     </Link>
                   )}
                 </div>
