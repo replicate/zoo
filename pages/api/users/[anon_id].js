@@ -11,7 +11,5 @@ export default async function handler(req, res) {
     .eq("anon_id", req.query.anon_id)
     .order("created_at", { ascending: false });
 
-  console.log(data, error);
-
   res.end(JSON.stringify(data));
 }

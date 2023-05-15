@@ -25,7 +25,6 @@ export default function History() {
   const getAndSetHistory = async (anonID) => {
     const response = await fetch("/api/users/" + anonID);
     const history = await response.json();
-    console.log("bloop", history);
     setHistory(history);
   };
 

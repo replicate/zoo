@@ -84,6 +84,4 @@ async function insertDB(prediction, req) {
   const { data, error } = await supabase
     .from("predictions")
     .upsert([predictionObject], { onConflict: "uuid" });
-
-  console.log(data, error);
 }
