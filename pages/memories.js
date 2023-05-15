@@ -3,7 +3,7 @@ import Head from "next/head";
 
 export default function History() {
   const [history, setHistory] = useState([]);
-  const [anonID, setAnonID] = useState(null);
+  const [anonId, setAnonId] = useState(null);
 
   function getPredictionOutput(prediction) {
     return prediction.output
@@ -22,16 +22,17 @@ export default function History() {
     }
   };
 
-  const getAndSetHistory = async (anonID) => {
-    const response = await fetch("/api/users/" + anonID);
+  const getAndSetHistory = async (anonId) => {
+    const response = await fetch("/api/users/" + anonId);
     const history = await response.json();
     setHistory(history);
   };
 
   useEffect(() => {
-    const anonID = localStorage.getItem("anonID");
-    setAnonID(anonID);
-    getAndSetHistory(anonID);
+    const anonId = localStorage.getItem("anonId");
+    setAnonId(anonId);
+    getAndSetHistory(anonId);
+    console.log("anon", anonId);
   }, []);
 
   return (

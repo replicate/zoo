@@ -15,16 +15,14 @@ export default function Home() {
   const [numOutputs, setNumOutputs] = useState(1);
   const [firstTime, setFirstTime] = useState(false);
   const [models, setModels] = useState([]);
-  const [anonID, setAnonID] = useState(null);
-  const [submissionID, setSubmissionID] = useState(null);
+  const [anonId, setAnonId] = useState(null);
+  const [submissionId, setSubmissionId] = useState(null);
 
   function getSelectedModels() {
     return models.filter((m) => m.checked);
   }
 
   function getPredictionsByVersion(version) {
-    console.log("getPredictionsByVersion", version);
-    console.log(predictions.map((p) => p.version));
     return predictions.filter((p) => p.version === version);
   }
 
@@ -69,7 +67,6 @@ export default function Home() {
       }),
     });
     let submission = await response.json();
-    console.log(submission);
   }
 
   async function postPrediction(prompt, model) {
@@ -83,8 +80,8 @@ export default function Home() {
         version: model.version,
         source: model.source,
         model: model.name,
-        anonID: anonID,
-        submissionID: submissionID,
+        anon_id: anonId,
+        submission_id: submissionId,
         ...(model.source == "openai" && { predictionId: uuidv4() }),
         ...(model.source == "openai" && {
           created_at: new Date().toISOString(),
@@ -182,11 +179,11 @@ export default function Home() {
   }
 
   useEffect(() => {
-    const anonID = localStorage.getItem("anonID");
+    const anonId = localStorage.getItem("anonId");
     const storedModels = localStorage.getItem("models");
     const prompt = promptmaker({ flavors: null });
-    const submissionID = uuidv4();
-    setSubmissionID(submissionID);
+    const submissionId = uuidv4();
+    setSubmissionId(submissionId);
 
     setPrompt(prompt);
 
@@ -197,19 +194,19 @@ export default function Home() {
       setFirstTime(true);
     }
 
-    if (!anonID) {
+    if (!anonId) {
       const uuid = uuidv4();
-      localStorage.setItem("anonID", uuid);
-      setAnonID(uuid);
+      localStorage.setItem("anonId", uuid);
+      setAnonId(uuid);
     } else {
-      console.log("returning user", anonID);
-      setAnonID(anonID);
+      console.log("returning user: ", anonId);
+      setAnonId(anonId);
     }
   }, []);
 
   useEffect(() => {
     if (predictions.length != 0) {
-      createSubmission(submissionID, predictions);
+      createSubmission(submissionId, predictions);
     }
   }, [predictions]);
 
@@ -300,9 +297,9 @@ export default function Home() {
 
           {!firstTime && (
             <div className="-mt-2">
-              {submissionID && predictions.length > 0 && (
+              {submissionId && predictions.length > 0 && (
                 <Link
-                  href={`/memories/${submissionID}`}
+                  href={`/memories/${submissionId}`}
                   className="hover:bg-gray-50 flex justify-center items-center rounded-md px-4 sm:px-8 py-2 text-sm font-medium text-gray-700 shadow-sm border"
                 >
                   Copy Link to Generations
