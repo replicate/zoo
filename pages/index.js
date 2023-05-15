@@ -80,6 +80,7 @@ export default function Home() {
         prompt: prompt,
         version: model.version,
         source: model.source,
+        model: model.name,
       }),
     });
 
@@ -120,6 +121,7 @@ export default function Home() {
         prompt: prompt,
         version: model.version,
         source: model.source,
+        model: model.name,
         predictionId: predictionId,
       }),
     });

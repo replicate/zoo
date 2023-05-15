@@ -1,5 +1,10 @@
 import Replicate from "replicate";
 import { Configuration, OpenAIApi } from "openai";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
@@ -30,6 +35,8 @@ export default async function handler(req, res) {
       return;
     }
 
+    insertDB(prediction, req);
+
     res.statusCode = 201;
     res.end(JSON.stringify(prediction));
   } else if (req.body.source == "openai") {
@@ -37,7 +44,6 @@ export default async function handler(req, res) {
       prompt: req.body.prompt,
       n: 1,
       size: "512x512",
-      //   response_format: "b64_json",
     });
 
     const prediction = {
@@ -46,8 +52,35 @@ export default async function handler(req, res) {
       version: "dall-e",
       output: [response.data.data[0].url],
       input: { prompt: req.body.prompt },
+      model: req.body.model,
     };
+
+    insertDB(prediction, req);
+
     res.statusCode = 201;
     res.end(JSON.stringify(prediction));
   }
+}
+
+async function insertDB(prediction, req) {
+  const predictionObject = {
+    uuid: prediction.id,
+    input: prediction.input,
+    output: prediction.output,
+    status: prediction.status,
+    created_at: prediction.created_at,
+    started_at: prediction.started_at,
+    completed_at: prediction.completed_at,
+    version: prediction.version,
+    metrics: prediction.metrics,
+    error: prediction.error,
+    model: req.body.model,
+    source: req.body.source,
+  };
+
+  const { data, error } = await supabase
+    .from("predictions")
+    .upsert([predictionObject], { onConflict: "uuid" });
+
+  console.log(data, error);
 }
