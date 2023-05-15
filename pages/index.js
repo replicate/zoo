@@ -238,15 +238,17 @@ export default function Home() {
 
       <div className="pt-2">
         <div className="mx-0 max-w-7xl">
-          <div className="mx-0 max-w-3xl">
-            {firstTime && (
-              <span className="text-2xl font-medium tracking-tight text-gray-500">
-                Welcome to the Zoo, a playground for text to image models.{" "}
+          <div className="flex justify-between mx-0">
+            <div>
+              {firstTime && (
+                <span className="text-2xl font-medium tracking-tight text-gray-500">
+                  Welcome to the Zoo, a playground for text to image models.{" "}
+                </span>
+              )}
+              <span className="text-2xl font-medium tracking-tight text-gray-900">
+                What do you want to see?
               </span>
-            )}
-            <span className="text-2xl font-medium tracking-tight text-gray-900">
-              What do you want to see?
-            </span>
+            </div>
           </div>
         </div>
       </div>
@@ -301,21 +303,21 @@ export default function Home() {
                   >
                     Go{" "}
                   </button>
-                  {submissionID && (
-                    <Link
-                      href={`/memories/${submissionID}`}
-                      className="ml-3 hover:bg-gray-50 h-full flex justify-center items-center rounded-md px-4 sm:px-8 py-2.5 font-semibold text-black shadow-sm border"
-                    >
-                      Copy Link
-                    </Link>
-                  )}
                 </div>
               </div>
             </form>
           </div>
 
           {!firstTime && (
-            <div className="">
+            <div className="-mt-2">
+              {submissionID && predictions.length > 0 && (
+                <Link
+                  href={`/memories/${submissionID}`}
+                  className="hover:bg-gray-50 flex justify-center items-center rounded-md px-4 sm:px-8 py-2 text-sm font-medium text-gray-700 shadow-sm border"
+                >
+                  Copy Link to Generations
+                </Link>
+              )}
               {getSelectedModels().length == 0 && <EmptyState />}
 
               {getSelectedModels().map((model) => (
