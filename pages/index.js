@@ -192,7 +192,7 @@ export default function Home() {
 
   useEffect(() => {
     const storedModels = localStorage.getItem("models");
-    const prompt = promptmaker();
+    const prompt = promptmaker({ flavors: null });
     setPrompt(prompt);
 
     if (storedModels && checkOrder(JSON.parse(storedModels), MODELS)) {
