@@ -9,12 +9,10 @@ export default async function handler(req, res) {
     .from("predictions")
     .select()
     .eq("submission_id", req.query.id)
-    .order("created_at", { ascending: false });
-
-  console.log(data);
+    .order("created_at", { ascending: true });
 
   if (error) {
-    console.log(error);
+    console.log("error getting predictions for submission id ", error);
     return res.status(500).json({ error: error.message });
   }
 

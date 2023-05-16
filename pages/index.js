@@ -81,8 +81,7 @@ export default function Home({ submissionPredictions }) {
     }
   };
 
-  async function createSubmission(id, predictions) {
-    console.log("predictions", predictions);
+  async function createSubmission(readable_id) {
     const response = await fetch("/api/submissions", {
       method: "POST",
       headers: {
@@ -91,14 +90,19 @@ export default function Home({ submissionPredictions }) {
       body: JSON.stringify({
         id: uuidv4(),
         prompt: prompt,
-        readable_id: id,
+        readable_id: readable_id,
         anon_id: anonId,
       }),
     });
     let submission = await response.json();
-    router.query.id = id;
+
+    // update previously generated predictions to use new readable submission Id
+    updatePredictionSubmissionIds(readable_id);
+
+    // push router to new page
+    router.query.id = readable_id;
     router.push(router);
-    return id;
+    return readable_id;
   }
 
   async function postPrediction(prompt, model, submissionId) {
@@ -159,6 +163,28 @@ export default function Home({ submissionPredictions }) {
     return prediction;
   }
 
+  async function putSubmissionId(prediction, submissionId) {
+    const response = await fetch(`/api/predictions/${prediction.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: prediction.id,
+        submission_id: submissionId,
+      }),
+    });
+
+    return await response.json();
+  }
+
+  async function updatePredictionSubmissionIds(submissionId) {
+    const updatedPredictions = predictions.map((prediction) => {
+      putSubmissionId(prediction, submissionId);
+    });
+    return updatedPredictions;
+  }
+
   const handleSubmit = async (e, prompt) => {
     e.preventDefault();
     setError(null);
@@ -168,17 +194,7 @@ export default function Home({ submissionPredictions }) {
     )
       .toString(36)
       .substring(5)}`;
-    createSubmission(submissionId, predictions);
-
-    // // update previously generated predictions
-    // setPredictions((prev) =>
-    //   prev.map((p) => {
-    //     return {
-    //       ...p,
-    //       submission_id: submissionId,
-    //     };
-    //   })
-    // );
+    createSubmission(submissionId);
 
     for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model
@@ -262,7 +278,7 @@ export default function Home({ submissionPredictions }) {
     }
   }, []);
 
-  console.log(predictions);
+  console.log("predictions: ", predictions);
 
   return (
     <div className="mx-auto container p-5">

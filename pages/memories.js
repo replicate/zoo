@@ -32,7 +32,6 @@ export default function History() {
     const anonId = localStorage.getItem("anonId");
     setAnonId(anonId);
     getAndSetHistory(anonId);
-    console.log("anon", anonId);
   }, []);
 
   return (

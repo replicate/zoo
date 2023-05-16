@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     .select();
 
   if (error) {
-    console.log(error);
+    console.log("error creating submission ", error);
     return res.status(500).json({ error: error.message });
   }
 
