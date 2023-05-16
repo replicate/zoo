@@ -2,24 +2,31 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 export default function Prediction({ prediction }) {
-  const [firstLoad, setFirstLoad] = useState(true);
+  const [url, setUrl] = useState(getTempOutput(prediction));
 
-  function getPredictionOutput(prediction) {
-    // if we can get it from the storage bucket we do, but otherwise we use the output from the API
-    const url = `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.id}.png`;
-
-    () => setFirstLoad(false);
-
-    if (firstLoad) {
-      if (typeof prediction == "Array") {
-        return prediction.output[prediction.output.length - 1];
-      } else {
-        return prediction.output;
-      }
-    } else {
-      return url;
+  function getTempOutput(prediction) {
+    if (typeof prediction.output == "string") {
+      return prediction.output;
+    }
+    if (prediction.output) {
+      return prediction.output[prediction.output.length - 1];
     }
   }
+
+  async function getOutput(prediction) {
+    const response = await fetch(`/api/images/${prediction.id}`);
+    const data = await response.json();
+    setUrl(data);
+    return data;
+  }
+
+  useEffect(() => {
+    getOutput(prediction);
+    // setTimeout(() => {
+    //   const url = `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.id}.png`;
+    //   setUrl(url);
+    // }, 1000);
+  }, []);
 
   return (
     <div className="h-44 w-44 aspect-square group relative" key={prediction.id}>
@@ -29,7 +36,7 @@ export default function Prediction({ prediction }) {
             <Image
               fill
               sizes="100vw"
-              src={getPredictionOutput(prediction)}
+              src={url}
               alt="output"
               className="rounded-xl"
               loading="lazy"
@@ -41,7 +48,7 @@ export default function Prediction({ prediction }) {
               <a
                 target="_blank"
                 rel="noopener noreferrer"
-                href={getPredictionOutput(prediction)}
+                href={url}
                 className=""
                 download={`${prediction.id}.png`}
               >
