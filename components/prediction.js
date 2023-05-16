@@ -17,12 +17,12 @@ export default function Prediction({ prediction }) {
 
   useEffect(() => {
     getOutput(prediction);
-  }, []);
+  }, [prediction]);
 
   return (
     <div className="h-44 w-44 aspect-square group relative" key={prediction.id}>
       {prediction.output && url && (
-        <>
+        <div key={`prediction-output-${prediction.id}`}>
           <div>
             <button
               onClick={() => setOpen(true)}
@@ -45,7 +45,7 @@ export default function Prediction({ prediction }) {
             prediction={prediction}
             url={url}
           />
-        </>
+        </div>
       )}
 
       {!prediction.output && prediction.error && (
