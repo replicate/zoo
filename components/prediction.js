@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 export default function Prediction({ prediction }) {
-  const [url, setUrl] = useState(getTempOutput(prediction));
+  const [url, setUrl] = useState(null);
 
   function getTempOutput(prediction) {
     if (typeof prediction.output == "string") {
@@ -14,6 +14,10 @@ export default function Prediction({ prediction }) {
   }
 
   async function getOutput(prediction) {
+    if (!prediction.id) {
+      return null;
+    }
+
     const response = await fetch(`/api/images/${prediction.id}`);
     const data = await response.json();
     setUrl(data);
@@ -30,7 +34,7 @@ export default function Prediction({ prediction }) {
 
   return (
     <div className="h-44 w-44 aspect-square group relative" key={prediction.id}>
-      {prediction.output && (
+      {prediction.output && url && (
         <>
           <div className="image-wrapper rounded-lg">
             <Image
