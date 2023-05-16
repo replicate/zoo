@@ -14,10 +14,18 @@ export default function Nav() {
   };
 
   const redirectToRandom = () => {
-    const seed = seeds[Math.floor(Math.random() * seeds.length)];
-    router.query.id = seed;
-    router.push(router);
-    router.reload();
+    if (router.pathname == "/memories") {
+      router.pathname = "/";
+      router.push(router);
+    } else {
+      const seed = seeds[Math.floor(Math.random() * seeds.length)];
+      router.query.id = seed;
+
+      router.push(router);
+      setTimeout(() => {
+        router.reload();
+      }, 500);
+    }
   };
 
   // Clear the "Copied!" message after 4 seconds
