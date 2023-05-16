@@ -38,11 +38,16 @@ export default async function handler(req, res) {
     });
 
     const body = JSON.stringify({
-      input: { prompt: req.body.prompt },
+      input: {
+        prompt: req.body.prompt,
+        image_dimensions: req.body.image_dimensions,
+      },
       version: req.body.version,
       webhook: `${WEBHOOK_HOST}/api/replicate-webhook?${searchParams}`,
       webhook_events_filter: ["start", "completed"],
     });
+
+    console.log("body ", body);
 
     const headers = {
       Authorization: `Token ${process.env.REPLICATE_API_TOKEN}`,

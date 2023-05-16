@@ -107,6 +107,7 @@ export default function Home({ submissionPredictions }) {
         model: model.name,
         anon_id: anonId,
         submission_id: submissionId,
+        ...(model.source == "replicate" && { image_dimensions: "512x512" }),
         ...(model.source == "openai" && { id: uuidv4() }),
         ...(model.source == "openai" && {
           created_at: new Date().toISOString(),
