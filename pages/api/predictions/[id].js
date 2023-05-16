@@ -20,6 +20,7 @@ export default async function handler(req, res) {
 
     if (error) {
       console.log("error updating prediction ", error);
+      console.log("body: ", req.body);
       return res.status(500).json({ error: error.message });
     }
 

@@ -10,6 +10,11 @@ import slugify from "slugify";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+const seeds = [
+  "a-3d-render-of-poppies-sosaku-hanga-by-jan-pynas-3s0erm9",
+  "a-child%27s-drawing-of-trees-gothic-art-by-konstantin-savitsky-7pfra6sk",
+];
+
 export default function Home({ submissionPredictions }) {
   const router = useRouter();
   const { id } = router.query;

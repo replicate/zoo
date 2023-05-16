@@ -2,12 +2,18 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 export default function Prediction({ prediction }) {
+  const [firstLoad, setFirstLoad] = useState(true);
+
   function getPredictionOutput(prediction) {
     // if we can get it from the storage bucket we do, but otherwise we use the output from the API
-    if (prediction.uuid) {
-      return `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.uuid}.png`;
-    } else {
+    const url = `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.id}.png`;
+
+    () => setFirstLoad(false);
+
+    if (firstLoad) {
       return prediction.output[prediction.output.length - 1];
+    } else {
+      return url;
     }
   }
 
