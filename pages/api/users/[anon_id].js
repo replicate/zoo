@@ -5,6 +5,7 @@ export default async function handler(req, res) {
     .from("predictions")
     .select()
     .eq("anon_id", req.query.anon_id)
+    .limit(50)
     .order("created_at", { ascending: false });
 
   if (error) {

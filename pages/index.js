@@ -418,6 +418,8 @@ export default function Home({ submissionPredictions }) {
                           <Prediction
                             key={prediction.id}
                             prediction={prediction}
+                            height={"52"}
+                            width={"52"}
                           />
                         </>
                       ))}
