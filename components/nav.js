@@ -31,7 +31,12 @@ export default function Nav() {
     <nav className="p-5 border-t-4 border-t-brand">
       <div className="flex">
         <Link href="/">
-          <div id="logo" ref={logoRef} onMouseEnter={onMouseEnter} className="flex-shrink-0 mb-0 mr-4">
+          <div
+            id="logo"
+            ref={logoRef}
+            onMouseEnter={onMouseEnter}
+            className="flex-shrink-0 mb-0 mr-4"
+          >
             <span className="text-4xl">🦓</span>
           </div>
         </Link>

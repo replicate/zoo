@@ -49,6 +49,7 @@ export default function Home({ submissionPredictions }) {
     // get the prompt from the predictions, and update the prompt
     const submissionPrompt = getPromptFromPredictions(submissionPredictions);
     setPrompt(submissionPrompt);
+    setLoading(false);
   }
 
   function getPromptFromPredictions(predictions) {
@@ -110,6 +111,7 @@ export default function Home({ submissionPredictions }) {
     localStorage.setItem("models", JSON.stringify(updatedModels));
   };
 
+  // cmd + enter to submit
   const onKeyDown = (e) => {
     if (e.metaKey && e.which === 13) {
       handleSubmit(e, prompt);
@@ -187,7 +189,6 @@ export default function Home({ submissionPredictions }) {
 
     for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model
-      // Update the API call or any other logic as needed to use the selected model
       for (let i = 0; i < numOutputs; i++) {
         let promise = null;
 
@@ -251,6 +252,8 @@ export default function Home({ submissionPredictions }) {
       // get the prompt from the predictions, and update the prompt
       const submissionPrompt = getPromptFromPredictions(submissionPredictions);
       setPrompt(submissionPrompt);
+
+      setLoading(false);
     } else {
       // load random seed
       if (router.isReady) {
@@ -272,10 +275,6 @@ export default function Home({ submissionPredictions }) {
       console.log("returning user: ", anonId);
       setAnonId(anonId);
     }
-
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
   }, []);
 
   console.log("predictions: ", predictions);
@@ -372,6 +371,8 @@ export default function Home({ submissionPredictions }) {
               </div>
             </form>
           </div>
+
+          {loading && "Loading..."}
 
           <div className="-mt-2">
             {!loading && getSelectedModels().length == 0 && <EmptyState />}
