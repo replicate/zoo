@@ -94,31 +94,6 @@ export default function Home({ submissionPredictions }) {
     }
   };
 
-  async function createSubmission(readable_id) {
-    const response = await fetch("/api/submissions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: uuidv4(),
-        prompt: prompt,
-        readable_id: readable_id,
-        anon_id: anonId,
-      }),
-    });
-    let submission = await response.json();
-
-    // TODO: If you create a bunch of submissions quickly, this will fail! It won't save all of them.
-    // update previously generated predictions to use new readable submission Id
-    updatePredictionSubmissionIds(readable_id);
-    // push router to new page
-    router.query.id = readable_id;
-    router.push(router);
-
-    return readable_id;
-  }
-
   async function postPrediction(prompt, model, submissionId) {
     return fetch("/api/predictions", {
       method: "POST",
@@ -177,28 +152,6 @@ export default function Home({ submissionPredictions }) {
     return prediction;
   }
 
-  async function putSubmissionId(prediction, submissionId) {
-    const response = await fetch(`/api/predictions/${prediction.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: prediction.id,
-        submission_id: submissionId,
-      }),
-    });
-
-    return await response.json();
-  }
-
-  async function updatePredictionSubmissionIds(submissionId) {
-    const updatedPredictions = predictions.map((prediction) => {
-      putSubmissionId(prediction, submissionId);
-    });
-    return updatedPredictions;
-  }
-
   const handleSubmit = async (e, prompt) => {
     e.preventDefault();
     setError(null);
@@ -208,7 +161,6 @@ export default function Home({ submissionPredictions }) {
     )
       .toString(36)
       .substring(5)}`;
-    await createSubmission(submissionId);
 
     for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model
@@ -237,6 +189,10 @@ export default function Home({ submissionPredictions }) {
           .catch((error) => setError(error.message));
       }
     }
+
+    // push router to new page
+    router.query.id = submissionId;
+    router.push(router);
   };
 
   function checkOrder(list1, list2) {
