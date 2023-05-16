@@ -10,6 +10,8 @@
     "test": "npm run lint && npm run build"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.14",
+    "@heroicons/react": "^2.0.18",
     "@next/font": "13.0.7",
     "@prisma/client": "^4.14.0",
     "@supabase/supabase-js": "^2.21.0",
@@ -17,6 +19,7 @@
     "@vercel/postgres": "^0.3.0",
     "eslint": "8.29.0",
     "eslint-config-next": "13.0.7",
+    "file-saver": "^2.0.5",
     "next": "13.0.7",
     "openai": "^3.2.1",
     "prisma": "^4.14.0",

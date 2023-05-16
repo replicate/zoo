@@ -25,11 +25,3 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser.
-
-
-- on client generate a submission ID
-- create a prediction with webhook URL set to api/replicate_webhook?submission_id = that submission ID (check scribble). there's a vercel URL thingy I want to differentiate local/prod
-- store prediction with submission_id
-
-- fix sizing of outputs
-- get images in storage

@@ -9,21 +9,6 @@ import { useRouter } from "next/router";
 import slugify from "slugify";
 import { OpenAIIcon, ReplicateIcon, GitHubIcon } from "../components/icons";
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-const seeds = [
-  "a-detailed-painting-of-fish-american-barbizon-school-by-diego-rivera-fp7xr7e",
-  "a-digital-painting-of-ocean-waves-rayonism-by-alejandro-obregon-h3nin4g",
-  "an-ambient-occlusion-render-of-trees-hyperrealism-by-nathaniel-pousette-dart-pine-sea-creatures-aybyf65",
-  "a-still-life-of-birds-analytical-art-by-ludwig-knaus-wfsbarr",
-  "a-comic-book-panel-of-cats-light-and-space-by-lucy-angeline-bacon-chiseled-jawline-eos-1d-swirly-vibrant-colors-69ofy29",
-  "a-portrait-of-birds-verdadism-by-utagawa-kunimasa-retaildesignblog.net-nhltld6",
-  "a-mid-nineteenth-century-engraving-of-ocean-waves-art-informel-by-frank-barrington-craig-collage-style-joseba-elorza-vv46oqn",
-  "a-marble-sculpture-of-cats-cubism-by-hans-falk-hb2ccov",
-  "a-digital-rendering-of-fish-crystal-cubism-by-eleanor-vere-boyle-casette-futurism-pokemon-style-camera-looking-down-upon-5yxsilc",
-  "a-tilt-shift-photo-of-fish-tonalism-by-ugo-nespolo-n5rb37s",
-];
-
 const ExternalLink = ({link, ...props}) => {
     let icon = null;
     console.log("LINK", link)
@@ -46,6 +31,10 @@ const ExternalLink = ({link, ...props}) => {
     </a>
 }
 
+import seeds from "../lib/seeds.js";
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 export default function Home({ submissionPredictions }) {
   const router = useRouter();
   const { id } = router.query;
@@ -57,6 +46,7 @@ export default function Home({ submissionPredictions }) {
   const [models, setModels] = useState([]);
   const [anonId, setAnonId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
 
   async function getPredictionsFromSeed(seed) {
     const response = await fetch(`/api/submissions/${seed}`, {
@@ -72,6 +62,7 @@ export default function Home({ submissionPredictions }) {
     // get the prompt from the predictions, and update the prompt
     const submissionPrompt = getPromptFromPredictions(submissionPredictions);
     setPrompt(submissionPrompt);
+    setLoading(false);
   }
 
   function getPromptFromPredictions(predictions) {
@@ -133,6 +124,7 @@ export default function Home({ submissionPredictions }) {
     localStorage.setItem("models", JSON.stringify(updatedModels));
   };
 
+  // cmd + enter to submit
   const onKeyDown = (e) => {
     if (e.metaKey && e.which === 13) {
       handleSubmit(e, prompt);
@@ -210,7 +202,6 @@ export default function Home({ submissionPredictions }) {
 
     for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model
-      // Update the API call or any other logic as needed to use the selected model
       for (let i = 0; i < numOutputs; i++) {
         let promise = null;
 
@@ -274,6 +265,8 @@ export default function Home({ submissionPredictions }) {
       // get the prompt from the predictions, and update the prompt
       const submissionPrompt = getPromptFromPredictions(submissionPredictions);
       setPrompt(submissionPrompt);
+
+      setLoading(false);
     } else {
       // load random seed
       if (router.isReady) {
@@ -295,10 +288,6 @@ export default function Home({ submissionPredictions }) {
       console.log("returning user: ", anonId);
       setAnonId(anonId);
     }
-
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
   }, []);
 
   console.log("predictions: ", predictions);
@@ -356,7 +345,7 @@ export default function Home({ submissionPredictions }) {
                   <button
                     className="absolute right-3.5 top-2 text-gray-500 hover:text-gray-900 px-1 py-2 rounded-md flex justify-center items-center"
                     type="button"
-                    onClick={() => setPrompt(promptmaker())}
+                    onClick={() => setPrompt(promptmaker({ flavors: null }))}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -395,6 +384,8 @@ export default function Home({ submissionPredictions }) {
               </div>
             </form>
           </div>
+
+          {loading && "Loading..."}
 
           <div className="-mt-2">
             {!loading && getSelectedModels().length == 0 && <EmptyState />}
@@ -439,10 +430,14 @@ export default function Home({ submissionPredictions }) {
                     {getPredictionsByVersion(model.version)
                       .reverse()
                       .map((prediction) => (
-                        <Prediction
-                          key={prediction.id}
-                          prediction={prediction}
-                        />
+                        <>
+                          <Prediction
+                            key={prediction.id}
+                            prediction={prediction}
+                            height={"52"}
+                            width={"52"}
+                          />
+                        </>
                       ))}
                   </div>
                 </div>

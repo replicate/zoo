@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import seeds from "../lib/seeds";
 
 export default function Nav() {
   const router = useRouter();
@@ -10,6 +11,21 @@ export default function Nav() {
   const copyToClipboard = (e) => {
     navigator.clipboard.writeText(window.location.toString());
     setLinkCopied(true);
+  };
+
+  const redirectToRandom = () => {
+    if (router.pathname == "/memories") {
+      router.pathname = "/";
+      router.push(router);
+    } else {
+      const seed = seeds[Math.floor(Math.random() * seeds.length)];
+      router.query.id = seed;
+
+      router.push(router);
+      setTimeout(() => {
+        router.reload();
+      }, 500);
+    }
   };
 
   // Clear the "Copied!" message after 4 seconds
@@ -30,16 +46,23 @@ export default function Nav() {
   return (
     <nav className="p-5 border-t-4 border-t-brand">
       <div className="flex">
-        <Link href="/">
-          <div id="logo" ref={logoRef} onMouseEnter={onMouseEnter} className="flex-shrink-0 mb-0 mr-4">
-            <span className="text-4xl">🦓</span>
-          </div>
-        </Link>
+        <button
+          id="logo"
+          onClick={() => redirectToRandom()}
+          ref={logoRef}
+          onMouseEnter={onMouseEnter}
+          className="flex-shrink-0 mb-0 mr-4"
+        >
+          <span className="text-4xl">🦓</span>
+        </button>
         <div className="flex w-full justify-between">
           <div className="sm:flex text-lg items-center font-bold justify-center">
-            <Link className="hover:underline text-sm sm:text-lg " href="/">
+            <button
+              onClick={() => redirectToRandom()}
+              className="hover:underline text-sm sm:text-lg "
+            >
               <h4>Zoo </h4>
-            </Link>
+            </button>
             <Link
               className="flex text-sm sm:text-lg sm:pl-2"
               href="https://replicate.com?utm_source=project&utm_campaign=zoo"

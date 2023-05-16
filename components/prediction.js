@@ -1,67 +1,69 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import Image from "next/image";
+import { XMarkIcon } from "@heroicons/react/20/solid";
+import { Dialog, Transition } from "@headlessui/react";
+import FileSaver from "file-saver";
 
-export default function Prediction({ prediction }) {
-  const [firstLoad, setFirstLoad] = useState(true);
+export default function Prediction({ prediction, height, width }) {
+  const [url, setUrl] = useState(null);
+  const [open, setOpen] = useState(false);
 
-  function getPredictionOutput(prediction) {
-    // if we can get it from the storage bucket we do, but otherwise we use the output from the API
-    const url = `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.id}.png`;
-
-    () => setFirstLoad(false);
-
-    if (firstLoad) {
-      if (typeof prediction == "Array") {
-        return prediction.output[prediction.output.length - 1];
-      } else {
-        return prediction.output;
-      }
-    } else {
-      return url;
+  function getTempOutput(prediction) {
+    if (typeof prediction.output == "string") {
+      return prediction.output;
+    }
+    if (prediction.output) {
+      return prediction.output[prediction.output.length - 1];
     }
   }
 
+  async function getOutput(prediction) {
+    const url = `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.id}.png`;
+    let response = await fetch(url);
+
+    if (response.status == 200) {
+      setUrl(url);
+      return url;
+    } else {
+      const tempUrl = getTempOutput(prediction);
+      setUrl(tempUrl);
+      return tempUrl;
+    }
+  }
+
+  useEffect(() => {
+    getOutput(prediction);
+  }, [prediction]);
+
   return (
-    <div className="h-44 w-44 aspect-square group relative" key={prediction.id}>
-      {prediction.output && (
+    <div
+      className={`h-${height} w-${width} aspect-square group relative`}
+      key={prediction.id}
+    >
+      {prediction.output && url && (
         <>
-          <div className="image-wrapper rounded-lg">
-            <Image
-              fill
-              sizes="100vw"
-              src={getPredictionOutput(prediction)}
-              alt="output"
-              className="rounded-xl"
-              loading="lazy"
-            />
+          <div>
+            <button
+              onClick={() => setOpen(true)}
+              className="image-wrapper rounded-lg hover:opacity-75"
+            >
+              <Image
+                fill
+                sizes="100vw"
+                src={url}
+                alt="output"
+                className="rounded-xl"
+                loading="lazy"
+              />
+            </button>
           </div>
 
-          <div className="transition duration-200 absolute inset-0 bg-white bg-opacity-90 opacity-0 hover:opacity-100">
-            <div className="absolute z-50 group-hover:block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href={getPredictionOutput(prediction)}
-                className=""
-                download={`${prediction.id}.png`}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-8 h-8 text-gray-900 hover:text-gray-400"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-                  />
-                </svg>
-              </a>
-            </div>
-          </div>
+          <Save
+            open={open}
+            setOpen={setOpen}
+            prediction={prediction}
+            url={url}
+          />
         </>
       )}
 
@@ -103,3 +105,104 @@ const Counter = () => {
     </div>
   );
 };
+
+export function Save({ open, setOpen, prediction, url }) {
+  const download = async (url, id) => {
+    FileSaver.saveAs(url, `${id}.png`);
+  };
+
+  return (
+    <Transition.Root show={open} as={Fragment} appear>
+      <Dialog
+        autoFocus={false}
+        as="div"
+        className="relative z-10"
+        onClose={setOpen}
+      >
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-60 transition-opacity" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 z-10 overflow-y-auto p-4 sm:p-6 md:p-20 mt-8 sm:mt-32">
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
+          >
+            <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm mx-auto sm:p-6">
+              <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
+                <button
+                  type="button"
+                  className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none"
+                  onClick={() => setOpen(false)}
+                >
+                  <span className="sr-only">Close</span>
+                  <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                </button>
+              </div>
+              <div>
+                <div className="">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900"
+                  >
+                    Zoo Prediction
+                  </Dialog.Title>
+                  <div className="mt-4">
+                    <img
+                      src={url}
+                      alt="output"
+                      className="rounded-xl"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div>
+                    <p className="mt-4 block truncate text-sm font-medium text-gray-900">
+                      {prediction.model}
+                    </p>
+                    <p className="block text-sm font-medium text-gray-500">
+                      {prediction.input.prompt}
+                    </p>
+
+                    {prediction.metrics && (
+                      <p className="mt-2 text-xs text-gray-500">
+                        Predict time:{" "}
+                        {prediction.metrics && prediction.metrics.predict_time}s
+                      </p>
+                    )}
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href={url}
+                      className="mt-4 mr-2 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                    >
+                      Open Link
+                    </a>
+                    <button
+                      onClick={() => download(url)}
+                      className="mt-4 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                    >
+                      Download Image
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </Dialog.Panel>
+          </Transition.Child>
+        </div>
+      </Dialog>
+    </Transition.Root>
+  );
+}

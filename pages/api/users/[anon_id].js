@@ -1,14 +1,11 @@
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+import db from "../../../lib/db";
 
 export default async function handler(req, res) {
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from("predictions")
     .select()
     .eq("anon_id", req.query.anon_id)
+    .limit(50)
     .order("created_at", { ascending: false });
 
   if (error) {
