@@ -11,7 +11,11 @@ export default function Prediction({ prediction }) {
     () => setFirstLoad(false);
 
     if (firstLoad) {
-      return prediction.output[prediction.output.length - 1];
+      if (typeof prediction == "Array") {
+        return prediction.output[prediction.output.length - 1];
+      } else {
+        return prediction.output;
+      }
     } else {
       return url;
     }
