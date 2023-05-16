@@ -41,7 +41,8 @@ export default function Home({ submissionPredictions }) {
   }
 
   function predictionsStillRunning(predictions) {
-    return predictions.some((p) => p.status != "succeeded");
+    // return predictions.some((p) => p.status != "succeeded");
+    return false;
   }
 
   const updateCheckedModels = (modelNames) => {
