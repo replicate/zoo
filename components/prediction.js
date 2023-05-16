@@ -4,20 +4,7 @@ import Image from "next/image";
 export default function Prediction({ prediction }) {
   const [url, setUrl] = useState(null);
 
-  function getTempOutput(prediction) {
-    if (typeof prediction.output == "string") {
-      return prediction.output;
-    }
-    if (prediction.output) {
-      return prediction.output[prediction.output.length - 1];
-    }
-  }
-
   async function getOutput(prediction) {
-    if (!prediction.id) {
-      return null;
-    }
-
     const response = await fetch(`/api/images/${prediction.id}`);
     const data = await response.json();
     setUrl(data);
@@ -26,10 +13,6 @@ export default function Prediction({ prediction }) {
 
   useEffect(() => {
     getOutput(prediction);
-    // setTimeout(() => {
-    //   const url = `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.id}.png`;
-    //   setUrl(url);
-    // }, 1000);
   }, []);
 
   return (
