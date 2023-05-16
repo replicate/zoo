@@ -11,8 +11,11 @@ import slugify from "slugify";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const seeds = [
-  "a-3d-render-of-poppies-sosaku-hanga-by-jan-pynas-3s0erm9",
-  "a-child%27s-drawing-of-trees-gothic-art-by-konstantin-savitsky-7pfra6sk",
+  "concept-art-of-ocean-waves-maximalism-by-alexander-robertson-x6nebi4",
+  "a-gouache-of-cats-neo-romanticism-by-willem-labeij-a1zr10d",
+  "a-woodcut-of-ocean-waves-context-art-by-frank-barrington-craig-8n8432v",
+  "a-surrealist-painting-of-poppies-australian-tonalism-by-william-stott-wofqap6",
+  "a-screenprint-of-poppies-cubism-by-nils-hamm-czy7wsv",
 ];
 
 export default function Home({ submissionPredictions }) {
@@ -35,6 +38,10 @@ export default function Home({ submissionPredictions }) {
 
   function getModelsFromPredictions(predictions) {
     return predictions.map((p) => p.model);
+  }
+
+  function predictionsStillRunning(predictions) {
+    return predictions.some((p) => p.status != "succeeded");
   }
 
   const updateCheckedModels = (modelNames) => {
@@ -101,12 +108,13 @@ export default function Home({ submissionPredictions }) {
     });
     let submission = await response.json();
 
+    // TODO: If you create a bunch of submissions quickly, this will fail! It won't save all of them.
     // update previously generated predictions to use new readable submission Id
     updatePredictionSubmissionIds(readable_id);
-
     // push router to new page
     router.query.id = readable_id;
     router.push(router);
+
     return readable_id;
   }
 
@@ -199,7 +207,7 @@ export default function Home({ submissionPredictions }) {
     )
       .toString(36)
       .substring(5)}`;
-    createSubmission(submissionId);
+    await createSubmission(submissionId);
 
     for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model
@@ -357,12 +365,22 @@ export default function Home({ submissionPredictions }) {
                   </button>
                 </div>
                 <div className="ml-3 mb-1.5 inline-flex">
-                  <button
-                    className="button bg-brand h-full flex justify-center items-center font-bold hover:bg-orange-600"
-                    type="submit"
-                  >
-                    Go{" "}
-                  </button>
+                  {!predictionsStillRunning(predictions) ? (
+                    <button
+                      className="button bg-brand h-full flex justify-center items-center font-bold hover:bg-orange-600"
+                      type="submit"
+                    >
+                      Go{" "}
+                    </button>
+                  ) : (
+                    <button
+                      className="button disabled cursor-wait h-full flex justify-center items-center font-bold bg-orange-700 text-orange-400"
+                      type=""
+                      disabled
+                    >
+                      Running...
+                    </button>
+                  )}
                 </div>
               </div>
             </form>
@@ -514,6 +532,7 @@ export async function getServerSideProps({ req }) {
   const protocol = req.headers.referer?.split("://")[0] || "http";
   const submissionId = req.url.split("?id=")[1];
   const baseUrl = `${protocol}://${req.headers.host}`;
+
   let submissionPredictions = [];
 
   if (submissionId) {
