@@ -7,7 +7,7 @@ export default function Prediction({ prediction }) {
   }
 
   return (
-    <div className="aspect-square group relative" key={prediction.id}>
+    <div className="h-44 w-44 aspect-square group relative" key={prediction.id}>
       {prediction.output && (
         <>
           <div className="image-wrapper rounded-lg">

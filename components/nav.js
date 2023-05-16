@@ -32,15 +32,13 @@ export default function Nav() {
         <div className="flex w-full justify-between">
           <div className="flex text-lg items-center font-bold justify-center">
             <Link className="hover:underline " href="/">
-              <h4>
-                Zoo{" "}
-                <span className="hidden sm:inline text-zinc-500 ml-1 font-light">
-                  Image Playground •
-                </span>
-              </h4>
+              <h4>Zoo </h4>
             </Link>
             <Link href="https://replicate.com?utm_source=project&utm_campaign=zoo">
-              <span className="text-zinc-500 ml-1 font-light">
+              <span className="text-zinc-500 ml-1 font-light hover:underline">
+                <span className="hidden sm:inline text-zinc-500 ml-1 font-light">
+                  Image Playground
+                </span>
                 <span className="sm:hidden inline">Powered</span> by Replicate
               </span>
             </Link>
@@ -58,7 +56,7 @@ export default function Nav() {
                 </Link>
               </>
             ) : (
-              <div class="flex">
+              <div className="flex">
                 {id && (
                   <button
                     onClick={() => copyToClipboard()}
