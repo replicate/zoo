@@ -18,7 +18,6 @@ const seeds = [
   "a-comic-book-panel-of-cats-light-and-space-by-lucy-angeline-bacon-chiseled-jawline-eos-1d-swirly-vibrant-colors-69ofy29",
   "a-portrait-of-birds-verdadism-by-utagawa-kunimasa-retaildesignblog.net-nhltld6",
   "a-mid-nineteenth-century-engraving-of-ocean-waves-art-informel-by-frank-barrington-craig-collage-style-joseba-elorza-vv46oqn",
-  "a manga drawing of ocean waves funk art by Ben Shahn, dark and dim",
 ];
 
 export default function Home({ submissionPredictions }) {
