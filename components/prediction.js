@@ -65,6 +65,12 @@ export default function Prediction({ prediction }) {
         </div>
       )}
 
+      {!url && !prediction.error && (
+        <div className="border border-gray-300 py-3 text-sm opacity-50 flex items-center justify-center aspect-square rounded-lg">
+          Loading...
+        </div>
+      )}
+
       {!prediction.output && !prediction.error && (
         <div className="border border-gray-300 py-3 text-sm opacity-50 flex items-center justify-center aspect-square rounded-lg">
           <Counter />
