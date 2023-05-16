@@ -7,21 +7,9 @@ import MODELS from "../lib/models.js";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import slugify from "slugify";
+import seeds from "../lib/seeds.js";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-const seeds = [
-  "a-detailed-painting-of-fish-american-barbizon-school-by-diego-rivera-fp7xr7e",
-  "a-digital-painting-of-ocean-waves-rayonism-by-alejandro-obregon-h3nin4g",
-  "an-ambient-occlusion-render-of-trees-hyperrealism-by-nathaniel-pousette-dart-pine-sea-creatures-aybyf65",
-  "a-still-life-of-birds-analytical-art-by-ludwig-knaus-wfsbarr",
-  "a-comic-book-panel-of-cats-light-and-space-by-lucy-angeline-bacon-chiseled-jawline-eos-1d-swirly-vibrant-colors-69ofy29",
-  "a-portrait-of-birds-verdadism-by-utagawa-kunimasa-retaildesignblog.net-nhltld6",
-  "a-mid-nineteenth-century-engraving-of-ocean-waves-art-informel-by-frank-barrington-craig-collage-style-joseba-elorza-vv46oqn",
-  "a-marble-sculpture-of-cats-cubism-by-hans-falk-hb2ccov",
-  "a-digital-rendering-of-fish-crystal-cubism-by-eleanor-vere-boyle-casette-futurism-pokemon-style-camera-looking-down-upon-5yxsilc",
-  "a-tilt-shift-photo-of-fish-tonalism-by-ugo-nespolo-n5rb37s",
-];
 
 export default function Home({ submissionPredictions }) {
   const router = useRouter();
@@ -34,23 +22,6 @@ export default function Home({ submissionPredictions }) {
   const [models, setModels] = useState([]);
   const [anonId, setAnonId] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  async function getPredictionsFromSeed(seed) {
-    const response = await fetch(`/api/submissions/${seed}`, {
-      method: "GET",
-    });
-    submissionPredictions = await response.json();
-    setPredictions(submissionPredictions);
-
-    // get the model names from the predictions, and update which ones are checked
-    const modelNames = getModelsFromPredictions(submissionPredictions);
-    updateCheckedModels(modelNames);
-
-    // get the prompt from the predictions, and update the prompt
-    const submissionPrompt = getPromptFromPredictions(submissionPredictions);
-    setPrompt(submissionPrompt);
-    setLoading(false);
-  }
 
   function getPromptFromPredictions(predictions) {
     if (predictions.length == 0) {
@@ -259,9 +230,9 @@ export default function Home({ submissionPredictions }) {
       if (router.isReady) {
         const seed = seeds[Math.floor(Math.random() * seeds.length)];
 
-        getPredictionsFromSeed(seed);
         router.query.id = seed;
         router.push(router);
+        router.reload();
       }
     }
 
