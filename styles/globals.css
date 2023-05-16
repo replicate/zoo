@@ -32,6 +32,14 @@
     animation: spin-reverse 1s linear infinite;
 }
 
+.icon {
+    fill: currentColor;
+}
+
+.icon:hover {
+    @apply fill-gray-500;
+}
+
 input {
     @apply border;
     @apply border-solid;

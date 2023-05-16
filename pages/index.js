@@ -41,7 +41,7 @@ const ExternalLink = ({link, ...props}) => {
             return null
     }
 
-    return <a href={link.url} title={link.name} className="w-6 h-6">
+    return <a href={link.url} title={link.name} className="icon w-6 h-6">
         {icon}
     </a>
 }
