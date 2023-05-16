@@ -20,7 +20,7 @@ export default function Prediction({ prediction }) {
   }, [prediction]);
 
   return (
-    <div className="h-44 w-44 aspect-square group relative" key={prediction.id}>
+    <div className="h-52 w-52 aspect-square group relative" key={prediction.id}>
       {prediction.output && url && (
         <>
           <div>
