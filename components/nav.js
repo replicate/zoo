@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -21,11 +21,17 @@ export default function Nav() {
     return () => clearInterval(intervalId);
   }, [id]);
 
+  const logoRef = useRef(null);
+
+  const onMouseEnter = () => {
+    logoRef.current.classList.add("hovered");
+  };
+
   return (
     <nav className="p-5 border-t-4 border-t-brand">
       <div className="flex">
         <Link href="/">
-          <div className="hover:animate-spin flex-shrink-0 mb-0 mr-4">
+          <div id="logo" ref={logoRef} onMouseEnter={onMouseEnter} className="flex-shrink-0 mb-0 mr-4">
             <span className="text-4xl">🦓</span>
           </div>
         </Link>

@@ -14,7 +14,23 @@
     100% { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
+@keyframes spin-reverse {
+    0% { transform: rotate(360deg); }
+    100% { transform: rotate(0deg); }
+}
+
+#logo.hovered {
+    animation: spin 0.5s ease-out;
+}
+
+#logo:hover {
+    animation: spin-reverse 1s linear infinite;
+}
 
 input {
     @apply border;
