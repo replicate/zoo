@@ -6,9 +6,7 @@ export default function History() {
   const [anonId, setAnonId] = useState(null);
 
   function getPredictionOutput(prediction) {
-    return prediction.output
-      ? prediction.output[prediction.output.length - 1]
-      : "";
+    return `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.uuid}.png`;
   }
 
   const clearHistory = () => {
