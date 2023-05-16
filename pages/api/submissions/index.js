@@ -10,6 +10,7 @@ export default async function handler(req, res) {
     .upsert({
       id: req.body.id,
       prompt: req.body.prompt,
+      readable_id: req.body.readable_id,
     })
     .select();
 

@@ -75,7 +75,7 @@ export default async function handler(req, res) {
 
     const prediction = {
       id: req.body.id,
-      status: "completed",
+      status: "succeeded",
       version: "dall-e",
       output: [response.data.data[0].url],
       input: { prompt: req.body.prompt },

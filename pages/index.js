@@ -6,6 +6,7 @@ import Link from "next/link";
 import MODELS from "../lib/models.js";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
+import slugify from "slugify";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -40,9 +41,6 @@ export default function Home({ submissionPredictions }) {
         checked: modelNames.includes(model.name),
       };
     });
-
-    console.log(modelNames);
-    console.log("models", updatedModels);
 
     // Update the state with the new array
     setModels(updatedModels);
@@ -91,8 +89,9 @@ export default function Home({ submissionPredictions }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: id,
+        id: uuidv4(),
         prompt: prompt,
+        readable_id: id,
       }),
     });
     let submission = await response.json();
@@ -163,8 +162,22 @@ export default function Home({ submissionPredictions }) {
     e.preventDefault();
     setError(null);
     setFirstTime(false);
-    const submissionId = uuidv4();
+    const submissionId = `${slugify(prompt, { lower: true })}-${(
+      Math.random() + 1
+    )
+      .toString(36)
+      .substring(5)}`;
     createSubmission(submissionId, predictions);
+
+    // // update previously generated predictions
+    // setPredictions((prev) =>
+    //   prev.map((p) => {
+    //     return {
+    //       ...p,
+    //       submission_id: submissionId,
+    //     };
+    //   })
+    // );
 
     for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model
