@@ -66,6 +66,7 @@ export default function History() {
                       src={getPredictionOutput(prediction)}
                       alt=""
                       className="pointer-events-none object-cover group-hover:opacity-75"
+                      loading="lazy"
                     />
                     <a
                       href={getPredictionOutput(prediction)}

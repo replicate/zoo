@@ -18,6 +18,9 @@ const seeds = [
   "a-comic-book-panel-of-cats-light-and-space-by-lucy-angeline-bacon-chiseled-jawline-eos-1d-swirly-vibrant-colors-69ofy29",
   "a-portrait-of-birds-verdadism-by-utagawa-kunimasa-retaildesignblog.net-nhltld6",
   "a-mid-nineteenth-century-engraving-of-ocean-waves-art-informel-by-frank-barrington-craig-collage-style-joseba-elorza-vv46oqn",
+  "a-marble-sculpture-of-cats-cubism-by-hans-falk-hb2ccov",
+  "a-digital-rendering-of-fish-crystal-cubism-by-eleanor-vere-boyle-casette-futurism-pokemon-style-camera-looking-down-upon-5yxsilc",
+  "a-tilt-shift-photo-of-fish-tonalism-by-ugo-nespolo-n5rb37s",
 ];
 
 export default function Home({ submissionPredictions }) {
