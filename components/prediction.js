@@ -26,7 +26,7 @@ export default function Prediction({ prediction }) {
           <div>
             <button
               onClick={() => setOpen(true)}
-              className="image-wrapper rounded-lg"
+              className="image-wrapper rounded-lg hover:opacity-75"
             >
               <Image
                 fill
@@ -145,9 +145,9 @@ export function Save({ open, setOpen, prediction, url }) {
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
                   >
-                    Prediction
+                    Zoo Prediction
                   </Dialog.Title>
-                  <div className="mt-6">
+                  <div className="mt-4">
                     <img
                       src={url}
                       alt="output"
@@ -156,7 +156,7 @@ export function Save({ open, setOpen, prediction, url }) {
                     />
                   </div>
                   <div>
-                    <p className="mt-2 block truncate text-sm font-medium text-gray-900">
+                    <p className="mt-4 block truncate text-sm font-medium text-gray-900">
                       {prediction.model}
                     </p>
                     <p className="block text-sm font-medium text-gray-500">
