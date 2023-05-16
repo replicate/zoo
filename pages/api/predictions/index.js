@@ -47,8 +47,6 @@ export default async function handler(req, res) {
       webhook_events_filter: ["start", "completed"],
     });
 
-    console.log("body ", body);
-
     const headers = {
       Authorization: `Token ${process.env.REPLICATE_API_TOKEN}`,
       "Content-Type": "application/json",

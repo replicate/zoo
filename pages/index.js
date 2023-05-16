@@ -11,11 +11,14 @@ import slugify from "slugify";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const seeds = [
-  "concept-art-of-ocean-waves-maximalism-by-alexander-robertson-x6nebi4",
-  "a-gouache-of-cats-neo-romanticism-by-willem-labeij-a1zr10d",
-  "a-woodcut-of-ocean-waves-context-art-by-frank-barrington-craig-8n8432v",
-  "a-surrealist-painting-of-poppies-australian-tonalism-by-william-stott-wofqap6",
-  "a-screenprint-of-poppies-cubism-by-nils-hamm-czy7wsv",
+  "a-detailed-painting-of-fish-american-barbizon-school-by-diego-rivera-fp7xr7e",
+  "a-digital-painting-of-ocean-waves-rayonism-by-alejandro-obregon-h3nin4g",
+  "an-ambient-occlusion-render-of-trees-hyperrealism-by-nathaniel-pousette-dart-pine-sea-creatures-aybyf65",
+  "a-still-life-of-birds-analytical-art-by-ludwig-knaus-wfsbarr",
+  "a-comic-book-panel-of-cats-light-and-space-by-lucy-angeline-bacon-chiseled-jawline-eos-1d-swirly-vibrant-colors-69ofy29",
+  "a-portrait-of-birds-verdadism-by-utagawa-kunimasa-retaildesignblog.net-nhltld6",
+  "a-mid-nineteenth-century-engraving-of-ocean-waves-art-informel-by-frank-barrington-craig-collage-style-joseba-elorza-vv46oqn",
+  "a manga drawing of ocean waves funk art by Ben Shahn, dark and dim",
 ];
 
 export default function Home({ submissionPredictions }) {
@@ -28,6 +31,23 @@ export default function Home({ submissionPredictions }) {
   const [firstTime, setFirstTime] = useState(false);
   const [models, setModels] = useState([]);
   const [anonId, setAnonId] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  async function getPredictionsFromSeed(seed) {
+    const response = await fetch(`/api/submissions/${seed}`, {
+      method: "GET",
+    });
+    submissionPredictions = await response.json();
+    setPredictions(submissionPredictions);
+
+    // get the model names from the predictions, and update which ones are checked
+    const modelNames = getModelsFromPredictions(submissionPredictions);
+    updateCheckedModels(modelNames);
+
+    // get the prompt from the predictions, and update the prompt
+    const submissionPrompt = getPromptFromPredictions(submissionPredictions);
+    setPrompt(submissionPrompt);
+  }
 
   function getPromptFromPredictions(predictions) {
     if (predictions.length == 0) {
@@ -216,7 +236,9 @@ export default function Home({ submissionPredictions }) {
   useEffect(() => {
     const anonId = localStorage.getItem("anonId");
     const storedModels = localStorage.getItem("models");
+    setLoading(true);
 
+    // if the page has an id set
     if (id) {
       setPredictions(submissionPredictions);
 
@@ -228,25 +250,28 @@ export default function Home({ submissionPredictions }) {
       const submissionPrompt = getPromptFromPredictions(submissionPredictions);
       setPrompt(submissionPrompt);
     } else {
-      const prompt = promptmaker({ flavors: null });
-      setPrompt(prompt);
+      // load random seed
+      if (router.isReady) {
+        const seed = seeds[Math.floor(Math.random() * seeds.length)];
 
-      if (storedModels && checkOrder(JSON.parse(storedModels), MODELS)) {
-        setModels(JSON.parse(storedModels));
-      } else {
-        setModels(MODELS);
-        setFirstTime(true);
+        getPredictionsFromSeed(seed);
+        router.query.id = seed;
+        router.push(router);
       }
     }
 
+    // setup id
     if (!anonId) {
       const uuid = uuidv4();
       localStorage.setItem("anonId", uuid);
       setAnonId(uuid);
+      setFirstTime(true);
     } else {
       console.log("returning user: ", anonId);
       setAnonId(anonId);
     }
+
+    setLoading(false);
   }, []);
 
   console.log("predictions: ", predictions);
@@ -345,7 +370,7 @@ export default function Home({ submissionPredictions }) {
           </div>
 
           <div className="-mt-2">
-            {getSelectedModels().length == 0 && <EmptyState />}
+            {!loading && getSelectedModels().length == 0 && <EmptyState />}
 
             {getSelectedModels().map((model) => (
               <div key={model.id} className="mt-5">
