@@ -23,6 +23,23 @@ export default function Home({ submissionPredictions }) {
   const [anonId, setAnonId] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  async function getPredictionsFromSeed(seed) {
+    const response = await fetch(`/api/submissions/${seed}`, {
+      method: "GET",
+    });
+    submissionPredictions = await response.json();
+    setPredictions(submissionPredictions);
+
+    // get the model names from the predictions, and update which ones are checked
+    const modelNames = getModelsFromPredictions(submissionPredictions);
+    updateCheckedModels(modelNames);
+
+    // get the prompt from the predictions, and update the prompt
+    const submissionPrompt = getPromptFromPredictions(submissionPredictions);
+    setPrompt(submissionPrompt);
+    setLoading(false);
+  }
+
   function getPromptFromPredictions(predictions) {
     if (predictions.length == 0) {
       return "";
@@ -230,9 +247,9 @@ export default function Home({ submissionPredictions }) {
       if (router.isReady) {
         const seed = seeds[Math.floor(Math.random() * seeds.length)];
 
+        getPredictionsFromSeed(seed);
         router.query.id = seed;
         router.push(router);
-        router.reload();
       }
     }
 
