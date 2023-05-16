@@ -1,11 +1,7 @@
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+import db from "../../../lib/db";
 
 export default async function handler(req, res) {
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from("predictions")
     .select()
     .eq("submission_id", req.query.id)
