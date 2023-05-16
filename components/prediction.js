@@ -17,7 +17,7 @@ export default function Prediction({ prediction }) {
 
   useEffect(() => {
     getOutput(prediction);
-  }, []);
+  }, [prediction]);
 
   return (
     <div className="h-44 w-44 aspect-square group relative" key={prediction.id}>
