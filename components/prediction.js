@@ -37,7 +37,7 @@ export default function Prediction({ prediction, height, width }) {
 
   return (
     <div
-      className={`h-${height} w-${width} aspect-square group relative`}
+      className={`h-52 w-52 aspect-square group relative`}
       key={prediction.id}
     >
       {prediction.output && url && (
@@ -52,7 +52,7 @@ export default function Prediction({ prediction, height, width }) {
                 sizes="100vw"
                 src={url}
                 alt="output"
-                className="rounded-xl"
+                className={`rounded-xl aspect-square`}
                 loading="lazy"
               />
             </button>
