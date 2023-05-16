@@ -92,6 +92,7 @@ export default function Home({ submissionPredictions }) {
         id: uuidv4(),
         prompt: prompt,
         readable_id: id,
+        anon_id: anonId,
       }),
     });
     let submission = await response.json();

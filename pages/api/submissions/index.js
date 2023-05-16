@@ -11,6 +11,7 @@ export default async function handler(req, res) {
       id: req.body.id,
       prompt: req.body.prompt,
       readable_id: req.body.readable_id,
+      anon_id: req.body.anon_id,
     })
     .select();
 
