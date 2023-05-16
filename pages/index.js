@@ -22,6 +22,7 @@ export default function Home({ submissionPredictions }) {
   const [models, setModels] = useState([]);
   const [anonId, setAnonId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
 
   async function getPredictionsFromSeed(seed) {
     const response = await fetch(`/api/submissions/${seed}`, {
@@ -413,10 +414,12 @@ export default function Home({ submissionPredictions }) {
                     {getPredictionsByVersion(model.version)
                       .reverse()
                       .map((prediction) => (
-                        <Prediction
-                          key={prediction.id}
-                          prediction={prediction}
-                        />
+                        <>
+                          <Prediction
+                            key={prediction.id}
+                            prediction={prediction}
+                          />
+                        </>
                       ))}
                   </div>
                 </div>
