@@ -30,13 +30,16 @@ export default function Nav() {
           </div>
         </Link>
         <div className="flex w-full justify-between">
-          <div className="flex text-lg items-center font-bold justify-center">
-            <Link className="hover:underline " href="/">
+          <div className="sm:flex text-lg items-center font-bold justify-center">
+            <Link className="hover:underline text-sm sm:text-lg " href="/">
               <h4>Zoo </h4>
             </Link>
-            <Link href="https://replicate.com?utm_source=project&utm_campaign=zoo">
-              <span className="text-zinc-500 ml-1 font-light hover:underline">
-                <span className="hidden sm:inline text-zinc-500 ml-1 font-light">
+            <Link
+              className="flex text-sm sm:text-lg sm:pl-2"
+              href="https://replicate.com?utm_source=project&utm_campaign=zoo"
+            >
+              <span className="text-zinc-500 font-light hover:underline">
+                <span className="hidden sm:inline text-zinc-500 font-light">
                   Image Playground
                 </span>
                 <span className="sm:hidden inline">Powered</span> by Replicate
@@ -63,7 +66,13 @@ export default function Nav() {
                     type="button"
                     className="animate-drop mr-3 inline-flex justify-center items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                   >
-                    {linkCopied ? "Copied!" : "Copy link"}
+                    {linkCopied ? (
+                      "Copied!"
+                    ) : (
+                      <span>
+                        Copy <span className="hidden sm:inline-flex">link</span>
+                      </span>
+                    )}
                   </button>
                 )}
                 <Link
