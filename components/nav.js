@@ -24,11 +24,11 @@ export default function Nav() {
   return (
     <nav className="p-5 border-t-4 border-t-brand">
       <div className="flex">
-        <Link href="/">
+        <a href="/">
           <div className="hover:animate-spin flex-shrink-0 mb-0 mr-4">
             <span className="text-4xl">🦓</span>
           </div>
-        </Link>
+        </a>
         <div className="flex w-full justify-between">
           <div className="sm:flex text-lg items-center font-bold justify-center">
             <Link className="hover:underline text-sm sm:text-lg " href="/">

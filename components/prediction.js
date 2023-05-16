@@ -2,10 +2,9 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 export default function Prediction({ prediction }) {
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState(getTempOutput(prediction));
 
-  function getOutput(prediction) {
-    console.log(prediction);
+  function getTempOutput(prediction) {
     if (typeof prediction.output == "string") {
       return prediction.output;
     }
@@ -14,12 +13,19 @@ export default function Prediction({ prediction }) {
     }
   }
 
+  async function getOutput(prediction) {
+    const response = await fetch(`/api/images/${prediction.id}`);
+    const data = await response.json();
+    setUrl(data);
+    return data;
+  }
+
   useEffect(() => {
-    setUrl(getOutput(prediction));
-    setTimeout(() => {
-      const url = `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.id}.png`;
-      setUrl(url);
-    }, 1500);
+    getOutput(prediction);
+    // setTimeout(() => {
+    //   const url = `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.id}.png`;
+    //   setUrl(url);
+    // }, 1000);
   }, []);
 
   return (
