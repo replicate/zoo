@@ -1,13 +1,17 @@
-import Replicate from "replicate";
 import { Configuration, OpenAIApi } from "openai";
+import upsertPrediction from "../../../lib/upsertPrediction";
+import packageData from "../../../package.json";
 
-const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN,
-});
+const REPLICATE_API_HOST = "https://api.replicate.com";
+
+const WEBHOOK_HOST = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : process.env.NGROK_HOST;
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
 const openai = new OpenAIApi(configuration);
 
 export default async function handler(req, res) {
@@ -17,19 +21,49 @@ export default async function handler(req, res) {
     );
   }
 
+  if (!WEBHOOK_HOST) {
+    throw new Error(
+      "WEBHOOK HOST is not set. If you're on local, make sure you set it to an ngrok url. If this doesn't exist, replicate predictions won't save to DB."
+    );
+  }
+
   if (req.body.source == "replicate") {
-    const prediction = await replicate.predictions.create({
-      // This is the text prompt that will be submitted by a form on the frontend
-      input: { prompt: req.body.prompt },
-      version: req.body.version,
+    console.log("host", WEBHOOK_HOST);
+
+    const searchParams = new URLSearchParams({
+      submission_id: req.body.submission_id,
+      model: req.body.model,
+      anon_id: req.body.anon_id,
+      source: req.body.source,
     });
 
-    if (prediction?.error) {
+    const body = JSON.stringify({
+      input: { prompt: req.body.prompt },
+      version: req.body.version,
+      webhook: `${WEBHOOK_HOST}/api/replicate-webhook?${searchParams}`,
+      webhook_events_filter: ["start", "completed"],
+    });
+
+    const headers = {
+      Authorization: `Token ${process.env.REPLICATE_API_TOKEN}`,
+      "Content-Type": "application/json",
+      "User-Agent": `${packageData.name}/${packageData.version}`,
+    };
+
+    const response = await fetch(`${REPLICATE_API_HOST}/v1/predictions`, {
+      method: "POST",
+      headers,
+      body,
+    });
+
+    if (response.status !== 201) {
+      let error = await response.json();
       res.statusCode = 500;
-      res.end(JSON.stringify({ detail: prediction.error }));
+      res.end(JSON.stringify({ detail: error.detail }));
       return;
     }
 
+    const prediction = await response.json();
     res.statusCode = 201;
     res.end(JSON.stringify(prediction));
   } else if (req.body.source == "openai") {
@@ -37,16 +71,25 @@ export default async function handler(req, res) {
       prompt: req.body.prompt,
       n: 1,
       size: "512x512",
-      //   response_format: "b64_json",
     });
 
     const prediction = {
-      id: req.body.predictionId,
-      status: "completed",
+      id: req.body.id,
+      status: "succeeded",
       version: "dall-e",
       output: [response.data.data[0].url],
       input: { prompt: req.body.prompt },
+      model: req.body.model,
+      inserted_at: new Date(),
+      created_at: new Date(),
+      submission_id: req.body.submission_id,
+      source: req.body.source,
+      model: req.body.model,
+      anon_id: req.body.anon_id,
     };
+
+    upsertPrediction(prediction);
+
     res.statusCode = 201;
     res.end(JSON.stringify(prediction));
   }

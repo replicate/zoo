@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
 
 export default function History() {
   const [history, setHistory] = useState([]);
+  const [anonId, setAnonId] = useState(null);
 
   function getPredictionOutput(prediction) {
     return prediction.output
@@ -23,14 +22,16 @@ export default function History() {
     }
   };
 
-  useEffect(() => {
-    const storedPredictions = localStorage.getItem("predictions");
+  const getAndSetHistory = async (anonId) => {
+    const response = await fetch("/api/users/" + anonId);
+    const history = await response.json();
+    setHistory(history);
+  };
 
-    if (storedPredictions) {
-      setHistory(JSON.parse(storedPredictions));
-    } else {
-      setHistory([]);
-    }
+  useEffect(() => {
+    const anonId = localStorage.getItem("anonId");
+    setAnonId(anonId);
+    getAndSetHistory(anonId);
   }, []);
 
   return (
@@ -43,7 +44,7 @@ export default function History() {
         ></link>
       </Head>
       <>
-        <div className="mt-12 md:flex md:items-center md:justify-between">
+        <div className="mt-6 md:flex md:items-center md:justify-between">
           <div className="min-w-0 flex-1">
             <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
               Memories at the Zoo
@@ -60,7 +61,7 @@ export default function History() {
               role="list"
               className="mt-12 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8"
             >
-              {history.reverse().map((prediction) => (
+              {history.map((prediction) => (
                 <li key={prediction.id} className="relative">
                   <div className="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
                     <img
@@ -72,6 +73,8 @@ export default function History() {
                       href={getPredictionOutput(prediction)}
                       className="absolute inset-0 focus:outline-none"
                       download={`${prediction.id}.png`}
+                      rel="noopener noreferrer"
+                      target="_blank"
                     />
                   </div>
                   <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">
@@ -83,7 +86,7 @@ export default function History() {
                 </li>
               ))}
             </ul>
-            <div className="mt-12">
+            {/* <div className="mt-12">
               <button
                 onClick={() => handleClearHistory()}
                 type="button"
@@ -92,7 +95,7 @@ export default function History() {
               >
                 Clear Memories
               </button>
-            </div>
+            </div> */}
           </>
         )}
       </>
