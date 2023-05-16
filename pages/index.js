@@ -7,6 +7,30 @@ import MODELS from "../lib/models.js";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import slugify from "slugify";
+import { OpenAIIcon, ReplicateIcon, GitHubIcon } from "../components/icons";
+
+const ExternalLink = ({link, ...props}) => {
+    let icon = null;
+    console.log("LINK", link)
+    switch (link.name) {
+        case "openai":
+            icon = <OpenAIIcon  {...props}/>
+            break;
+        case "replicate":
+            icon = <ReplicateIcon  {...props}/>
+            break;
+        case "github":
+            icon = <GitHubIcon  {...props}/>
+            break;
+        default:
+            return null
+    }
+
+    return <a href={link.url} title={link.name} className="icon w-6 h-6">
+        {icon}
+    </a>
+}
+
 import seeds from "../lib/seeds.js";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -393,18 +417,10 @@ export default function Home({ submissionPredictions }) {
                       {model.description}
                     </p>
 
-                    <div className="mt-2 -ml-1 md:mt-6 flex">
+                    <div className="mt-2 md:mt-6 flex gap-2">
                       {model.links != null &&
                         model.links.map((link) => (
-                          <a key={`${model.id}-${link.url}`} href={link.url}>
-                            <img
-                              src={`/${link.name}.png`}
-                              alt={link.name}
-                              className={
-                                model.source == "openai" ? "h-4 w-4" : "h-6 w-6"
-                              }
-                            />
-                          </a>
+                            <ExternalLink key={`${model.id}-${link.url}`} link={link} />
                         ))}
                     </div>
                   </div>
