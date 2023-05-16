@@ -321,7 +321,7 @@ export default function Home({ submissionPredictions }) {
                   <button
                     className="absolute right-3.5 top-2 text-gray-500 hover:text-gray-900 px-1 py-2 rounded-md flex justify-center items-center"
                     type="button"
-                    onClick={() => setPrompt(promptmaker())}
+                    onClick={() => setPrompt(promptmaker({ flavors: null }))}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
