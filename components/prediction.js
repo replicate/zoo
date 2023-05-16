@@ -19,7 +19,7 @@ export default function Prediction({ prediction }) {
     setTimeout(() => {
       const url = `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.id}.png`;
       setUrl(url);
-    }, 1000);
+    }, 1500);
   }, []);
 
   return (
