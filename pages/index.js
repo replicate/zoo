@@ -271,7 +271,9 @@ export default function Home({ submissionPredictions }) {
       setAnonId(anonId);
     }
 
-    setLoading(false);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
   }, []);
 
   console.log("predictions: ", predictions);
