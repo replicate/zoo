@@ -37,7 +37,7 @@ export default function Prediction({ prediction, height, width }) {
 
   return (
     <div
-      className={`h-52 w-52 aspect-square group relative`}
+      className={`h-44 w-44 sm:h-52 sm:w-52 aspect-square group relative`}
       key={prediction.id}
     >
       {prediction.output && url && (
