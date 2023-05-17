@@ -9,6 +9,10 @@ import { useRouter } from "next/router";
 import slugify from "slugify";
 import { OpenAIIcon, ReplicateIcon, GitHubIcon } from "../components/icons";
 
+const HOST = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : "http://localhost:3000";
+
 const ExternalLink = ({ link, ...props }) => {
   let icon = null;
   console.log("LINK", link);
@@ -37,7 +41,7 @@ import seeds from "../lib/seeds.js";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export default function Home({ submissionPredictions }) {
+export default function Home({ baseUrl, submissionPredictions }) {
   const router = useRouter();
   const { id } = router.query;
   const [prompt, setPrompt] = useState("");
@@ -48,7 +52,6 @@ export default function Home({ submissionPredictions }) {
   const [models, setModels] = useState([]);
   const [anonId, setAnonId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
 
   async function getPredictionsFromSeed(seed) {
     const response = await fetch(`/api/submissions/${seed}`, {
@@ -252,6 +255,9 @@ export default function Home({ submissionPredictions }) {
   }
 
   useEffect(() => {
+    console.log(
+      submissionPredictions.map((prediction) => prediction.id).join(",")
+    );
     const anonId = localStorage.getItem("anonId");
     const storedModels = localStorage.getItem("models");
     setLoading(true);
@@ -302,7 +308,24 @@ export default function Home({ submissionPredictions }) {
           rel="icon"
           href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%2210 0 100 100%22><text y=%22.90em%22 font-size=%2290%22>🦓</text></svg>"
         ></link>
-        <meta property="og:image" content="/og.png" />
+        {/* <meta property="og:image" content="/og.png" /> */}
+
+        {/* <meta
+          property="og:description"
+          content={
+            submissionPredictions
+              ? submissionPredictions[0].input.prompt
+              : "A playground for text to image models."
+          }
+        /> */}
+        <meta
+          property="og:image"
+          content={`${baseUrl}/api/og?prompt=${getPromptFromPredictions(
+            submissionPredictions
+          )}&ids=${submissionPredictions
+            .map((prediction) => prediction.id)
+            .join(",")}`}
+        />
       </Head>
 
       <div className="pt-2">
