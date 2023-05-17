@@ -4,7 +4,7 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import { Dialog, Transition } from "@headlessui/react";
 import FileSaver from "file-saver";
 
-export default function Prediction({ prediction, height, width }) {
+export default function Prediction({ prediction }) {
   const [url, setUrl] = useState(null);
   const [open, setOpen] = useState(false);
 
