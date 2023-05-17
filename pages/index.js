@@ -9,27 +9,29 @@ import { useRouter } from "next/router";
 import slugify from "slugify";
 import { OpenAIIcon, ReplicateIcon, GitHubIcon } from "../components/icons";
 
-const ExternalLink = ({link, ...props}) => {
-    let icon = null;
-    console.log("LINK", link)
-    switch (link.name) {
-        case "openai":
-            icon = <OpenAIIcon  {...props}/>
-            break;
-        case "replicate":
-            icon = <ReplicateIcon  {...props}/>
-            break;
-        case "github":
-            icon = <GitHubIcon  {...props}/>
-            break;
-        default:
-            return null
-    }
+const ExternalLink = ({ link, ...props }) => {
+  let icon = null;
+  console.log("LINK", link);
+  switch (link.name) {
+    case "openai":
+      icon = <OpenAIIcon {...props} />;
+      break;
+    case "replicate":
+      icon = <ReplicateIcon {...props} />;
+      break;
+    case "github":
+      icon = <GitHubIcon {...props} />;
+      break;
+    default:
+      return null;
+  }
 
-    return <a href={link.url} title={link.name} className="icon w-6 h-6">
-        {icon}
+  return (
+    <a href={link.url} title={link.name} className="icon w-6 h-6">
+      {icon}
     </a>
-}
+  );
+};
 
 import seeds from "../lib/seeds.js";
 
@@ -41,7 +43,7 @@ export default function Home({ submissionPredictions }) {
   const [prompt, setPrompt] = useState("");
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
-  const [numOutputs, setNumOutputs] = useState(1);
+  const [numOutputs, setNumOutputs] = useState(3);
   const [firstTime, setFirstTime] = useState(false);
   const [models, setModels] = useState([]);
   const [anonId, setAnonId] = useState(null);
@@ -420,7 +422,10 @@ export default function Home({ submissionPredictions }) {
                     <div className="mt-2 md:mt-6 flex gap-2">
                       {model.links != null &&
                         model.links.map((link) => (
-                            <ExternalLink key={`${model.id}-${link.url}`} link={link} />
+                          <ExternalLink
+                            key={`${model.id}-${link.url}`}
+                            link={link}
+                          />
                         ))}
                     </div>
                   </div>
