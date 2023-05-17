@@ -82,8 +82,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
   }
 
   function predictionsStillRunning(predictions) {
-    // return predictions.some((p) => p.status != "succeeded");
-    return false;
+    return predictions.some((p) => p.status != "succeeded");
   }
 
   const updateCheckedModels = (modelNames) => {
@@ -135,6 +134,14 @@ export default function Home({ baseUrl, submissionPredictions }) {
       handleSubmit(e, prompt);
     }
   };
+
+  function ogParams() {
+    return new URLSearchParams({
+      done: !predictionsStillRunning(predictions),
+      prompt: getPromptFromPredictions(submissionPredictions),
+      ids: submissionPredictions.map((prediction) => prediction.id).join(","),
+    });
+  }
 
   async function postPrediction(prompt, model, submissionId) {
     return fetch("/api/predictions", {
@@ -308,24 +315,20 @@ export default function Home({ baseUrl, submissionPredictions }) {
           rel="icon"
           href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%2210 0 100 100%22><text y=%22.90em%22 font-size=%2290%22>🦓</text></svg>"
         ></link>
-        {/* <meta property="og:image" content="/og.png" /> */}
+        <meta
+          property="og:title"
+          content="Zoo - a playground for text to image models."
+        />
 
-        {/* <meta
+        <meta
           property="og:description"
           content={
-            submissionPredictions
-              ? submissionPredictions[0].input.prompt
+            submissionPredictions && submissionPredictions.length > 0
+              ? getPromptFromPredictions(submissionPredictions)
               : "A playground for text to image models."
           }
-        /> */}
-        <meta
-          property="og:image"
-          content={`${baseUrl}/api/og?prompt=${getPromptFromPredictions(
-            submissionPredictions
-          )}&ids=${submissionPredictions
-            .map((prediction) => prediction.id)
-            .join(",")}`}
         />
+        <meta property="og:image" content={`${baseUrl}/api/og?${ogParams()}`} />
       </Head>
 
       <div className="pt-2">
@@ -389,22 +392,12 @@ export default function Home({ baseUrl, submissionPredictions }) {
                   </button>
                 </div>
                 <div className="ml-3 mb-1.5 inline-flex">
-                  {!predictionsStillRunning(predictions) ? (
-                    <button
-                      className="button bg-brand h-full flex justify-center items-center font-bold hover:bg-orange-600"
-                      type="submit"
-                    >
-                      Go{" "}
-                    </button>
-                  ) : (
-                    <button
-                      className="button disabled cursor-wait h-full flex justify-center items-center font-bold bg-orange-700 text-orange-400"
-                      type=""
-                      disabled
-                    >
-                      Running...
-                    </button>
-                  )}
+                  <button
+                    className="button bg-brand h-full flex justify-center items-center font-bold hover:bg-orange-600"
+                    type="submit"
+                  >
+                    Go{" "}
+                  </button>
                 </div>
               </div>
             </form>
