@@ -316,6 +316,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
           href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%2210 0 100 100%22><text y=%22.90em%22 font-size=%2290%22>🦓</text></svg>"
         ></link>
         <meta property="og:title" content="Zoo • Image Playground" />
+        <meta name="twitter:card" content="summary_large_image" />
 
         <meta
           property="og:description"
