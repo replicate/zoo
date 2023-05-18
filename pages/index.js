@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Prediction from "../components/prediction";
+import Popup from "../components/popup";
 import Head from "next/head";
 import promptmaker from "promptmaker";
 import Link from "next/link";
@@ -52,6 +53,8 @@ export default function Home({ baseUrl, submissionPredictions }) {
   const [models, setModels] = useState([]);
   const [anonId, setAnonId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [numRuns, setNumRuns] = useState(1);
+  const [popupOpen, setPopupOpen] = useState(false);
 
   async function getPredictionsFromSeed(seed) {
     const response = await fetch(`/api/submissions/${seed}`, {
@@ -206,6 +209,16 @@ export default function Home({ baseUrl, submissionPredictions }) {
     e.preventDefault();
     setError(null);
     setFirstTime(false);
+
+    // update num runs and save to local storage
+    const newNumRuns = Number(numRuns) + 1;
+    setNumRuns(newNumRuns);
+    localStorage.setItem("numRuns", newNumRuns);
+
+    if (newNumRuns != 0 && newNumRuns % 10 == 0) {
+      setPopupOpen(true);
+    }
+
     const submissionId = `${slugify(prompt, { lower: true })}-${(
       Math.random() + 1
     )
@@ -293,6 +306,14 @@ export default function Home({ baseUrl, submissionPredictions }) {
       }
     }
 
+    // get number of runs from local storage
+    const storedNumRuns = localStorage.getItem("numRuns");
+    if (storedNumRuns) {
+      setNumRuns(storedNumRuns);
+    } else {
+      localStorage.setItem("numRuns", numRuns);
+    }
+
     // setup id
     if (!anonId) {
       const uuid = uuidv4();
@@ -328,6 +349,8 @@ export default function Home({ baseUrl, submissionPredictions }) {
         />
         <meta property="og:image" content={`${baseUrl}/api/og?${ogParams()}`} />
       </Head>
+
+      <Popup open={popupOpen} setOpen={setPopupOpen} />
 
       <div className="pt-2">
         <div className="mx-0 max-w-7xl">
