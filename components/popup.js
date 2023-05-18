@@ -47,6 +47,7 @@ export default function Popup({ open, setOpen }) {
                       className="mx-auto"
                       src="https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/2370caef-bc8c-423e-88bb-0ca4a71e19c8.png"
                       alt=""
+                      unoptimized={true}
                     />
                     <div className="mt-2">
                       <p className="text-base text-gray-500">

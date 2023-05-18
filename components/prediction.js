@@ -47,9 +47,7 @@ export default function Prediction({ prediction }) {
               onClick={() => setOpen(true)}
               className="image-wrapper rounded-lg hover:opacity-75"
             >
-              <Image
-                fill
-                sizes="100vw"
+              <img
                 src={url}
                 alt="output"
                 className={`rounded-xl aspect-square`}
