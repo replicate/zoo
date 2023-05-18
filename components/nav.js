@@ -2,6 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import seeds from "../lib/seeds";
+import {
+  CodeBracketIcon,
+  DocumentDuplicateIcon,
+  PhotoIcon,
+} from "@heroicons/react/20/solid";
 
 export default function Nav() {
   const router = useRouter();
@@ -95,6 +100,14 @@ export default function Nav() {
               </>
             ) : (
               <div className="flex">
+                <Link
+                  href="https://github.com/replicate/zoo?utm_source=project&utm_campaign=zoo"
+                  type="button"
+                  className="inline-flex mr-3 items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                >
+                  <CodeBracketIcon className="h-5 w-5 text-gray-500 mr-2" />{" "}
+                  Code
+                </Link>
                 {id && (
                   <button
                     onClick={() => copyToClipboard()}
@@ -105,6 +118,7 @@ export default function Nav() {
                       "Copied!"
                     ) : (
                       <span>
+                        <DocumentDuplicateIcon className="h-5 w-5 text-gray-400 mr-2 inline-flex" />
                         Copy <span className="hidden sm:inline-flex">link</span>
                       </span>
                     )}
@@ -115,6 +129,7 @@ export default function Nav() {
                   type="button"
                   className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                 >
+                  <PhotoIcon className="h-5 w-5 text-gray-400 mr-2 inline-flex" />
                   Memories
                 </Link>
               </div>
