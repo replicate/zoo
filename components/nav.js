@@ -64,12 +64,18 @@ export default function Nav() {
               <h4>Zoo </h4>
             </button>
             <Link
-              className="flex text-sm sm:text-lg sm:pl-2"
+              className="flex text-sm lg:text-base sm:pl-2 text-zinc-500 font-light hover:underline"
+              href="https://github.com/replicate/zoo?utm_source=project&utm_campaign=zoo"
+            >
+              Open Source
+            </Link>
+            <Link
+              className="flex text-sm lg:text-base sm:pl-1"
               href="https://replicate.com?utm_source=project&utm_campaign=zoo"
             >
               <span className="text-zinc-500 font-light hover:underline">
                 <span className="hidden sm:inline text-zinc-500 font-light">
-                  Image Playground
+                  Playground
                 </span>
                 <span className="sm:hidden inline">Powered</span> by Replicate
               </span>
