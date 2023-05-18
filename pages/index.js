@@ -54,7 +54,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
   const [anonId, setAnonId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [numRuns, setNumRuns] = useState(1);
-  const [popupOpen, setPopupOpen] = useState(false);
+  const [popupOpen, setPopupOpen] = useState(true);
 
   async function getPredictionsFromSeed(seed) {
     const response = await fetch(`/api/submissions/${seed}`, {
@@ -350,7 +350,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
         <meta property="og:image" content={`${baseUrl}/api/og?${ogParams()}`} />
       </Head>
 
-      <Popup open={popupOpen} setOpen={setPopupOpen} />
+      <Popup open={false} setOpen={setPopupOpen} />
 
       <div className="pt-2">
         <div className="mx-0 max-w-7xl">
