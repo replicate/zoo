@@ -348,6 +348,10 @@ export default function Home({ baseUrl, submissionPredictions }) {
           }
         />
         <meta property="og:image" content={`${baseUrl}/api/og?${ogParams()}`} />
+        <meta
+          property="twitter:image"
+          content={`${baseUrl}/api/og?${ogParams()}`}
+        />
       </Head>
 
       <Popup open={false} setOpen={setPopupOpen} />
