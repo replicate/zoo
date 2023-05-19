@@ -119,7 +119,8 @@ export default function Nav() {
                     ) : (
                       <span className="flex">
                         <DocumentDuplicateIcon className="h-5 w-5 text-gray-400 mr-2 hidden sm:inline-flex" />
-                        Copy <span className="hidden sm:inline-flex">link</span>
+                        Copy{" "}
+                        <span className="hidden sm:inline-flex pl-1">link</span>
                       </span>
                     )}
                   </button>
