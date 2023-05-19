@@ -135,11 +135,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
         model: model.name,
         anon_id: anonId,
         submission_id: submissionId,
-        ...(model.source == "replicate" && { image_dimensions: "512x512" }),
-        ...(model.source == "openai" && { id: uuidv4() }),
-        ...(model.source == "openai" && {
-          created_at: new Date().toISOString(),
-        }),
+        image_dimensions: "512x512",
       }),
     });
   }
@@ -171,16 +167,6 @@ export default function Home({ baseUrl, submissionPredictions }) {
     return prediction;
   }
 
-  async function createDallePrediction(prompt, model, submissionId) {
-    const response = await postPrediction(prompt, model, submissionId);
-
-    let prediction = await response.json();
-    prediction.source = model.source;
-    prediction.version = model.version;
-
-    return prediction;
-  }
-
   const handleSubmit = async (e, prompt) => {
     e.preventDefault();
     setError(null);
@@ -206,12 +192,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
       for (let i = 0; i < numOutputs; i++) {
         let promise = null;
 
-        if (model.source == "replicate") {
-          promise = createReplicatePrediction(prompt, model, submissionId);
-        } else if (model.source == "openai") {
-          promise = createDallePrediction(prompt, model, submissionId);
-        }
-
+        promise = createReplicatePrediction(prompt, model, submissionId);
         promise.model = model.name;
         promise.source = model.source;
         promise.version = model.version;
