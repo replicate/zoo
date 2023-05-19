@@ -5,7 +5,7 @@ import ZooHead from "../components/zoo-head";
 import ExternalLink from "../components/external-link";
 import promptmaker from "promptmaker";
 import Link from "next/link";
-import CONTROLNET_MODELS from "../lib/controlnetModels";
+import MODELS from "../lib/controlnetModels";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import slugify from "slugify";
@@ -66,7 +66,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
   const updateCheckedModels = (modelNames) => {
     // Create a new array where each model's `checked` value is updated
-    const updatedModels = CONTROLNET_MODELS.map((model) => {
+    const updatedModels = MODELS.map((model) => {
       // If the model's name is in the list of names, set `checked` to true, else set it to false
       return {
         ...model,
