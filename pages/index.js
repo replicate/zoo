@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Prediction from "../components/prediction";
 import Popup from "../components/popup";
-import Head from "next/head";
+import ZooHead from "../components/zoo-head";
 import promptmaker from "promptmaker";
 import Link from "next/link";
 import MODELS from "../lib/models.js";
@@ -330,29 +330,12 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
   return (
     <div className="mx-auto container p-5">
-      <Head>
-        <title>Zoo</title>
-        <link
-          rel="icon"
-          href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%2210 0 100 100%22><text y=%22.90em%22 font-size=%2290%22>🦓</text></svg>"
-        ></link>
-        <meta property="og:title" content="Zoo • Image Playground" />
-        <meta name="twitter:card" content="summary_large_image" />
-
-        <meta
-          property="og:description"
-          content={
+      <ZooHead ogDescription={
             submissionPredictions && submissionPredictions.length > 0
               ? getPromptFromPredictions(submissionPredictions)
               : "A playground for text to image models."
-          }
+          } ogImage={`${baseUrl}/api/og?${ogParams()}`}
         />
-        <meta property="og:image" content={`${baseUrl}/api/og?${ogParams()}`} />
-        <meta
-          property="twitter:image"
-          content={`${baseUrl}/api/og?${ogParams()}`}
-        />
-      </Head>
 
       <Popup open={false} setOpen={setPopupOpen} />
 
