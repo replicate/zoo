@@ -2,41 +2,17 @@ import { useState, useEffect } from "react";
 import Prediction from "../components/prediction";
 import Popup from "../components/popup";
 import ZooHead from "../components/zoo-head";
+import ExternalLink from "../components/external-link";
 import promptmaker from "promptmaker";
 import Link from "next/link";
 import MODELS from "../lib/models.js";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import slugify from "slugify";
-import { OpenAIIcon, ReplicateIcon, GitHubIcon } from "../components/icons";
 
 const HOST = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
-
-const ExternalLink = ({ link, ...props }) => {
-  let icon = null;
-  console.log("LINK", link);
-  switch (link.name) {
-    case "openai":
-      icon = <OpenAIIcon {...props} />;
-      break;
-    case "replicate":
-      icon = <ReplicateIcon {...props} />;
-      break;
-    case "github":
-      icon = <GitHubIcon {...props} />;
-      break;
-    default:
-      return null;
-  }
-
-  return (
-    <a href={link.url} title={link.name} className="icon w-6 h-6">
-      {icon}
-    </a>
-  );
-};
 
 import seeds from "../lib/seeds.js";
 
