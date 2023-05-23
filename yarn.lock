@@ -94,11 +94,6 @@
   dependencies:
     "glob" "7.1.7"
 
-"@next/font@13.0.7":
-  "integrity" "sha512-39SzuoMI6jbrIzPs3KtXdKX03OrVp6Y7kRHcoVmOg69spiBzruPJ5x5DQSfN+OXqznbvVBNZBXnmdnSqs3qXiA=="
-  "resolved" "https://registry.npmjs.org/@next/font/-/font-13.0.7.tgz"
-  "version" "13.0.7"
-
 "@next/swc-darwin-arm64@13.4.2":
   "integrity" "sha512-6BBlqGu3ewgJflv9iLCwO1v1hqlecaIH2AotpKfVUEzUxuuDNJQZ2a4KLb4MBl8T9/vca1YuWhSqtbF6ZuUJJw=="
   "resolved" "https://registry.npmjs.org/@next/swc-darwin-arm64/-/swc-darwin-arm64-13.4.2.tgz"
