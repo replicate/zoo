@@ -28,11 +28,16 @@ export default async function handler(req, res) {
     source: req.body.source,
   });
 
+  const input = {
+    prompt: req.body.prompt,
+    image: req.body.image,
+
+    // HED is slightly different
+    input_image: req.body.image,
+  };
+
   const body = JSON.stringify({
-    input: {
-      prompt: req.body.prompt,
-      image: req.body.image
-    },
+    input,
     version: req.body.version,
     webhook: `${WEBHOOK_HOST}/api/replicate-webhook?${searchParams}`,
     webhook_events_filter: ["start", "completed"],
