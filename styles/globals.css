@@ -79,12 +79,11 @@ input {
   width: 100%;
   aspect-ratio: 1 / 1;
   position: relative;
-  @apply bg-gray-500;
   overflow: hidden;
 }
 
 .image-wrapper img {
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .image-wrapper--controlnet:hover img {
