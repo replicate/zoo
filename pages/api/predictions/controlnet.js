@@ -31,7 +31,7 @@ export default async function handler(req, res) {
   const body = JSON.stringify({
     input: {
       prompt: req.body.prompt,
-      image_dimensions: req.body.image_dimensions,
+      image: req.body.image
     },
     version: req.body.version,
     webhook: `${WEBHOOK_HOST}/api/replicate-webhook?${searchParams}`,

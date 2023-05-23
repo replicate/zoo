@@ -22,6 +22,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
   const router = useRouter();
   const { id } = router.query;
   const [prompt, setPrompt] = useState("");
+  const [image, setImage] = useState("");
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
   const [numOutputs, setNumOutputs] = useState(3);
@@ -122,26 +123,26 @@ export default function Home({ baseUrl, submissionPredictions }) {
     });
   }
 
-  async function postPrediction(prompt, model, submissionId) {
-    return fetch("/api/predictions", {
+  async function postPrediction(prompt, image, model, submissionId) {
+    return fetch("/api/predictions/controlnet", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         prompt: prompt,
+        image: image,
         version: model.version,
         source: model.source,
         model: model.name,
         anon_id: anonId,
-        submission_id: submissionId,
-        image_dimensions: "512x512",
+        submission_id: submissionId
       }),
     });
   }
 
-  async function createReplicatePrediction(prompt, model, submissionId) {
-    const response = await postPrediction(prompt, model, submissionId);
+  async function createReplicatePrediction(prompt, image, model, submissionId) {
+    const response = await postPrediction(prompt, image, model, submissionId);
     let prediction = await response.json();
 
     if (response.status !== 201) {
@@ -167,7 +168,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
     return prediction;
   }
 
-  const handleSubmit = async (e, prompt) => {
+  const handleSubmit = async (e, prompt, image) => {
     e.preventDefault();
     setError(null);
     setFirstTime(false);
@@ -192,7 +193,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
       for (let i = 0; i < numOutputs; i++) {
         let promise = null;
 
-        promise = createReplicatePrediction(prompt, model, submissionId);
+        promise = createReplicatePrediction(prompt, image, model, submissionId);
         promise.model = model.name;
         promise.source = model.source;
         promise.version = model.version;
@@ -214,29 +215,11 @@ export default function Home({ baseUrl, submissionPredictions }) {
     router.push(router);
   };
 
-  function checkOrder(list1, list2) {
-    // Check if both lists are of the same length
-    if (list1.length !== list2.length) {
-      return false;
-    }
-
-    // Check if names are in the same order
-    for (let i = 0; i < list1.length; i++) {
-      if (list1[i].name !== list2[i].name) {
-        return false;
-      }
-    }
-
-    // If we made it here, the names are in the same order
-    return true;
-  }
-
   useEffect(() => {
     console.log(
       submissionPredictions.map((prediction) => prediction.id).join(",")
     );
     const anonId = localStorage.getItem("anonId");
-    const storedModels = localStorage.getItem("models");
     setLoading(true);
 
     // if the page has an id set
@@ -320,7 +303,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
             <form
               onKeyDown={onKeyDown}
               className="w-full"
-              onSubmit={(e) => handleSubmit(e, prompt)}
+              onSubmit={(e) => handleSubmit(e, prompt, image)}
             >
               <div className="flex relative mt-2">
                 {" "}
@@ -332,6 +315,15 @@ export default function Home({ baseUrl, submissionPredictions }) {
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Enter a prompt to display an image"
+                  />
+
+                  <input
+                    name="image"
+                    className="w-full border-2 p-3 pr-12 text-sm md:text-base rounded-md ring-brand outline-brand"
+                    rows="2"
+                    value={image}
+                    onChange={(e) => setImage(e.target.value)}
+                    placeholder="Enter a an image URL"
                   />
 
                   <button
