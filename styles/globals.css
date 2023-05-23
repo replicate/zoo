@@ -86,3 +86,16 @@ input {
 .image-wrapper img {
   object-fit: contain;
 }
+
+.image-wrapper--controlnet:hover img {
+  position: absolute;
+  top: 0;
+}
+
+.image-wrapper--controlnet:hover .prediction-image {
+  z-index: 0;
+}
+
+.image-wrapper--controlnet .prediction-annotated-image {
+  opacity: 0.75;
+}

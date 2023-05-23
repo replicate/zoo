@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Prediction from "../components/prediction";
+import ControlnetPrediction from "../components/controlnet-prediction";
 import Popup from "../components/popup";
 import ZooHead from "../components/zoo-head";
 import ExternalLink from "../components/external-link";
@@ -401,7 +401,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
                       .reverse()
                       .map((prediction) => (
                         <>
-                          <Prediction
+                          <ControlnetPrediction
                             key={prediction.id}
                             prediction={prediction}
                             height={"52"}

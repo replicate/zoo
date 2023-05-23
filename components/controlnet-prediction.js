@@ -3,30 +3,33 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import { Dialog, Transition } from "@headlessui/react";
 import FileSaver from "file-saver";
 
-export default function Prediction({ prediction }) {
+export default function ControlnetPrediction({ prediction }) {
   const [url, setUrl] = useState(null);
+  const [annotatedUrl, setAnnotatedUrl] = useState(null);
   const [open, setOpen] = useState(false);
 
   function getTempOutput(prediction) {
     if (typeof prediction.output == "string") {
       return prediction.output;
     }
-    if (prediction.output) {
-      return prediction.output[prediction.output.length - 1];
-    }
+    return prediction.output[prediction.output.length - 1];
+  }
+
+  function getTempAnnotatedOutput(prediction) {
+    return prediction.output[0];
   }
 
   async function getOutput(prediction) {
-    const url = `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.id}.png`;
-    let response = await fetch(url);
+    // const url = `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.id}.png`;
+    // let response = await fetch(url);
+    // if (response.status == 200) {
+    //   setUrl(url);
+    // } else {
+    // }
 
-    if (response.status == 200) {
-      setUrl(url);
-      return url;
-    } else {
-      const tempUrl = getTempOutput(prediction);
-      setUrl(tempUrl);
-      return tempUrl;
+    if (prediction.output) {
+      setUrl(getTempOutput(prediction));
+      setAnnotatedUrl(getTempAnnotatedOutput(prediction));
     }
   }
 
@@ -44,12 +47,18 @@ export default function Prediction({ prediction }) {
           <div>
             <button
               onClick={() => setOpen(true)}
-              className="image-wrapper rounded-lg hover:opacity-75"
+              className="image-wrapper image-wrapper--controlnet rounded-lg hover:opacity-75"
             >
               <img
                 src={url}
                 alt="output"
-                className={`rounded-xl aspect-square`}
+                className={`rounded-xl aspect-square prediction-image`}
+                loading="lazy"
+              />
+              <img
+                src={annotatedUrl}
+                alt="output"
+                className={`rounded-xl aspect-square prediction-annotated-image`}
                 loading="lazy"
               />
             </button>
@@ -60,6 +69,7 @@ export default function Prediction({ prediction }) {
             setOpen={setOpen}
             prediction={prediction}
             url={url}
+            annotatedUrl={annotatedUrl}
           />
         </>
       )}
@@ -103,7 +113,7 @@ const Counter = () => {
   );
 };
 
-export function Save({ open, setOpen, prediction, url }) {
+export function Save({ open, setOpen, prediction, url, annotatedUrl }) {
   const download = async (url, id) => {
     FileSaver.saveAs(url, `${id}.png`);
   };
@@ -160,6 +170,12 @@ export function Save({ open, setOpen, prediction, url }) {
                   <div className="mt-4">
                     <img
                       src={url}
+                      alt="output"
+                      className="rounded-xl"
+                      loading="lazy"
+                    />
+                    <img
+                      src={annotatedUrl}
                       alt="output"
                       className="rounded-xl"
                       loading="lazy"
