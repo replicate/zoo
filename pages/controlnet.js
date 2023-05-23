@@ -299,7 +299,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
         {/* Form + Outputs */}
 
         <div className="col-span-10 h-full">
-          <div className="h-24">
+          <div className="h-36">
             <form
               onKeyDown={onKeyDown}
               className="w-full"
@@ -311,7 +311,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
                   <textarea
                     name="prompt"
                     className="w-full border-2 p-3 pr-12 text-sm md:text-base rounded-md ring-brand outline-brand"
-                    rows="2"
+                    rows="1"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Enter a prompt to display an image"
@@ -320,10 +320,9 @@ export default function Home({ baseUrl, submissionPredictions }) {
                   <input
                     name="image"
                     className="w-full border-2 p-3 pr-12 text-sm md:text-base rounded-md ring-brand outline-brand"
-                    rows="2"
                     value={image}
                     onChange={(e) => setImage(e.target.value)}
-                    placeholder="Enter a an image URL"
+                    placeholder="Enter an image URL"
                   />
 
                   <button
@@ -369,15 +368,9 @@ export default function Home({ baseUrl, submissionPredictions }) {
                 <div className="flex gap-6 tracking-wide mb-10">
                   {/* Model description */}
                   <div className="w-72 border-l-4 border-gray-900 pl-5 md:pl-6 py-2">
-                    <Link
-                      href={`https://replicate.com/${model.owner.toLowerCase()}?utm_source=project&utm_campaign=zoo`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <h5 className="text-xs md:text-sm text-gray-500 hover:text-gray-900">
-                        {model.owner}
-                      </h5>
-                    </Link>
+                    <h5 className="text-xs md:text-sm text-gray-500 hover:text-gray-900">
+                      Controlnet
+                    </h5>
                     <Link
                       href={model.url}
                       target="_blank"
