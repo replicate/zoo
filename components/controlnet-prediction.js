@@ -20,16 +20,21 @@ export default function ControlnetPrediction({ prediction }) {
   }
 
   async function getOutput(prediction) {
-    // const url = `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.id}.png`;
-    // let response = await fetch(url);
-    // if (response.status == 200) {
-    //   setUrl(url);
-    // } else {
-    // }
+    const bucket = `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/`;
+    const predictionUrl = `${bucket}/${prediction.id}.png`;
+    const predictionAnnotationUrl = `${bucket}/annotated-${prediction.id}.png`;
+
+    let response = await fetch(predictionUrl);
 
     if (prediction.output) {
-      setUrl(getTempOutput(prediction));
-      setAnnotatedUrl(getTempAnnotatedOutput(prediction));
+      if (response.status != 200) {
+        setUrl(predictionUrl);
+        setAnnotatedUrl(predictionAnnotationUrl);
+        return url;
+      } else {
+        setUrl(getTempOutput(prediction));
+        setAnnotatedUrl(getTempAnnotatedOutput(prediction));
+      }
     }
   }
 
