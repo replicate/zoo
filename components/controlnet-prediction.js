@@ -69,7 +69,6 @@ export default function ControlnetPrediction({ prediction }) {
             setOpen={setOpen}
             prediction={prediction}
             url={url}
-            annotatedUrl={annotatedUrl}
           />
         </>
       )}
@@ -113,7 +112,7 @@ const Counter = () => {
   );
 };
 
-export function Save({ open, setOpen, prediction, url, annotatedUrl }) {
+export function Save({ open, setOpen, prediction, url }) {
   const download = async (url, id) => {
     FileSaver.saveAs(url, `${id}.png`);
   };
@@ -148,7 +147,7 @@ export function Save({ open, setOpen, prediction, url, annotatedUrl }) {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm mx-auto sm:p-6">
+            <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg mx-auto sm:p-6">
               <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
                 <button
                   type="button"
@@ -167,17 +166,11 @@ export function Save({ open, setOpen, prediction, url, annotatedUrl }) {
                   >
                     Zoo Prediction
                   </Dialog.Title>
-                  <div className="mt-4">
+                  <div className="mt-4 flex">
                     <img
                       src={url}
                       alt="output"
-                      className="rounded-xl"
-                      loading="lazy"
-                    />
-                    <img
-                      src={annotatedUrl}
-                      alt="output"
-                      className="rounded-xl"
+                      className="rounded-xl mr-2"
                       loading="lazy"
                     />
                   </div>
