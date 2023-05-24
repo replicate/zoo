@@ -57,6 +57,13 @@ export default function Home({ baseUrl, submissionPredictions }) {
     return predictions[0].input.prompt;
   }
 
+  function getImageFromPredictions(predictions) {
+    if (predictions.length == 0) {
+      return "";
+    }
+    return predictions[0].control_image;
+  }
+
   function getModelsFromPredictions(predictions) {
     return predictions.map((p) => p.model);
   }
@@ -136,7 +143,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
         source: model.source,
         model: model.name,
         anon_id: anonId,
-        submission_id: submissionId
+        submission_id: submissionId,
       }),
     });
   }
@@ -232,7 +239,9 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
       // get the prompt from the predictions, and update the prompt
       const submissionPrompt = getPromptFromPredictions(submissionPredictions);
+      const submissionImage = getImageFromPredictions(submissionPredictions);
       setPrompt(submissionPrompt);
+      setImage(submissionImage);
 
       setLoading(false);
     } else {
@@ -270,11 +279,14 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
   return (
     <div className="mx-auto container p-5">
-      <ZooHead ogDescription={
-            submissionPredictions && submissionPredictions.length > 0
-              ? getPromptFromPredictions(submissionPredictions)
-              : "A playground for text to image models."
-          } ogImage={`${baseUrl}/api/og?${ogParams()}`} />
+      <ZooHead
+        ogDescription={
+          submissionPredictions && submissionPredictions.length > 0
+            ? getPromptFromPredictions(submissionPredictions)
+            : "A playground for text to image models."
+        }
+        ogImage={`${baseUrl}/api/og?${ogParams()}`}
+      />
 
       <Popup open={false} setOpen={setPopupOpen} />
 
