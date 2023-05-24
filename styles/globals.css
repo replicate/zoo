@@ -3,66 +3,98 @@
 @tailwind utilities;
 
 .animate-drop {
-    animation-duration: 0.5s;
-    animation-name: animate-drop;
-    animation-delay: 0.5s;
-    animation-fill-mode: backwards;
+  animation-duration: 0.5s;
+  animation-name: animate-drop;
+  animation-delay: 0.5s;
+  animation-fill-mode: backwards;
 }
 
 @keyframes animate-drop {
-    0% { opacity: 0; transform: translateY(-400px); }
-    100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(-400px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes spin-reverse {
-    0% { transform: rotate(360deg); }
-    100% { transform: rotate(0deg); }
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 #logo.hovered {
-    animation: spin 0.5s ease-out;
+  animation: spin 0.5s ease-out;
 }
 
 #logo:hover {
-    animation: spin-reverse 1s linear infinite;
+  animation: spin-reverse 1s linear infinite;
 }
 
 .icon {
-    fill: currentColor;
+  fill: currentColor;
 }
 
 .icon:hover {
-    @apply fill-gray-500;
+  @apply fill-gray-500;
 }
 
 input {
-    @apply border;
-    @apply border-solid;
-    @apply border-gray-300;
-    /* @apply rounded-md; */
-    @apply px-4;
-    @apply py-2;
+  @apply border;
+  @apply border-solid;
+  @apply border-gray-300;
+  /* @apply rounded-md; */
+  @apply px-4;
+  @apply py-2;
 }
 
 .border-hairline {
-    @apply border border-black border-opacity-10;
+  @apply border border-black border-opacity-10;
 }
 
 .button {
-    @apply rounded-md px-4 sm:px-8 py-2.5 font-semibold text-white shadow-sm;
+  @apply rounded-md px-4 sm:px-8 py-2.5 font-semibold text-white shadow-sm;
 }
 
 .loading-button {
-    @apply bg-gray-500 text-white rounded-md inline-block px-5 py-3 cursor-wait;
+  @apply bg-gray-500 text-white rounded-md inline-block px-5 py-3 cursor-wait;
 }
 
 .image-wrapper {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.image-wrapper img {
+  object-fit: cover;
+}
+
+.image-wrapper--controlnet:hover img {
+  position: absolute;
+  top: 0;
+}
+
+.image-wrapper--controlnet:hover .prediction-image {
+  z-index: 0;
+}
+
+.image-wrapper--controlnet .prediction-annotated-image {
+  opacity: 0.75;
 }
