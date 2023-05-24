@@ -9,6 +9,9 @@ export default function Prediction({ prediction }) {
   const [open, setOpen] = useState(false);
 
   function getTempOutput(prediction) {
+    if (prediction.source == "stability") {
+      return `data:image/png;base64,${prediction.output}`;
+    }
     if (typeof prediction.output == "string") {
       return prediction.output;
     }
@@ -55,7 +58,6 @@ export default function Prediction({ prediction }) {
               />
             </button>
           </div>
-
           <Save
             open={open}
             setOpen={setOpen}

@@ -136,8 +136,8 @@ export default function Home({ baseUrl, submissionPredictions }) {
         anon_id: anonId,
         submission_id: submissionId,
         ...(model.source == "replicate" && { image_dimensions: "512x512" }),
-        ...(model.source == "openai" && { id: uuidv4() }),
-        ...(model.source == "openai" && {
+        ...(model.source != "replicate" && { id: uuidv4() }),
+        ...(model.source != "replicate" && {
           created_at: new Date().toISOString(),
         }),
       }),
@@ -209,6 +209,8 @@ export default function Home({ baseUrl, submissionPredictions }) {
         if (model.source == "replicate") {
           promise = createReplicatePrediction(prompt, model, submissionId);
         } else if (model.source == "openai") {
+          promise = createDallePrediction(prompt, model, submissionId);
+        } else if (model.source == "stability") {
           promise = createDallePrediction(prompt, model, submissionId);
         }
 
@@ -543,5 +545,6 @@ export async function getServerSideProps({ req }) {
     });
     submissionPredictions = await response.json();
   }
+
   return { props: { baseUrl, submissionPredictions } };
 }

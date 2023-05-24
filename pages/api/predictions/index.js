@@ -1,8 +1,10 @@
 import { Configuration, OpenAIApi } from "openai";
 import upsertPrediction from "../../../lib/upsertPrediction";
 import packageData from "../../../package.json";
+import fetch from "node-fetch";
 
 const REPLICATE_API_HOST = "https://api.replicate.com";
+const STABILITY_API_HOST = "https://api.stability.ai";
 
 const WEBHOOK_HOST = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -91,6 +93,65 @@ export default async function handler(req, res) {
       anon_id: req.body.anon_id,
     };
 
+    upsertPrediction(prediction);
+
+    res.statusCode = 201;
+    res.end(JSON.stringify(prediction));
+  } else if (req.body.source == "stability") {
+    const apiKey = process.env.STABILITY_API_KEY;
+    if (!apiKey) throw new Error("Missing Stability API key.");
+
+    const engineId = "stable-diffusion-xl-beta-v2-2-2";
+
+    const response = await fetch(
+      `${STABILITY_API_HOST}/v1/generation/${engineId}/text-to-image`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          text_prompts: [
+            {
+              text: req.body.prompt,
+            },
+          ],
+          cfg_scale: 7,
+          clip_guidance_preset: "FAST_BLUE",
+          height: 512,
+          width: 512,
+          samples: 1,
+          steps: 30,
+        }),
+      }
+    );
+
+    const responseJSON = await response.json();
+
+    if (!response.ok) {
+      throw new Error(`Non-200 response: ${await response.text()}`);
+    }
+
+    console.log(
+      `data is ${JSON.stringify(Object.keys(responseJSON.artifacts[0]))}`
+    );
+
+    const prediction = {
+      id: req.body.id,
+      status: "succeeded",
+      version: "stability",
+      output: [responseJSON.artifacts[0].base64],
+      input: { prompt: req.body.prompt },
+      model: req.body.model,
+      inserted_at: new Date(),
+      created_at: new Date(),
+      submission_id: req.body.submission_id,
+      source: req.body.source,
+      model: req.body.model,
+      anon_id: req.body.anon_id,
+    };
     upsertPrediction(prediction);
 
     res.statusCode = 201;
