@@ -104,7 +104,7 @@ export default async function handler(req, res) {
     const engineId = "stable-diffusion-xl-beta-v2-2-2";
 
     const response = await fetch(
-      `${apiHost}/v1/generation/${engineId}/text-to-image`,
+      `${STABILITY_API_HOST}/v1/generation/${engineId}/text-to-image`,
       {
         method: "POST",
         headers: {
@@ -128,17 +128,21 @@ export default async function handler(req, res) {
       }
     );
 
+    const responseJSON = await response.json();
+
     if (!response.ok) {
       throw new Error(`Non-200 response: ${await response.text()}`);
     }
 
-    console.log(`data is ${response.data}`);
+    console.log(
+      `data is ${JSON.stringify(Object.keys(responseJSON.artifacts[0]))}`
+    );
 
     const prediction = {
       id: req.body.id,
       status: "succeeded",
-      version: "dall-e",
-      output: [response.data.data[0].url],
+      version: "stability",
+      output: [responseJSON.artifacts[0].base64],
       input: { prompt: req.body.prompt },
       model: req.body.model,
       inserted_at: new Date(),
@@ -148,5 +152,9 @@ export default async function handler(req, res) {
       model: req.body.model,
       anon_id: req.body.anon_id,
     };
+    upsertPrediction(prediction);
+
+    res.statusCode = 201;
+    res.end(JSON.stringify(prediction));
   }
 }
