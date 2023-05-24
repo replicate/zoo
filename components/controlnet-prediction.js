@@ -74,6 +74,7 @@ export default function ControlnetPrediction({ prediction }) {
             setOpen={setOpen}
             prediction={prediction}
             url={url}
+            annotatedUrl={annotatedUrl}
           />
         </>
       )}
@@ -117,7 +118,7 @@ const Counter = () => {
   );
 };
 
-export function Save({ open, setOpen, prediction, url }) {
+export function Save({ open, setOpen, prediction, url, annotatedUrl }) {
   const download = async (url, id) => {
     FileSaver.saveAs(url, `${id}.png`);
   };
@@ -152,7 +153,7 @@ export function Save({ open, setOpen, prediction, url }) {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg mx-auto sm:p-6">
+            <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl mx-auto sm:p-6">
               <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
                 <button
                   type="button"
@@ -171,13 +172,41 @@ export function Save({ open, setOpen, prediction, url }) {
                   >
                     Zoo Prediction
                   </Dialog.Title>
-                  <div className="mt-4 flex">
-                    <img
-                      src={url}
-                      alt="output"
-                      className="rounded-xl mr-2"
-                      loading="lazy"
-                    />
+
+                  <div className="grid grid-cols-3 mt-4 gap-x-4">
+                    <div>
+                      <h1 className="text-sm pb-2 font-medium text-gray-500">
+                        Input
+                      </h1>
+                      <img
+                        src={prediction.control_image}
+                        alt="output"
+                        className="rounded-xl  h-64 w-64 aspect-square"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div>
+                      <h1 className="text-sm pb-2 font-medium text-gray-500">
+                        Edge
+                      </h1>
+                      <img
+                        src={annotatedUrl}
+                        alt="output"
+                        className="rounded-xl  h-64 w-64 aspect-square"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div>
+                      <h1 className="text-sm pb-2 font-medium text-gray-500">
+                        Output
+                      </h1>
+                      <img
+                        src={url}
+                        alt="output"
+                        className="rounded-xl  h-64 w-64 aspect-square"
+                        loading="lazy"
+                      />
+                    </div>
                   </div>
                   <div>
                     <p className="mt-4 block truncate text-sm font-medium text-gray-900">
