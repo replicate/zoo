@@ -389,11 +389,10 @@ export default function Home({ baseUrl, submissionPredictions }) {
                 </Link>
               </div>
               <div className="flex w-full overflow-y-hidden overflow-x-auto space-x-6">
-                <div
+                <img
+                  src={image}
                   className={`h-44 w-44 sm:h-52 sm:w-52 group relative rounded-xl aspect-square prediction-image`}
-                >
-                  <img src={image} alt="" />
-                </div>
+                />
               </div>
             </div>
 
