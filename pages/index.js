@@ -431,7 +431,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
                   </div>
 
                   {/* Row for predictions */}
-                  <div className="flex w-full overflow-x-auto space-x-6">
+                  <div className="flex w-full overflow-y-hidden overflow-x-auto space-x-6">
                     {getPredictionsByVersion(model.version)
                       .reverse()
                       .map((prediction) => (
