@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import Prediction from "../components/prediction";
+import ControlnetPrediction from "../components/controlnet-prediction";
 import Popup from "../components/popup";
 import ZooHead from "../components/zoo-head";
 import ExternalLink from "../components/external-link";
 import promptmaker from "promptmaker";
 import Link from "next/link";
-import MODELS from "../lib/models.js";
+import MODELS from "../lib/controlnetModels";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import slugify from "slugify";
@@ -14,7 +14,7 @@ const HOST = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
 
-import seeds from "../lib/seeds.js";
+import seeds from "../lib/controlnetSeeds.js";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -22,6 +22,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
   const router = useRouter();
   const { id } = router.query;
   const [prompt, setPrompt] = useState("");
+  const [image, setImage] = useState("");
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
   const [numOutputs, setNumOutputs] = useState(3);
@@ -54,6 +55,13 @@ export default function Home({ baseUrl, submissionPredictions }) {
       return "";
     }
     return predictions[0].input.prompt;
+  }
+
+  function getImageFromPredictions(predictions) {
+    if (predictions.length == 0) {
+      return "";
+    }
+    return predictions[0].control_image;
   }
 
   function getModelsFromPredictions(predictions) {
@@ -122,30 +130,26 @@ export default function Home({ baseUrl, submissionPredictions }) {
     });
   }
 
-  async function postPrediction(prompt, model, submissionId) {
-    return fetch("/api/predictions", {
+  async function postPrediction(prompt, image, model, submissionId) {
+    return fetch("/api/predictions/controlnet", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         prompt: prompt,
+        image: image,
         version: model.version,
         source: model.source,
         model: model.name,
         anon_id: anonId,
         submission_id: submissionId,
-        ...(model.source == "replicate" && { image_dimensions: "512x512" }),
-        ...(model.source != "replicate" && { id: uuidv4() }),
-        ...(model.source != "replicate" && {
-          created_at: new Date().toISOString(),
-        }),
       }),
     });
   }
 
-  async function createReplicatePrediction(prompt, model, submissionId) {
-    const response = await postPrediction(prompt, model, submissionId);
+  async function createReplicatePrediction(prompt, image, model, submissionId) {
+    const response = await postPrediction(prompt, image, model, submissionId);
     let prediction = await response.json();
 
     if (response.status !== 201) {
@@ -171,17 +175,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
     return prediction;
   }
 
-  async function createDallePrediction(prompt, model, submissionId) {
-    const response = await postPrediction(prompt, model, submissionId);
-
-    let prediction = await response.json();
-    prediction.source = model.source;
-    prediction.version = model.version;
-
-    return prediction;
-  }
-
-  const handleSubmit = async (e, prompt) => {
+  const handleSubmit = async (e, prompt, image) => {
     e.preventDefault();
     setError(null);
     setFirstTime(false);
@@ -206,14 +200,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
       for (let i = 0; i < numOutputs; i++) {
         let promise = null;
 
-        if (model.source == "replicate") {
-          promise = createReplicatePrediction(prompt, model, submissionId);
-        } else if (model.source == "openai") {
-          promise = createDallePrediction(prompt, model, submissionId);
-        } else if (model.source == "stability") {
-          promise = createDallePrediction(prompt, model, submissionId);
-        }
-
+        promise = createReplicatePrediction(prompt, image, model, submissionId);
         promise.model = model.name;
         promise.source = model.source;
         promise.version = model.version;
@@ -235,29 +222,11 @@ export default function Home({ baseUrl, submissionPredictions }) {
     router.push(router);
   };
 
-  function checkOrder(list1, list2) {
-    // Check if both lists are of the same length
-    if (list1.length !== list2.length) {
-      return false;
-    }
-
-    // Check if names are in the same order
-    for (let i = 0; i < list1.length; i++) {
-      if (list1[i].name !== list2[i].name) {
-        return false;
-      }
-    }
-
-    // If we made it here, the names are in the same order
-    return true;
-  }
-
   useEffect(() => {
     console.log(
       submissionPredictions.map((prediction) => prediction.id).join(",")
     );
     const anonId = localStorage.getItem("anonId");
-    const storedModels = localStorage.getItem("models");
     setLoading(true);
 
     // if the page has an id set
@@ -270,7 +239,9 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
       // get the prompt from the predictions, and update the prompt
       const submissionPrompt = getPromptFromPredictions(submissionPredictions);
+      const submissionImage = getImageFromPredictions(submissionPredictions);
       setPrompt(submissionPrompt);
+      setImage(submissionImage);
 
       setLoading(false);
     } else {
@@ -308,12 +279,14 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
   return (
     <div className="mx-auto container p-5">
-      <ZooHead ogDescription={
-            submissionPredictions && submissionPredictions.length > 0
-              ? getPromptFromPredictions(submissionPredictions)
-              : "A playground for text to image models."
-          } ogImage={`${baseUrl}/api/og?${ogParams()}`}
-        />
+      <ZooHead
+        ogDescription={
+          submissionPredictions && submissionPredictions.length > 0
+            ? getPromptFromPredictions(submissionPredictions)
+            : "A playground for text to image models."
+        }
+        ogImage={`${baseUrl}/api/og?${ogParams()}`}
+      />
 
       <Popup open={false} setOpen={setPopupOpen} />
 
@@ -338,11 +311,11 @@ export default function Home({ baseUrl, submissionPredictions }) {
         {/* Form + Outputs */}
 
         <div className="col-span-10 h-full">
-          <div className="h-24">
+          <div className="h-36">
             <form
               onKeyDown={onKeyDown}
               className="w-full"
-              onSubmit={(e) => handleSubmit(e, prompt)}
+              onSubmit={(e) => handleSubmit(e, prompt, image)}
             >
               <div className="flex relative mt-2">
                 {" "}
@@ -350,11 +323,21 @@ export default function Home({ baseUrl, submissionPredictions }) {
                   <textarea
                     name="prompt"
                     className="w-full border-2 p-3 pr-12 text-sm md:text-base rounded-md ring-brand outline-brand"
-                    rows="2"
+                    rows="1"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Enter a prompt to display an image"
                   />
+
+                  <div>
+                    <input
+                      name="image"
+                      className="w-full border-2 p-3 pr-12 text-sm md:text-base rounded-md ring-brand outline-brand"
+                      value={image}
+                      onChange={(e) => setImage(e.target.value)}
+                      placeholder="Enter an image URL"
+                    />
+                  </div>
 
                   <button
                     className="absolute right-3.5 top-2 text-gray-500 hover:text-gray-900 px-1 py-2 rounded-md flex justify-center items-center"
@@ -377,7 +360,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
                     </svg>
                   </button>
                 </div>
-                <div className="ml-3 mb-1.5 inline-flex">
+                <div className="ml-3 inline-flex">
                   <button
                     className="button bg-brand h-full flex justify-center items-center font-bold hover:bg-orange-600"
                     type="submit"
@@ -394,20 +377,33 @@ export default function Home({ baseUrl, submissionPredictions }) {
           <div className="-mt-2">
             {!loading && getSelectedModels().length == 0 && <EmptyState />}
 
+            <div className="flex gap-6 tracking-wide mb-10">
+              <div className="w-72 border-l-4 border-gray-900 pl-5 md:pl-6 py-2">
+                <h5 className="text-xs md:text-sm text-gray-500 hover:text-gray-900">
+                  Controlnet
+                </h5>
+                <Link href={image} target="_blank" rel="noopener noreferrer">
+                  <h5 className="text-base md:text-xl font-medium text-gray-800 hover:text-gray-500">
+                    Original
+                  </h5>
+                </Link>
+              </div>
+              <div className="flex w-full overflow-y-hidden overflow-x-auto space-x-6">
+                <img
+                  src={image}
+                  className={`h-44 w-44 sm:h-52 sm:w-52 group relative rounded-xl aspect-square prediction-image`}
+                />
+              </div>
+            </div>
+
             {getSelectedModels().map((model) => (
               <div key={model.id} className="mt-5">
                 <div className="flex gap-6 tracking-wide mb-10">
                   {/* Model description */}
                   <div className="w-72 border-l-4 border-gray-900 pl-5 md:pl-6 py-2">
-                    <Link
-                      href={`https://replicate.com/${model.owner.toLowerCase()}?utm_source=project&utm_campaign=zoo`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <h5 className="text-xs md:text-sm text-gray-500 hover:text-gray-900">
-                        {model.owner}
-                      </h5>
-                    </Link>
+                    <h5 className="text-xs md:text-sm text-gray-500 hover:text-gray-900">
+                      Controlnet
+                    </h5>
                     <Link
                       href={model.url}
                       target="_blank"
@@ -438,7 +434,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
                       .reverse()
                       .map((prediction) => (
                         <>
-                          <Prediction
+                          <ControlnetPrediction
                             key={prediction.id}
                             prediction={prediction}
                             height={"52"}
@@ -545,6 +541,5 @@ export async function getServerSideProps({ req }) {
     });
     submissionPredictions = await response.json();
   }
-
   return { props: { baseUrl, submissionPredictions } };
 }
