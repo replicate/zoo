@@ -14,7 +14,7 @@ const HOST = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
 
-import seeds from "../lib/seeds.js";
+import seeds from "../lib/controlnetSeeds.js";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
