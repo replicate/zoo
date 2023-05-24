@@ -329,13 +329,15 @@ export default function Home({ baseUrl, submissionPredictions }) {
                     placeholder="Enter a prompt to display an image"
                   />
 
-                  <input
-                    name="image"
-                    className="w-full border-2 p-3 pr-12 text-sm md:text-base rounded-md ring-brand outline-brand"
-                    value={image}
-                    onChange={(e) => setImage(e.target.value)}
-                    placeholder="Enter an image URL"
-                  />
+                  <div>
+                    <input
+                      name="image"
+                      className="w-full border-2 p-3 pr-12 text-sm md:text-base rounded-md ring-brand outline-brand"
+                      value={image}
+                      onChange={(e) => setImage(e.target.value)}
+                      placeholder="Enter an image URL"
+                    />
+                  </div>
 
                   <button
                     className="absolute right-3.5 top-2 text-gray-500 hover:text-gray-900 px-1 py-2 rounded-md flex justify-center items-center"
@@ -358,7 +360,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
                     </svg>
                   </button>
                 </div>
-                <div className="ml-3 mb-1.5 inline-flex">
+                <div className="ml-3 inline-flex">
                   <button
                     className="button bg-brand h-full flex justify-center items-center font-bold hover:bg-orange-600"
                     type="submit"
@@ -374,6 +376,24 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
           <div className="-mt-2">
             {!loading && getSelectedModels().length == 0 && <EmptyState />}
+
+            <div className="flex gap-6 tracking-wide mb-10">
+              <div className="w-72 border-l-4 border-gray-900 pl-5 md:pl-6 py-2">
+                <h5 className="text-xs md:text-sm text-gray-500 hover:text-gray-900">
+                  Controlnet
+                </h5>
+                <Link href={image} target="_blank" rel="noopener noreferrer">
+                  <h5 className="text-base md:text-xl font-medium text-gray-800 hover:text-gray-500">
+                    Original
+                  </h5>
+                </Link>
+              </div>
+              <div className="flex w-full overflow-y-hidden overflow-x-auto space-x-6">
+                <div className={`h-44 w-44  aspect-square group relative`}>
+                  <img src={image} alt="" />
+                </div>
+              </div>
+            </div>
 
             {getSelectedModels().map((model) => (
               <div key={model.id} className="mt-5">
