@@ -311,7 +311,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
       <ZooHead ogDescription={
             submissionPredictions && submissionPredictions.length > 0
               ? getPromptFromPredictions(submissionPredictions)
-              : "A playground for text to image models."
+              : "Compare text-to-image models like Stable Diffusion and DALL-E"
           } ogImage={`${baseUrl}/api/og?${ogParams()}`}
         />
 
