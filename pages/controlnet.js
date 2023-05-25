@@ -466,7 +466,7 @@ const Checkboxes = ({ models, handleCheckboxChange, className }) => {
         <h5 className="text-lg text-gray-800 font-bold">Models</h5>
         <div className="mt-4 grid space-y-1">
           {models.map((model) => (
-            <div key={model.id} className="relative flex items-start">
+            <div key={model.id} className="relative flex items-center">
               <div className="flex h-7 items-center">
                 <input
                   className="h-4 w-4 rounded accent-brand border-gray-300 focus:ring-indigo-600"
