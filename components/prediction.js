@@ -1,5 +1,4 @@
 import { useState, useEffect, Fragment } from "react";
-import Image from "next/image";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { Dialog, Transition } from "@headlessui/react";
 import FileSaver from "file-saver";
