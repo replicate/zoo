@@ -27,7 +27,7 @@ export default function ControlnetPrediction({ prediction }) {
     let response = await fetch(predictionUrl);
 
     if (prediction.output) {
-      if (response.status != 200) {
+      if (response.status == 200) {
         setUrl(predictionUrl);
         setAnnotatedUrl(predictionAnnotationUrl);
         return url;
