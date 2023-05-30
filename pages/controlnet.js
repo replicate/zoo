@@ -463,6 +463,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
                 {imageURL ? (
                   <div className="relative mt-2">
                     <img
+                      alt="Controlnet image"
                       src={imageURL}
                       className={`h-44 w-44 sm:h-52 sm:w-52 group relative rounded-xl aspect-square prediction-image`}
                     />
