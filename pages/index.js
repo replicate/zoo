@@ -9,6 +9,7 @@ import MODELS from "../lib/models.js";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import slugify from "slugify";
+import Pills from "../components/pills";
 
 const HOST = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -308,16 +309,19 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
   return (
     <div className="mx-auto container p-5">
-      <ZooHead ogDescription={
-            submissionPredictions && submissionPredictions.length > 0
-              ? getPromptFromPredictions(submissionPredictions)
-              : "Compare text-to-image models like Stable Diffusion and DALL-E"
-          } ogImage={`${baseUrl}/api/og?${ogParams()}`}
-        />
+      <ZooHead
+        ogDescription={
+          submissionPredictions && submissionPredictions.length > 0
+            ? getPromptFromPredictions(submissionPredictions)
+            : "Compare text-to-image models like Stable Diffusion and DALL-E"
+        }
+        ogImage={`${baseUrl}/api/og?${ogParams()}`}
+      />
 
       <Popup open={false} setOpen={setPopupOpen} />
+      <Pills />
 
-      <div className="pt-2">
+      <div className="pt-4">
         <div className="mx-0 max-w-7xl">
           <div className="flex justify-between mx-0">
             <div>

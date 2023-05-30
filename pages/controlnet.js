@@ -9,20 +9,30 @@ import MODELS from "../lib/controlnetModels";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import slugify from "slugify";
-
-const HOST = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
-
+import { FileUploader } from "react-drag-drop-files";
+import { createClient } from "@supabase/supabase-js";
 import seeds from "../lib/controlnetSeeds.js";
+import { XCircleIcon, PhotoIcon } from "@heroicons/react/20/solid";
+import Pills from "../components/pills";
+import { InformationCircleIcon } from "@heroicons/react/20/solid";
+
+// Create a single supabase client for interacting with your database
+const supabase = createClient(
+  "https://ennwjiitmiqwdrgxkevm.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVubndqaWl0bWlxd2RyZ3hrZXZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODM5Mjc3OTgsImV4cCI6MTk5OTUwMzc5OH0.zCHzwchIjcmKNmccb9D4OLVwrWrpLHMmf4a8W7UedFs"
+);
+
+const supabaseUrl = "https://ennwjiitmiqwdrgxkevm.supabase.co";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const fileTypes = ["JPG", "PNG"];
 
 export default function Home({ baseUrl, submissionPredictions }) {
   const router = useRouter();
   const { id } = router.query;
   const [prompt, setPrompt] = useState("");
-  const [image, setImage] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [imageURL, setImageURL] = useState("");
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
   const [numOutputs, setNumOutputs] = useState(3);
@@ -47,7 +57,18 @@ export default function Home({ baseUrl, submissionPredictions }) {
     // get the prompt from the predictions, and update the prompt
     const submissionPrompt = getPromptFromPredictions(submissionPredictions);
     setPrompt(submissionPrompt);
+
+    const submissionImage = getImageFromPredictions(submissionPredictions);
+    setImageURL(submissionImage);
     setLoading(false);
+  }
+
+  function isImageOnSupabase(imageURL) {
+    if (typeof imageURL != "string") {
+      return false;
+    } else {
+      return imageURL.startsWith(supabaseUrl);
+    }
   }
 
   function getPromptFromPredictions(predictions) {
@@ -115,6 +136,12 @@ export default function Home({ baseUrl, submissionPredictions }) {
     localStorage.setItem("models", JSON.stringify(updatedModels));
   };
 
+  const handleImageChange = (file) => {
+    console.log(file);
+    setImageFile(file);
+    setImageURL(URL.createObjectURL(file));
+  };
+
   // cmd + enter to submit
   const onKeyDown = (e) => {
     if (e.metaKey && e.which === 13) {
@@ -180,6 +207,8 @@ export default function Home({ baseUrl, submissionPredictions }) {
     setError(null);
     setFirstTime(false);
 
+    localStorage.setItem("hasRunControlnet", true);
+
     // update num runs and save to local storage
     const newNumRuns = Number(numRuns) + 1;
     setNumRuns(newNumRuns);
@@ -188,6 +217,36 @@ export default function Home({ baseUrl, submissionPredictions }) {
     if (newNumRuns != 0 && newNumRuns % 10 == 0) {
       setPopupOpen(true);
     }
+
+    let newImageURL;
+
+    if (!isImageOnSupabase(imageURL)) {
+      const imageName = `${uuidv4()}-${imageFile.name}`;
+
+      // upload controlnet image
+      const { data, error } = await supabase.storage
+        .from("images")
+        .upload(`public/${imageName}`, imageFile);
+
+      if (data) {
+        console.log(
+          `successfully uploaded ${JSON.stringify(data)}, ${imageFile.name}`
+        );
+      } else {
+        console.log(
+          `failed uploaded ${JSON.stringify(error)}, ${imageFile.name}`
+        );
+        window.alert("Failed to upload image");
+        return;
+      }
+
+      newImageURL = `${supabaseUrl}/storage/v1/object/public/images/public/${imageName}`;
+      setImageURL(newImageURL);
+    } else {
+      newImageURL = imageURL;
+    }
+
+    console.log(`great, setting url to ${newImageURL}`);
 
     const submissionId = `${slugify(prompt, { lower: true })}-${(
       Math.random() + 1
@@ -200,7 +259,12 @@ export default function Home({ baseUrl, submissionPredictions }) {
       for (let i = 0; i < numOutputs; i++) {
         let promise = null;
 
-        promise = createReplicatePrediction(prompt, image, model, submissionId);
+        promise = createReplicatePrediction(
+          prompt,
+          newImageURL,
+          model,
+          submissionId
+        );
         promise.model = model.name;
         promise.source = model.source;
         promise.version = model.version;
@@ -240,8 +304,10 @@ export default function Home({ baseUrl, submissionPredictions }) {
       // get the prompt from the predictions, and update the prompt
       const submissionPrompt = getPromptFromPredictions(submissionPredictions);
       const submissionImage = getImageFromPredictions(submissionPredictions);
+
+      console.log(`submission image is ${submissionImage}`);
       setPrompt(submissionPrompt);
-      setImage(submissionImage);
+      setImageURL(submissionImage);
 
       setLoading(false);
     } else {
@@ -263,12 +329,18 @@ export default function Home({ baseUrl, submissionPredictions }) {
       localStorage.setItem("numRuns", numRuns);
     }
 
+    const hasRunControlnet = localStorage.getItem("hasRunControlnet");
+    if (hasRunControlnet) {
+      setFirstTime(false);
+    } else {
+      setFirstTime(true);
+    }
+
     // setup id
     if (!anonId) {
       const uuid = uuidv4();
       localStorage.setItem("anonId", uuid);
       setAnonId(uuid);
-      setFirstTime(true);
     } else {
       console.log("returning user: ", anonId);
       setAnonId(anonId);
@@ -290,14 +362,22 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
       <Popup open={false} setOpen={setPopupOpen} />
 
-      <div className="pt-2">
+      <Pills />
+
+      <div className="pt-4">
         <div className="mx-0 max-w-7xl">
           <div className="flex justify-between mx-0">
             <div>
               {firstTime && (
-                <span className="text-2xl font-medium tracking-tight text-gray-500">
-                  Welcome to the Zoo, a playground for text to image models.{" "}
-                </span>
+                <div>
+                  <Link
+                    href="https://www.youtube.com/watch?v=GVCZHCLWON8"
+                    className="text-2xl font-medium tracking-tight hover:underline text-gray-500"
+                  >
+                    ControlNet models take an input image and a text prompt and
+                    generates a new image combining the two.
+                  </Link>
+                </div>
               )}
               <span className="text-2xl font-medium tracking-tight text-gray-900">
                 What do you want to see?
@@ -311,36 +391,25 @@ export default function Home({ baseUrl, submissionPredictions }) {
         {/* Form + Outputs */}
 
         <div className="col-span-10 h-full">
-          <div className="h-36">
+          <div className="">
             <form
               onKeyDown={onKeyDown}
               className="w-full"
-              onSubmit={(e) => handleSubmit(e, prompt, image)}
+              onSubmit={(e) => handleSubmit(e, prompt, imageFile)}
             >
               <div className="flex relative mt-2">
-                {" "}
                 <div className="w-full h-full relative">
                   <textarea
                     name="prompt"
-                    className="w-full border-2 p-3 pr-12 text-sm md:text-base rounded-md ring-brand outline-brand"
+                    className="w-full h-full border-2 -mb-1 p-3 pr-12 text-sm md:text-base rounded-md ring-brand outline-brand"
                     rows="1"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Enter a prompt to display an image"
                   />
 
-                  <div>
-                    <input
-                      name="image"
-                      className="w-full border-2 p-3 pr-12 text-sm md:text-base rounded-md ring-brand outline-brand"
-                      value={image}
-                      onChange={(e) => setImage(e.target.value)}
-                      placeholder="Enter an image URL"
-                    />
-                  </div>
-
                   <button
-                    className="absolute right-3.5 top-2 text-gray-500 hover:text-gray-900 px-1 py-2 rounded-md flex justify-center items-center"
+                    className="absolute right-3.5 top-2 mb-1 text-gray-500 hover:text-gray-900 px-1 py-2 rounded-md flex justify-center items-center"
                     type="button"
                     onClick={() => setPrompt(promptmaker({ flavors: null }))}
                   >
@@ -360,6 +429,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
                     </svg>
                   </button>
                 </div>
+
                 <div className="ml-3 inline-flex">
                   <button
                     className="button bg-brand h-full flex justify-center items-center font-bold hover:bg-orange-600"
@@ -374,25 +444,82 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
           {loading && "Loading..."}
 
-          <div className="-mt-2">
+          <div className="mt-6">
             {!loading && getSelectedModels().length == 0 && <EmptyState />}
 
+            {/* Controlnet image */}
             <div className="flex gap-6 tracking-wide mb-10">
               <div className="w-72 border-l-4 border-gray-900 pl-5 md:pl-6 py-2">
                 <h5 className="text-xs md:text-sm text-gray-500 hover:text-gray-900">
                   Controlnet
                 </h5>
-                <Link href={image} target="_blank" rel="noopener noreferrer">
+                <Link href={imageURL} target="_blank" rel="noopener noreferrer">
                   <h5 className="text-base md:text-xl font-medium text-gray-800 hover:text-gray-500">
                     Original
                   </h5>
                 </Link>
               </div>
               <div className="flex w-full overflow-y-hidden overflow-x-auto space-x-6">
-                <img
-                  src={image}
-                  className={`h-44 w-44 sm:h-52 sm:w-52 group relative rounded-xl aspect-square prediction-image`}
-                />
+                {imageURL ? (
+                  <div className="relative mt-2">
+                    <img
+                      alt="Controlnet image"
+                      src={imageURL}
+                      className={`h-44 w-44 sm:h-52 sm:w-52 group relative rounded-xl aspect-square prediction-image`}
+                    />
+                    <button className="absolute h-12 w-12 text-gray-900 hover:text-gray-500 rounded-full -top-3 z-10 -right-3">
+                      <XCircleIcon onClick={() => setImageURL("")} />
+                    </button>
+                  </div>
+                ) : (
+                  <FileUploader
+                    handleChange={handleImageChange}
+                    name="file"
+                    label="Upload or drop a controlnet image here"
+                    types={fileTypes}
+                    required={true}
+                    multiple={false}
+                    hoverTitle="Drop here"
+                  >
+                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                      <div className="text-center">
+                        <PhotoIcon
+                          className="mx-auto h-12 w-12 text-gray-300"
+                          aria-hidden="true"
+                        />
+                        <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                          <label
+                            htmlFor="file-upload"
+                            className="relative cursor-pointer rounded-md bg-white font-semibold text-black focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-gray-700"
+                          >
+                            <span>Upload a file</span>
+                            <input
+                              id="file-upload"
+                              name="file-upload"
+                              type="file"
+                              className="sr-only"
+                            />
+                          </label>
+                          <p className="pl-1">or drag and drop</p>
+                        </div>
+                        <p className="text-xs leading-5 text-gray-600">
+                          PNG, JPG
+                        </p>
+                      </div>
+                    </div>
+                  </FileUploader>
+                )}
+
+                {firstTime && (
+                  <div className="w-32 mt-2 rotate-6 text-gray-600 ">
+                    <div className="flex items-center ">
+                      <span>&larr;</span>
+                      <p className="text-xs animate-pulse font-medium pl-2">
+                        Click to upload your own image
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -488,6 +615,19 @@ const Checkboxes = ({ models, handleCheckboxChange, className }) => {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className=" text-xs text-gray-500 mt-4">
+        <label>
+          Each ControlNet model runs a different pre-processor on your input
+          image.{" "}
+          <Link
+            href="https://www.youtube.com/watch?v=GVCZHCLWON8"
+            className="font-bold hover:underline text-black"
+          >
+            Learn More &rarr;
+          </Link>
+        </label>
       </div>
     </div>
   );

@@ -2,7 +2,6 @@ import { OpenAIIcon, ReplicateIcon, GitHubIcon } from "./icons";
 
 const ExternalLink = ({ link, ...props }) => {
   let icon = null;
-  console.log("LINK", link);
   switch (link.name) {
     case "openai":
       icon = <OpenAIIcon {...props} />;
