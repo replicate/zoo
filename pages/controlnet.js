@@ -29,8 +29,8 @@ export default function Home({ baseUrl, submissionPredictions }) {
   const router = useRouter();
   const { id } = router.query;
   const [prompt, setPrompt] = useState("");
-  const [image, setImage] = useState("");
-  const [previewImage, setPreviewImage] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [imageURL, setImageURL] = useState("");
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
   const [numOutputs, setNumOutputs] = useState(3);
@@ -55,9 +55,18 @@ export default function Home({ baseUrl, submissionPredictions }) {
     // get the prompt from the predictions, and update the prompt
     const submissionPrompt = getPromptFromPredictions(submissionPredictions);
     setPrompt(submissionPrompt);
-    setImage(getImageFromPredictions(submissionPredictions));
-    setPreviewImage(getImageFromPredictions(submissionPredictions));
+
+    const submissionImage = getImageFromPredictions(submissionPredictions);
+    setImageURL(submissionImage);
     setLoading(false);
+  }
+
+  function isImageOnSupabase(imageURL) {
+    if (typeof imageURL != "string") {
+      return false;
+    } else {
+      return imageURL.startsWith(supabaseUrl);
+    }
   }
 
   function getPromptFromPredictions(predictions) {
@@ -127,8 +136,8 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
   const handleImageChange = (file) => {
     console.log(file);
-    setImage(file);
-    setPreviewImage(URL.createObjectURL(file));
+    setImageFile(file);
+    setImageURL(URL.createObjectURL(file));
   };
 
   // cmd + enter to submit
@@ -196,10 +205,6 @@ export default function Home({ baseUrl, submissionPredictions }) {
     setError(null);
     setFirstTime(false);
 
-    if (image == "") {
-      window.alert("Please upload a controlnet image");
-    }
-
     // update num runs and save to local storage
     const newNumRuns = Number(numRuns) + 1;
     setNumRuns(newNumRuns);
@@ -209,24 +214,40 @@ export default function Home({ baseUrl, submissionPredictions }) {
       setPopupOpen(true);
     }
 
-    const imageName = `${uuidv4()}-${image.name}`;
+    // if (!imageFile) {
+    //   window.alert("Please upload a controlnet image");
+    //   return;
+    // }
 
-    // upload controlnet image
-    const { data, error } = await supabase.storage
-      .from("images")
-      .upload(`public/${imageName}`, image);
+    let newImageURL;
 
-    if (data) {
-      console.log(
-        `successfully uploaded ${JSON.stringify(data)}, ${image.name}`
-      );
+    if (!isImageOnSupabase(imageURL)) {
+      const imageName = `${uuidv4()}-${imageFile.name}`;
+
+      // upload controlnet image
+      const { data, error } = await supabase.storage
+        .from("images")
+        .upload(`public/${imageName}`, imageFile);
+
+      if (data) {
+        console.log(
+          `successfully uploaded ${JSON.stringify(data)}, ${imageFile.name}`
+        );
+      } else {
+        console.log(
+          `failed uploaded ${JSON.stringify(error)}, ${imageFile.name}`
+        );
+        window.alert("Failed to upload image");
+        return;
+      }
+
+      newImageURL = `${supabaseUrl}/storage/v1/object/public/images/public/${imageName}`;
+      setImageURL(newImageURL);
     } else {
-      console.log(`failed uploaded ${JSON.stringify(error)}, ${image.name}`);
-      window.alert("Failed to upload image");
-      return;
+      newImageURL = imageURL;
     }
 
-    const imageURL = `${supabaseUrl}/storage/v1/object/public/images/public/${imageName}`;
+    console.log(`great, setting url to ${newImageURL}`);
 
     const submissionId = `${slugify(prompt, { lower: true })}-${(
       Math.random() + 1
@@ -241,7 +262,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
         promise = createReplicatePrediction(
           prompt,
-          imageURL,
+          newImageURL,
           model,
           submissionId
         );
@@ -273,8 +294,6 @@ export default function Home({ baseUrl, submissionPredictions }) {
     const anonId = localStorage.getItem("anonId");
     setLoading(true);
 
-    console.log(`id is ${id}`);
-
     // if the page has an id set
     if (id) {
       setPredictions(submissionPredictions);
@@ -289,8 +308,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
       console.log(`submission image is ${submissionImage}`);
       setPrompt(submissionPrompt);
-      setPreviewImage(submissionImage);
-      setImage(submissionImage);
+      setImageURL(submissionImage);
 
       setLoading(false);
     } else {
@@ -364,7 +382,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
             <form
               onKeyDown={onKeyDown}
               className="w-full"
-              onSubmit={(e) => handleSubmit(e, prompt, image)}
+              onSubmit={(e) => handleSubmit(e, prompt, imageFile)}
             >
               <div className="flex relative mt-2">
                 <div className="w-full h-full relative">
@@ -421,25 +439,21 @@ export default function Home({ baseUrl, submissionPredictions }) {
                 <h5 className="text-xs md:text-sm text-gray-500 hover:text-gray-900">
                   Controlnet
                 </h5>
-                <Link
-                  href={previewImage}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <Link href={imageURL} target="_blank" rel="noopener noreferrer">
                   <h5 className="text-base md:text-xl font-medium text-gray-800 hover:text-gray-500">
                     Original
                   </h5>
                 </Link>
               </div>
               <div className="flex w-full overflow-y-hidden overflow-x-auto space-x-6">
-                {previewImage ? (
+                {imageURL ? (
                   <div className="relative mt-2">
                     <img
-                      src={previewImage}
+                      src={imageURL}
                       className={`h-44 w-44 sm:h-52 sm:w-52 group relative rounded-xl aspect-square prediction-image`}
                     />
                     <button className="absolute h-12 w-12 text-gray-900 hover:text-gray-500 rounded-full -top-3 z-10 -right-3">
-                      <XCircleIcon onClick={() => setPreviewImage("")} />
+                      <XCircleIcon onClick={() => setImageURL("")} />
                     </button>
                   </div>
                 ) : (
