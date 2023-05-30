@@ -10,12 +10,17 @@ import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import slugify from "slugify";
 import { FileUploader } from "react-drag-drop-files";
-
-const HOST = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
-
+import { createClient } from "@supabase/supabase-js";
 import seeds from "../lib/controlnetSeeds.js";
+import { XCircleIcon } from "@heroicons/react/20/solid";
+
+// Create a single supabase client for interacting with your database
+const supabase = createClient(
+  "https://ennwjiitmiqwdrgxkevm.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVubndqaWl0bWlxd2RyZ3hrZXZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODM5Mjc3OTgsImV4cCI6MTk5OTUwMzc5OH0.zCHzwchIjcmKNmccb9D4OLVwrWrpLHMmf4a8W7UedFs"
+);
+
+const supabaseUrl = "https://ennwjiitmiqwdrgxkevm.supabase.co";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const fileTypes = ["JPG", "PNG"];
@@ -189,6 +194,10 @@ export default function Home({ baseUrl, submissionPredictions }) {
     setError(null);
     setFirstTime(false);
 
+    if (image == "") {
+      window.alert("Please upload a controlnet image");
+    }
+
     // update num runs and save to local storage
     const newNumRuns = Number(numRuns) + 1;
     setNumRuns(newNumRuns);
@@ -197,6 +206,25 @@ export default function Home({ baseUrl, submissionPredictions }) {
     if (newNumRuns != 0 && newNumRuns % 10 == 0) {
       setPopupOpen(true);
     }
+
+    const imageName = `${uuidv4()}-${image.name}`;
+
+    // upload controlnet image
+    const { data, error } = await supabase.storage
+      .from("images")
+      .upload(`public/${imageName}`, image);
+
+    if (data) {
+      console.log(
+        `successfully uploaded ${JSON.stringify(data)}, ${image.name}`
+      );
+    } else {
+      console.log(`failed uploaded ${JSON.stringify(error)}, ${image.name}`);
+      window.alert("Failed to upload image");
+      return;
+    }
+
+    const imageURL = `${supabaseUrl}/storage/v1/object/public/images/public/${imageName}`;
 
     const submissionId = `${slugify(prompt, { lower: true })}-${(
       Math.random() + 1
@@ -209,7 +237,12 @@ export default function Home({ baseUrl, submissionPredictions }) {
       for (let i = 0; i < numOutputs; i++) {
         let promise = null;
 
-        promise = createReplicatePrediction(prompt, image, model, submissionId);
+        promise = createReplicatePrediction(
+          prompt,
+          imageURL,
+          model,
+          submissionId
+        );
         promise.model = model.name;
         promise.source = model.source;
         promise.version = model.version;
@@ -250,6 +283,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
       const submissionPrompt = getPromptFromPredictions(submissionPredictions);
       const submissionImage = getImageFromPredictions(submissionPredictions);
       setPrompt(submissionPrompt);
+      setPreviewImage(submissionImage);
       setImage(submissionImage);
 
       setLoading(false);
@@ -320,16 +354,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
         {/* Form + Outputs */}
 
         <div className="col-span-10 h-full">
-          <div className="w-full mt-4 text-sm md:text-base rounded-md ring-brand outline-brand">
-            <FileUploader
-              handleChange={handleImageChange}
-              name="file"
-              label="Upload or drop a controlnet image here"
-              types={fileTypes}
-              required={true}
-            />
-          </div>
-          <div className="h-40">
+          <div className="h-36">
             <form
               onKeyDown={onKeyDown}
               className="w-full"
@@ -401,10 +426,27 @@ export default function Home({ baseUrl, submissionPredictions }) {
                 </Link>
               </div>
               <div className="flex w-full overflow-y-hidden overflow-x-auto space-x-6">
-                <img
-                  src={previewImage}
-                  className={`h-44 w-44 sm:h-52 sm:w-52 group relative rounded-xl aspect-square prediction-image`}
-                />
+                {previewImage ? (
+                  <div className="relative mt-2">
+                    <img
+                      src={previewImage}
+                      className={`h-44 w-44 sm:h-52 sm:w-52 group relative rounded-xl aspect-square prediction-image`}
+                    />
+                    <button className="absolute h-12 w-12 text-gray-900 hover:text-gray-500 rounded-full -top-3 z-10 -right-3">
+                      <XCircleIcon onClick={() => setPreviewImage("")} />
+                    </button>
+                  </div>
+                ) : (
+                  <FileUploader
+                    handleChange={handleImageChange}
+                    name="file"
+                    label="Upload or drop a controlnet image here"
+                    types={fileTypes}
+                    required={true}
+                    multiple={false}
+                    hoverTitle="Drop here"
+                  />
+                )}
               </div>
             </div>
 

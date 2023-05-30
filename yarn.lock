@@ -349,17 +349,17 @@
   dependencies:
     "cross-fetch" "^3.1.5"
 
-"@supabase/gotrue-js@^2.23.0":
+"@supabase/gotrue-js@^2.26.0":
   "integrity" "sha512-orxz8nwaF5D1nY/9H5xxTfFSCTvYeDLx24UO/Mxsx83xFP0t5RNxQZ0lEHBOhHhXJ4vR/COv79AxoWCOTu/7Rg=="
   "resolved" "https://registry.npmjs.org/@supabase/gotrue-js/-/gotrue-js-2.26.0.tgz"
   "version" "2.26.0"
   dependencies:
     "cross-fetch" "^3.1.5"
 
-"@supabase/postgrest-js@^1.1.1":
-  "integrity" "sha512-WDBUPOCOwcZonaCwEodwdA8hwWYOiXroDF9vWGxZxKAnuSVE2Ieci/kvhR4EsWvgGST2h90LRowgO+msXe8+fA=="
-  "resolved" "https://registry.npmjs.org/@supabase/postgrest-js/-/postgrest-js-1.6.1.tgz"
-  "version" "1.6.1"
+"@supabase/postgrest-js@^1.7.0":
+  "integrity" "sha512-wLADHZ5jm7LljF4GigK0H2vc1wGupBY2hGYfb4fVo0UuyMftmA6tOYy+ZpMH/vPq01CUFwXGwvIke6kyqh/QDg=="
+  "resolved" "https://registry.npmjs.org/@supabase/postgrest-js/-/postgrest-js-1.7.0.tgz"
+  "version" "1.7.0"
   dependencies:
     "cross-fetch" "^3.1.5"
 
@@ -379,14 +379,14 @@
   dependencies:
     "cross-fetch" "^3.1.5"
 
-"@supabase/supabase-js@^2.21.0":
-  "integrity" "sha512-FW3ZzBoc4orSgfX0dXrmJoXAcI/hiekmqXTkN64vjtUF2Urp3UjyAf71UTtV9Jl6ejHoe3K++e0+Rg9zKUJh5w=="
-  "resolved" "https://registry.npmjs.org/@supabase/supabase-js/-/supabase-js-2.21.0.tgz"
-  "version" "2.21.0"
+"@supabase/supabase-js@^2.24.0":
+  "integrity" "sha512-zrAm+hp6DBICqZ7xVPk+KofmlfjJWQzXuf2sHAyPz8XVjpha84z2OVWcow2aI10YkMOrPwhRtBBQYJOnh/fx2w=="
+  "resolved" "https://registry.npmjs.org/@supabase/supabase-js/-/supabase-js-2.24.0.tgz"
+  "version" "2.24.0"
   dependencies:
     "@supabase/functions-js" "^2.1.0"
-    "@supabase/gotrue-js" "^2.23.0"
-    "@supabase/postgrest-js" "^1.1.1"
+    "@supabase/gotrue-js" "^2.26.0"
+    "@supabase/postgrest-js" "^1.7.0"
     "@supabase/realtime-js" "^2.7.2"
     "@supabase/storage-js" "^2.5.1"
     "cross-fetch" "^3.1.5"
