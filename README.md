@@ -12,9 +12,13 @@ Install dependencies:
 npm install
 ```
 
-Then, copy the `.env.example` file and fill in your credentials. You'll need a running [ngrok](https://ngrok.com/) server to receive the [webhooks](https://replicate.com/docs/reference/http#predictions.create--webhook) from Replicate.
+Then, copy the `.env.example` file, name it `.env.local`, and fill in your credentials.
 
-Run the development server:
+You'll need a running ngrok server to receive the [webhooks](https://replicate.com/docs/reference/http#predictions.create--webhook) from Replicate.
+
+To do this, [install ngrok](https://ngrok.com/), and run it with `ngrok http 3000`. You'll see two forwarding addresses. Copy the `https` URL and enter it as your `NGROK_URL`
+
+Then, run the development server:
 
 ```console
 npm run dev
