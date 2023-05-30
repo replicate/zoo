@@ -368,6 +368,14 @@ export default function Home({ baseUrl, submissionPredictions }) {
         <div className="mx-0 max-w-7xl">
           <div className="flex justify-between mx-0">
             <div>
+              {firstTime && (
+                <div>
+                  <span className="text-2xl font-medium tracking-tight text-gray-500">
+                    ControlNet models take an input image and a text prompt and
+                    generates a new image combining the two.
+                  </span>
+                </div>
+              )}
               <span className="text-2xl font-medium tracking-tight text-gray-900">
                 What do you want to see?
               </span>
@@ -375,13 +383,12 @@ export default function Home({ baseUrl, submissionPredictions }) {
           </div>
         </div>
       </div>
-      {firstTime && <Info />}
 
       <div className="md:grid grid-cols-12 gap-x-16 mt-2">
         {/* Form + Outputs */}
 
         <div className="col-span-10 h-full">
-          <div className="h-36">
+          <div className="">
             <form
               onKeyDown={onKeyDown}
               className="w-full"
@@ -434,9 +441,10 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
           {loading && "Loading..."}
 
-          <div className="-mt-2">
+          <div className="mt-6">
             {!loading && getSelectedModels().length == 0 && <EmptyState />}
 
+            {/* Controlnet image */}
             <div className="flex gap-6 tracking-wide mb-10">
               <div className="w-72 border-l-4 border-gray-900 pl-5 md:pl-6 py-2">
                 <h5 className="text-xs md:text-sm text-gray-500 hover:text-gray-900">
@@ -497,6 +505,17 @@ export default function Home({ baseUrl, submissionPredictions }) {
                       </div>
                     }
                   />
+                )}
+
+                {firstTime && (
+                  <div className="w-32 mt-2 rotate-6 text-gray-600 ">
+                    <div className="flex items-center ">
+                      <span>&larr;</span>
+                      <p className="text-xs animate-pulse font-medium pl-2">
+                        Click to upload your own image
+                      </p>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
@@ -597,36 +616,6 @@ const Checkboxes = ({ models, handleCheckboxChange, className }) => {
     </div>
   );
 };
-
-export function Info() {
-  return (
-    <div className="rounded-md bg-blue-50 p-4 mt-4 max-w-3xl">
-      <div className="flex">
-        <div className="flex-shrink-0">
-          <InformationCircleIcon
-            className="h-5 w-5 text-blue-400"
-            aria-hidden="true"
-          />
-        </div>
-        <div className="ml-3 flex-1 md:flex md:justify-between">
-          <p className="text-sm text-blue-700">
-            ControlNet models take an input image and text prompt and generate a
-            new image based on the prompt.
-          </p>
-          <p className="mt-3 text-sm md:ml-6 md:mt-0">
-            <Link
-              href="https://arxiv.org/abs/2302.05543?utm_source=project&utm_campaign=zoo"
-              className="whitespace-nowrap font-medium text-blue-700 hover:text-blue-600"
-            >
-              Learn More
-              <span aria-hidden="true"> &rarr;</span>
-            </Link>
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function EmptyState() {
   return (
