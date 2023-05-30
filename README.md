@@ -12,11 +12,7 @@ Install dependencies:
 npm install
 ```
 
-Add your [Replicate API token](https://replicate.com/account#token) to `.env.local`:
-
-```
-REPLICATE_API_TOKEN=<your-token-here>
-```
+Then, copy the `.env.example` file and fill in your credentials. You'll need a running [ngrok](https://ngrok.com/) server to receive the [webhooks](https://replicate.com/docs/reference/http#predictions.create--webhook) from Replicate.
 
 Run the development server:
 
