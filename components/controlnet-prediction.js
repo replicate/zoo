@@ -51,7 +51,7 @@ export default function ControlnetPrediction({ prediction }) {
           <div>
             <button
               onClick={() => setOpen(true)}
-              className="image-wrapper image-wrapper--controlnet rounded-lg hover:opacity-75"
+              className="image-wrapper image-wrapper--controlnet rounded-xl hover:opacity-75"
             >
               <img
                 src={url}
