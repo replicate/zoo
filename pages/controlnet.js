@@ -370,10 +370,13 @@ export default function Home({ baseUrl, submissionPredictions }) {
             <div>
               {firstTime && (
                 <div>
-                  <span className="text-2xl font-medium tracking-tight text-gray-500">
+                  <Link
+                    href="https://www.youtube.com/watch?v=GVCZHCLWON8"
+                    className="text-2xl font-medium tracking-tight hover:underline text-gray-500"
+                  >
                     ControlNet models take an input image and a text prompt and
                     generates a new image combining the two.
-                  </span>
+                  </Link>
                 </div>
               )}
               <span className="text-2xl font-medium tracking-tight text-gray-900">
