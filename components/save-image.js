@@ -67,7 +67,7 @@ export function SaveImage({ open, setOpen, prediction, url, annotatedUrl = false
                           </h1>
                           <img
                             src={prediction.control_image}
-                            alt="output"
+                            alt="Input"
                             className="rounded-xl  h-64 w-64 aspect-square"
                             loading="lazy"
                           />
@@ -78,7 +78,7 @@ export function SaveImage({ open, setOpen, prediction, url, annotatedUrl = false
                           </h1>
                           <img
                             src={annotatedUrl}
-                            alt="output"
+                            alt="Edge"
                             className="rounded-xl  h-64 w-64 aspect-square"
                             loading="lazy"
                           />
@@ -89,7 +89,7 @@ export function SaveImage({ open, setOpen, prediction, url, annotatedUrl = false
                           </h1>
                           <img
                             src={url}
-                            alt="output"
+                            alt="Output"
                             className="rounded-xl  h-64 w-64 aspect-square"
                             loading="lazy"
                           />
