@@ -12,8 +12,9 @@ import slugify from "slugify";
 import { FileUploader } from "react-drag-drop-files";
 import { createClient } from "@supabase/supabase-js";
 import seeds from "../lib/controlnetSeeds.js";
-import { XCircleIcon } from "@heroicons/react/20/solid";
+import { XCircleIcon, PhotoIcon } from "@heroicons/react/20/solid";
 import Pills from "../components/pills";
+import { InformationCircleIcon } from "@heroicons/react/20/solid";
 
 // Create a single supabase client for interacting with your database
 const supabase = createClient(
@@ -206,6 +207,8 @@ export default function Home({ baseUrl, submissionPredictions }) {
     setError(null);
     setFirstTime(false);
 
+    localStorage.setItem("hasRunControlnet", true);
+
     // update num runs and save to local storage
     const newNumRuns = Number(numRuns) + 1;
     setNumRuns(newNumRuns);
@@ -214,11 +217,6 @@ export default function Home({ baseUrl, submissionPredictions }) {
     if (newNumRuns != 0 && newNumRuns % 10 == 0) {
       setPopupOpen(true);
     }
-
-    // if (!imageFile) {
-    //   window.alert("Please upload a controlnet image");
-    //   return;
-    // }
 
     let newImageURL;
 
@@ -331,12 +329,18 @@ export default function Home({ baseUrl, submissionPredictions }) {
       localStorage.setItem("numRuns", numRuns);
     }
 
+    const hasRunControlnet = localStorage.getItem("hasRunControlnet");
+    if (hasRunControlnet) {
+      setFirstTime(false);
+    } else {
+      setFirstTime(true);
+    }
+
     // setup id
     if (!anonId) {
       const uuid = uuidv4();
       localStorage.setItem("anonId", uuid);
       setAnonId(uuid);
-      setFirstTime(true);
     } else {
       console.log("returning user: ", anonId);
       setAnonId(anonId);
@@ -364,11 +368,6 @@ export default function Home({ baseUrl, submissionPredictions }) {
         <div className="mx-0 max-w-7xl">
           <div className="flex justify-between mx-0">
             <div>
-              {firstTime && (
-                <span className="text-2xl font-medium tracking-tight text-gray-500">
-                  Welcome to the Zoo, a playground for text to image models.{" "}
-                </span>
-              )}
               <span className="text-2xl font-medium tracking-tight text-gray-900">
                 What do you want to see?
               </span>
@@ -376,6 +375,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
           </div>
         </div>
       </div>
+      {firstTime && <Info />}
 
       <div className="md:grid grid-cols-12 gap-x-16 mt-2">
         {/* Form + Outputs */}
@@ -468,6 +468,34 @@ export default function Home({ baseUrl, submissionPredictions }) {
                     required={true}
                     multiple={false}
                     hoverTitle="Drop here"
+                    children={
+                      <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                        <div className="text-center">
+                          <PhotoIcon
+                            className="mx-auto h-12 w-12 text-gray-300"
+                            aria-hidden="true"
+                          />
+                          <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                            <label
+                              htmlFor="file-upload"
+                              className="relative cursor-pointer rounded-md bg-white font-semibold text-black focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-gray-700"
+                            >
+                              <span>Upload a file</span>
+                              <input
+                                id="file-upload"
+                                name="file-upload"
+                                type="file"
+                                className="sr-only"
+                              />
+                            </label>
+                            <p className="pl-1">or drag and drop</p>
+                          </div>
+                          <p className="text-xs leading-5 text-gray-600">
+                            PNG, JPG
+                          </p>
+                        </div>
+                      </div>
+                    }
                   />
                 )}
               </div>
@@ -569,6 +597,36 @@ const Checkboxes = ({ models, handleCheckboxChange, className }) => {
     </div>
   );
 };
+
+export function Info() {
+  return (
+    <div className="rounded-md bg-blue-50 p-4 mt-4 max-w-3xl">
+      <div className="flex">
+        <div className="flex-shrink-0">
+          <InformationCircleIcon
+            className="h-5 w-5 text-blue-400"
+            aria-hidden="true"
+          />
+        </div>
+        <div className="ml-3 flex-1 md:flex md:justify-between">
+          <p className="text-sm text-blue-700">
+            ControlNet models take an input image and text prompt and generate a
+            new image based on the prompt.
+          </p>
+          <p className="mt-3 text-sm md:ml-6 md:mt-0">
+            <Link
+              href="https://arxiv.org/abs/2302.05543?utm_source=project&utm_campaign=zoo"
+              className="whitespace-nowrap font-medium text-blue-700 hover:text-blue-600"
+            >
+              Learn More
+              <span aria-hidden="true"> &rarr;</span>
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function EmptyState() {
   return (
