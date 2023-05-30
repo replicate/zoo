@@ -469,7 +469,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
                         className={`h-44 w-44 sm:h-52 sm:w-52 group relative rounded-xl aspect-square prediction-image`}
                       />
                     </div>
-                    <button className="absolute h-12 w-12 text-gray-900 hover:text-gray-500 rounded-full -top-3 z-10 -right-3">
+                    <button className="absolute h-12 w-12 text-gray-900 bg-white hover:text-gray-500 rounded-full -top-3 z-10 -right-3">
                       <XCircleIcon onClick={() => setImageURL("")} />
                     </button>
                   </div>
