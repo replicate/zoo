@@ -613,6 +613,19 @@ const Checkboxes = ({ models, handleCheckboxChange, className }) => {
           ))}
         </div>
       </div>
+
+      <div className=" text-xs text-gray-500 mt-4">
+        <label>
+          Each ControlNet model runs a different pre-processor on your input
+          image.{" "}
+          <Link
+            href="https://www.youtube.com/watch?v=GVCZHCLWON8"
+            className="font-bold hover:underline text-black"
+          >
+            Learn More &rarr;
+          </Link>
+        </label>
+      </div>
     </div>
   );
 };
