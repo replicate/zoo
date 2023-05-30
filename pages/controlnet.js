@@ -9,6 +9,7 @@ import MODELS from "../lib/controlnetModels";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import slugify from "slugify";
+import { FileUploader } from "react-drag-drop-files";
 
 const HOST = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -17,12 +18,14 @@ const HOST = process.env.VERCEL_URL
 import seeds from "../lib/controlnetSeeds.js";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const fileTypes = ["JPG", "PNG"];
 
 export default function Home({ baseUrl, submissionPredictions }) {
   const router = useRouter();
   const { id } = router.query;
   const [prompt, setPrompt] = useState("");
   const [image, setImage] = useState("");
+  const [previewImage, setPreviewImage] = useState("");
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
   const [numOutputs, setNumOutputs] = useState(3);
@@ -113,6 +116,12 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
     // save to local storage
     localStorage.setItem("models", JSON.stringify(updatedModels));
+  };
+
+  const handleImageChange = (file) => {
+    console.log(file);
+    setImage(file);
+    setPreviewImage(URL.createObjectURL(file));
   };
 
   // cmd + enter to submit
@@ -311,36 +320,34 @@ export default function Home({ baseUrl, submissionPredictions }) {
         {/* Form + Outputs */}
 
         <div className="col-span-10 h-full">
-          <div className="h-36">
+          <div className="w-full mt-4 text-sm md:text-base rounded-md ring-brand outline-brand">
+            <FileUploader
+              handleChange={handleImageChange}
+              name="file"
+              label="Upload or drop a controlnet image here"
+              types={fileTypes}
+              required={true}
+            />
+          </div>
+          <div className="h-40">
             <form
               onKeyDown={onKeyDown}
               className="w-full"
               onSubmit={(e) => handleSubmit(e, prompt, image)}
             >
               <div className="flex relative mt-2">
-                {" "}
                 <div className="w-full h-full relative">
                   <textarea
                     name="prompt"
-                    className="w-full border-2 p-3 pr-12 text-sm md:text-base rounded-md ring-brand outline-brand"
+                    className="w-full h-full border-2 -mb-1 p-3 pr-12 text-sm md:text-base rounded-md ring-brand outline-brand"
                     rows="1"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Enter a prompt to display an image"
                   />
 
-                  <div>
-                    <input
-                      name="image"
-                      className="w-full border-2 p-3 pr-12 text-sm md:text-base rounded-md ring-brand outline-brand"
-                      value={image}
-                      onChange={(e) => setImage(e.target.value)}
-                      placeholder="Enter an image URL"
-                    />
-                  </div>
-
                   <button
-                    className="absolute right-3.5 top-2 text-gray-500 hover:text-gray-900 px-1 py-2 rounded-md flex justify-center items-center"
+                    className="absolute right-3.5 top-2 mb-1 text-gray-500 hover:text-gray-900 px-1 py-2 rounded-md flex justify-center items-center"
                     type="button"
                     onClick={() => setPrompt(promptmaker({ flavors: null }))}
                   >
@@ -360,6 +367,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
                     </svg>
                   </button>
                 </div>
+
                 <div className="ml-3 inline-flex">
                   <button
                     className="button bg-brand h-full flex justify-center items-center font-bold hover:bg-orange-600"
@@ -382,7 +390,11 @@ export default function Home({ baseUrl, submissionPredictions }) {
                 <h5 className="text-xs md:text-sm text-gray-500 hover:text-gray-900">
                   Controlnet
                 </h5>
-                <Link href={image} target="_blank" rel="noopener noreferrer">
+                <Link
+                  href={previewImage}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <h5 className="text-base md:text-xl font-medium text-gray-800 hover:text-gray-500">
                     Original
                   </h5>
@@ -390,7 +402,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
               </div>
               <div className="flex w-full overflow-y-hidden overflow-x-auto space-x-6">
                 <img
-                  src={image}
+                  src={previewImage}
                   className={`h-44 w-44 sm:h-52 sm:w-52 group relative rounded-xl aspect-square prediction-image`}
                 />
               </div>
