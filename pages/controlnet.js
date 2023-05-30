@@ -13,6 +13,7 @@ import { FileUploader } from "react-drag-drop-files";
 import { createClient } from "@supabase/supabase-js";
 import seeds from "../lib/controlnetSeeds.js";
 import { XCircleIcon } from "@heroicons/react/20/solid";
+import Pills from "../components/pills";
 
 // Create a single supabase client for interacting with your database
 const supabase = createClient(
@@ -357,7 +358,9 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
       <Popup open={false} setOpen={setPopupOpen} />
 
-      <div className="pt-2">
+      <Pills />
+
+      <div className="pt-4">
         <div className="mx-0 max-w-7xl">
           <div className="flex justify-between mx-0">
             <div>
