@@ -55,6 +55,8 @@ export default function Home({ baseUrl, submissionPredictions }) {
     // get the prompt from the predictions, and update the prompt
     const submissionPrompt = getPromptFromPredictions(submissionPredictions);
     setPrompt(submissionPrompt);
+    setImage(getImageFromPredictions(submissionPredictions));
+    setPreviewImage(getImageFromPredictions(submissionPredictions));
     setLoading(false);
   }
 
@@ -271,6 +273,8 @@ export default function Home({ baseUrl, submissionPredictions }) {
     const anonId = localStorage.getItem("anonId");
     setLoading(true);
 
+    console.log(`id is ${id}`);
+
     // if the page has an id set
     if (id) {
       setPredictions(submissionPredictions);
@@ -282,6 +286,8 @@ export default function Home({ baseUrl, submissionPredictions }) {
       // get the prompt from the predictions, and update the prompt
       const submissionPrompt = getPromptFromPredictions(submissionPredictions);
       const submissionImage = getImageFromPredictions(submissionPredictions);
+
+      console.log(`submission image is ${submissionImage}`);
       setPrompt(submissionPrompt);
       setPreviewImage(submissionImage);
       setImage(submissionImage);
