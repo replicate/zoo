@@ -5,6 +5,10 @@ import { XMarkIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { Dialog, Transition } from "@headlessui/react";
 
 export default function Popup({ open, setOpen }) {
+  const handleClose = () => {
+    localStorage.setItem("hasClosedPopup", true);
+    setOpen(false);
+  };
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={setOpen}>
@@ -51,8 +55,7 @@ export default function Popup({ open, setOpen }) {
                     />
                     <div className="mt-2">
                       <p className="text-base text-gray-500">
-                        Check out the repo to see how to build this yourself.
-                        Or, try running a model on Replicate, an API for machine
+                        Try running a model on Replicate, an API for machine
                         learning models.
                       </p>
                     </div>
@@ -60,19 +63,18 @@ export default function Popup({ open, setOpen }) {
                 </div>
                 <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                   <Link
-                    href="https://replicate.com?utm_source=project&utm_campaign=zoo"
+                    href="https://replicate.com/docs?utm_source=project&utm_campaign=zoo_popup"
+                    onClick={() => setOpen(false)}
                     className="inline-flex w-full justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600 sm:col-start-2"
-                    onClick={() => setOpen(false)}
                   >
-                    Try Replicate
+                    Check out Replicate &rarr;
                   </Link>
-                  <Link
-                    href="https://github.com/replicate/zoo?utm_source=project&utm_campaign=zoo"
+                  <button
+                    onClick={() => handleClose()}
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
-                    onClick={() => setOpen(false)}
                   >
-                    Fork on GitHub
-                  </Link>
+                    No thanks, back to Zoo
+                  </button>
                 </div>
               </Dialog.Panel>
             </Transition.Child>

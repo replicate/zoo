@@ -31,7 +31,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
   const [anonId, setAnonId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [numRuns, setNumRuns] = useState(1);
-  const [popupOpen, setPopupOpen] = useState(true);
+  const [popupOpen, setPopupOpen] = useState(false);
 
   async function getPredictionsFromSeed(seed) {
     const response = await fetch(`/api/submissions/${seed}`, {
@@ -192,7 +192,9 @@ export default function Home({ baseUrl, submissionPredictions }) {
     setNumRuns(newNumRuns);
     localStorage.setItem("numRuns", newNumRuns);
 
-    if (newNumRuns != 0 && newNumRuns % 10 == 0) {
+    const hasClosedPopup = localStorage.getItem("hasClosedPopup");
+
+    if (!hasClosedPopup && newNumRuns != 0 && newNumRuns % 10 == 0) {
       setPopupOpen(true);
     }
 
@@ -318,7 +320,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
         ogImage={`${baseUrl}/api/og?${ogParams()}`}
       />
 
-      <Popup open={false} setOpen={setPopupOpen} />
+      <Popup open={popupOpen} setOpen={setPopupOpen} />
       <Pills />
 
       <div className="pt-4">
