@@ -3,6 +3,12 @@ import upsertPrediction from "../../../lib/upsertPrediction";
 import packageData from "../../../package.json";
 import fetch from "node-fetch";
 
+import Replicate from "replicate";
+
+const replicate = new Replicate({
+  auth: process.env.REPLICATE_API_TOKEN,
+});
+
 const REPLICATE_API_HOST = "https://api.replicate.com";
 const STABILITY_API_HOST = "https://api.stability.ai";
 
@@ -25,7 +31,7 @@ export default async function handler(req, res) {
 
   if (!WEBHOOK_HOST) {
     throw new Error(
-      "WEBHOOK HOST is not set. If you're on local, make sure you set it to an ngrok url. If this doesn't exist, replicate predictions won't save to DB."
+      "WEBHOOK_HOST is not set. If you're on local, make sure you set it to an ngrok url. If this doesn't exist, replicate predictions won't save to DB."
     );
   }
 
@@ -39,7 +45,7 @@ export default async function handler(req, res) {
       source: req.body.source,
     });
 
-    const body = JSON.stringify({
+    const body = {
       input: {
         prompt: req.body.prompt,
         image_dimensions: req.body.image_dimensions,
@@ -47,7 +53,8 @@ export default async function handler(req, res) {
       version: req.body.version,
       webhook: `${WEBHOOK_HOST}/api/replicate-webhook?${searchParams}`,
       webhook_events_filter: ["start", "completed"],
-    });
+    };
+    const deployment = req.body.deployment;
 
     const headers = {
       Authorization: `Token ${process.env.REPLICATE_API_TOKEN}`,
@@ -55,22 +62,38 @@ export default async function handler(req, res) {
       "User-Agent": `${packageData.name}/${packageData.version}`,
     };
 
-    const response = await fetch(`${REPLICATE_API_HOST}/v1/predictions`, {
-      method: "POST",
-      headers,
-      body,
-    });
+    if (deployment) {
+      try {
+        console.log("running prediction using deployment", deployment);
+        const prediction = await replicate.deployments.predictions.create(
+          deployment.owner,
+          deployment.name,
+          body
+        );
 
-    if (response.status !== 201) {
-      let error = await response.json();
-      res.statusCode = 500;
-      res.end(JSON.stringify({ detail: error.detail }));
-      return;
+        res.statusCode = 201;
+        res.end(JSON.stringify(prediction));
+      } catch (err) {
+        console.log("deployment-based prediction failed:", err);
+      }
+    } else {
+      const response = await fetch(`${REPLICATE_API_HOST}/v1/predictions`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body),
+      });
+
+      if (response.status !== 201) {
+        let error = await response.json();
+        res.statusCode = 500;
+        res.end(JSON.stringify({ detail: error.detail }));
+        return;
+      }
+
+      const prediction = await response.json();
+      res.statusCode = 201;
+      res.end(JSON.stringify(prediction));
     }
-
-    const prediction = await response.json();
-    res.statusCode = 201;
-    res.end(JSON.stringify(prediction));
   } else if (req.body.source == "openai") {
     const response = await openai.createImage({
       prompt: req.body.prompt,
