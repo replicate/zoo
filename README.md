@@ -25,3 +25,7 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser.
+
+## Deploying on Vercel
+
+Alternatively, you can [deploy Zoo on Vercel](./doc/deploy_vercel/README.md).
