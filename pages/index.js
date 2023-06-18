@@ -544,13 +544,14 @@ export async function getServerSideProps({ req }) {
   const baseUrl = `${protocol}://${req.headers.host}`;
 
   let submissionPredictions = [];
+  console.log(`submissionId: ${submissionId}`);
 
-  if (submissionId) {
-    const response = await fetch(`${baseUrl}/api/submissions/${submissionId}`, {
-      method: "GET",
-    });
-    submissionPredictions = await response.json();
-  }
+  //   if (submissionId) {
+  //     const response = await fetch(`${baseUrl}/api/submissions/${submissionId}`, {
+  //       method: "GET",
+  //     });
+  //     submissionPredictions = await response.json();
+  //   }
 
   return { props: { baseUrl, submissionPredictions } };
 }
