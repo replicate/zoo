@@ -198,11 +198,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
       setPopupOpen(true);
     }
 
-    const submissionId = `${slugify(prompt, { lower: true })}-${(
-      Math.random() + 1
-    )
-      .toString(36)
-      .substring(5)}`;
+    const submissionId = uuidv4();
 
     for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model
