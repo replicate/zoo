@@ -102,6 +102,7 @@ export default async function handler(req, res) {
     if (!apiKey) throw new Error("Missing Stability API key.");
 
     const engineId = "stable-diffusion-xl-beta-v2-2-2";
+    const seed = 42;
 
     const response = await fetch(
       `${STABILITY_API_HOST}/v1/generation/${engineId}/text-to-image`,
@@ -124,6 +125,7 @@ export default async function handler(req, res) {
           width: 512,
           samples: 1,
           steps: 30,
+          seed: seed,
         }),
       }
     );
@@ -151,6 +153,7 @@ export default async function handler(req, res) {
       source: req.body.source,
       model: req.body.model,
       anon_id: req.body.anon_id,
+      seed: seed,
     };
     upsertPrediction(prediction);
 
