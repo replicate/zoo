@@ -102,7 +102,7 @@ export default async function handler(req, res) {
     if (!apiKey) throw new Error("Missing Stability API key.");
 
     const engineId = "stable-diffusion-xl-beta-v2-2-2";
-    const seed = 42;
+    const seed = Math.floor(Math.random() * 1000000);
 
     const response = await fetch(
       `${STABILITY_API_HOST}/v1/generation/${engineId}/text-to-image`,
