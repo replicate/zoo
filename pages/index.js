@@ -132,6 +132,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
       body: JSON.stringify({
         prompt: prompt,
         version: model.version,
+        deployment: model.deployment,
         source: model.source,
         model: model.name,
         anon_id: anonId,
