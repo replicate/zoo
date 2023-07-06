@@ -136,7 +136,6 @@ export default function Home({ baseUrl, submissionPredictions }) {
         model: model.name,
         anon_id: anonId,
         submission_id: submissionId,
-        ...(model.source == "replicate" && { image_dimensions: "512x512" }),
         ...(model.source != "replicate" && { id: uuidv4() }),
         ...(model.source != "replicate" && {
           created_at: new Date().toISOString(),
@@ -542,12 +541,12 @@ export async function getServerSideProps({ req }) {
   let submissionPredictions = [];
   console.log(`submissionId: ${submissionId}`);
 
-  //   if (submissionId) {
-  //     const response = await fetch(`${baseUrl}/api/submissions/${submissionId}`, {
-  //       method: "GET",
-  //     });
-  //     submissionPredictions = await response.json();
-  //   }
+  if (submissionId) {
+    const response = await fetch(`${baseUrl}/api/submissions/${submissionId}`, {
+      method: "GET",
+    });
+    submissionPredictions = await response.json();
+  }
 
   return { props: { baseUrl, submissionPredictions } };
 }

@@ -10,8 +10,7 @@ export default async function handler(req, res) {
     .from("predictions")
     .select()
     .eq("submission_id", req.query.id)
-    .limit(9);
-  // .order("created_at", { ascending: true });
+    .order("created_at", { ascending: true });
 
   if (error) {
     console.log("error getting predictions for submission id ", error);

@@ -1,5 +1,6 @@
 import { Configuration, OpenAIApi } from "openai";
 import upsertPrediction from "../../../lib/upsertPrediction";
+import MODELS from "../../../lib/models";
 import packageData from "../../../package.json";
 import fetch from "node-fetch";
 
@@ -29,12 +30,19 @@ export default async function handler(req, res) {
     );
   }
 
+  const modelName = req.body.model;
+  const modelObject = MODELS.filter((model) => model.name === modelName)[0];
+
+  if (!modelObject) {
+    throw new Error(`Model ${modelName} not found`);
+  }
+
   if (req.body.source == "replicate") {
     console.log("host", WEBHOOK_HOST);
 
     const searchParams = new URLSearchParams({
       submission_id: req.body.submission_id,
-      model: req.body.model,
+      model: modelName,
       anon_id: req.body.anon_id,
       source: req.body.source,
     });
@@ -42,9 +50,9 @@ export default async function handler(req, res) {
     const body = JSON.stringify({
       input: {
         prompt: req.body.prompt,
-        image_dimensions: req.body.image_dimensions,
+        ...modelObject.default_params,
       },
-      version: req.body.version,
+      version: modelObject.version,
       webhook: `${WEBHOOK_HOST}/api/replicate-webhook?${searchParams}`,
       webhook_events_filter: ["start", "completed"],
     });
@@ -74,8 +82,7 @@ export default async function handler(req, res) {
   } else if (req.body.source == "openai") {
     const response = await openai.createImage({
       prompt: req.body.prompt,
-      n: 1,
-      size: "512x512",
+      ...modelObject.default_params,
     });
 
     const prediction = {
@@ -84,12 +91,11 @@ export default async function handler(req, res) {
       version: "dall-e",
       output: [response.data.data[0].url],
       input: { prompt: req.body.prompt },
-      model: req.body.model,
+      model: modelName,
       inserted_at: new Date(),
       created_at: new Date(),
       submission_id: req.body.submission_id,
-      source: req.body.source,
-      model: req.body.model,
+      source: modelObject.source,
       anon_id: req.body.anon_id,
     };
 
@@ -103,6 +109,7 @@ export default async function handler(req, res) {
 
     const engineId = "stable-diffusion-xl-1024-v0-9";
     const seed = Math.floor(Math.random() * 1000000);
+    const prompt = req.body.prompt;
 
     const response = await fetch(
       `${STABILITY_API_HOST}/v1/generation/${engineId}/text-to-image`,
@@ -116,16 +123,11 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           text_prompts: [
             {
-              text: req.body.prompt,
+              text: prompt,
             },
           ],
-          cfg_scale: 7,
-          clip_guidance_preset: "FAST_BLUE",
-          height: 1024,
-          width: 1024,
-          samples: 1,
-          steps: 30,
-          seed: seed,
+          ...modelObject.default_params,
+          seed,
         }),
       }
     );
@@ -146,12 +148,11 @@ export default async function handler(req, res) {
       version: "stability",
       output: [responseJSON.artifacts[0].base64],
       input: { prompt: req.body.prompt },
-      model: req.body.model,
+      model: modelName,
       inserted_at: new Date(),
       created_at: new Date(),
       submission_id: req.body.submission_id,
       source: req.body.source,
-      model: req.body.model,
       anon_id: req.body.anon_id,
       seed: seed,
     };
