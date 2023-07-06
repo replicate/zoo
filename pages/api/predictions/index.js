@@ -101,7 +101,7 @@ export default async function handler(req, res) {
     const apiKey = process.env.STABILITY_API_KEY;
     if (!apiKey) throw new Error("Missing Stability API key.");
 
-    const engineId = "stable-diffusion-xl-beta-v2-2-2";
+    const engineId = "stable-diffusion-xl-1024-v0-9";
     const seed = Math.floor(Math.random() * 1000000);
 
     const response = await fetch(
