@@ -99,7 +99,7 @@ export default async function handler(req, res) {
       anon_id: req.body.anon_id,
     };
 
-    upsertPrediction(prediction);
+    await upsertPrediction(prediction);
 
     res.statusCode = 201;
     res.end(JSON.stringify(prediction));
@@ -156,7 +156,10 @@ export default async function handler(req, res) {
       anon_id: req.body.anon_id,
       seed: seed,
     };
-    upsertPrediction(prediction);
+    await upsertPrediction(prediction);
+
+    // ask charlie or jesse about this
+    delete prediction.output;
 
     res.statusCode = 201;
     res.end(JSON.stringify(prediction));

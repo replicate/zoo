@@ -12,6 +12,10 @@ export default async function handler(req, res) {
     .eq("submission_id", req.query.id)
     .order("created_at", { ascending: true });
 
+  data.forEach((prediction) => {
+    delete prediction.output;
+  });
+
   if (error) {
     console.log("error getting predictions for submission id ", error);
     return res.status(500).json({ error: error.message });

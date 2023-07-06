@@ -3,45 +3,22 @@ import SaveImage from "./save-image";
 import Counter from "./counter";
 
 export default function Prediction({ prediction }) {
-  const [url, setUrl] = useState(null);
   const [open, setOpen] = useState(false);
 
-  function getTempOutput(prediction) {
-    if (prediction.source == "stability") {
-      return `data:image/png;base64,${prediction.output}`;
-    }
-    if (typeof prediction.output == "string") {
-      return prediction.output;
-    }
+  function getOutput(prediction) {
     if (prediction.output) {
-      return prediction.output[prediction.output.length - 1];
-    }
-  }
-
-  async function getOutput(prediction) {
-    const url = `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.id}.png`;
-    let response = await fetch(url);
-
-    if (response.status == 200) {
-      setUrl(url);
-      return url;
+      return prediction.output;
     } else {
-      const tempUrl = getTempOutput(prediction);
-      setUrl(tempUrl);
-      return tempUrl;
+      return `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.id}.png`;
     }
   }
-
-  useEffect(() => {
-    getOutput(prediction);
-  }, [prediction]);
 
   return (
     <div
       className={`h-44 w-44 sm:h-52 sm:w-52 aspect-square group relative`}
       key={prediction.id}
     >
-      {prediction.output && url && (
+      {prediction.status == "succeeded" && (
         <>
           <div>
             <button
@@ -49,7 +26,7 @@ export default function Prediction({ prediction }) {
               className="image-wrapper rounded-lg hover:opacity-75"
             >
               <img
-                src={url}
+                src={getOutput(prediction)}
                 alt="output"
                 className={`rounded-xl aspect-square`}
                 loading="lazy"
@@ -60,7 +37,7 @@ export default function Prediction({ prediction }) {
             open={open}
             setOpen={setOpen}
             prediction={prediction}
-            url={url}
+            url={getOutput(prediction)}
           />
         </>
       )}
