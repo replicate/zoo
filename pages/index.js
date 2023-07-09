@@ -8,7 +8,6 @@ import Link from "next/link";
 import MODELS from "../lib/models.js";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
-import slugify from "slugify";
 import Pills from "../components/pills";
 
 const HOST = process.env.VERCEL_URL

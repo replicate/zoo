@@ -28,6 +28,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-drag-drop-files": "^2.3.10",
+    "react-hot-toast": "^2.4.1",
     "react-tooltip": "^5.13.0",
     "replicate": "^0.6.0",
     "slugify": "^1.6.6",
