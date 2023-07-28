@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 
 const tabs = [
   { name: "Text to Image", href: "/", current: true },
-  { name: "Text+Image to Image", href: "/controlnet", current: false },
+  { name: "ControlNet", href: "/controlnet", current: false },
 ];
 
 function classNames(...classes) {
