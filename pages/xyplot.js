@@ -91,27 +91,6 @@ export default function Home({ baseUrl, submissionPredictions }) {
     return predictions.filter((p) => p.version === version && p.input.scheduler === scheduler);
   }
 
-  const handleCheckboxChange = (e) => {
-    const modelId = parseInt(e.target.value, 10);
-
-    // Update the checked flag for the model with the matching modelId
-    const updatedModels = models.map((model) => {
-      if (model.id === modelId) {
-        return {
-          ...model,
-          checked: e.target.checked,
-        };
-      }
-      return model;
-    });
-
-    // Set the new models array
-    setModels(updatedModels);
-
-    // save to local storage
-    localStorage.setItem("models", JSON.stringify(updatedModels));
-  };
-
   // cmd + enter to submit
   const onKeyDown = (e) => {
     if (e.metaKey && e.which === 13) {
