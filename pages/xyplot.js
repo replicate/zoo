@@ -181,6 +181,8 @@ export default function Home({ baseUrl, submissionPredictions }) {
     setError(null);
     setFirstTime(false);
 
+    setPredictions([]);
+
     // update num runs and save to local storage
     const newNumRuns = Number(numRuns) + 1;
     setNumRuns(newNumRuns);
