@@ -98,7 +98,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
     return [models[1]];
   }
 
-  function getPredictionsByVersionAndRow(version, scheduler) {
+  function getPredictionsByVersionAndRow(version, {scheduler}) {
     return predictions.filter((p) => p.version === version && p.input.scheduler === scheduler);
   }
 
