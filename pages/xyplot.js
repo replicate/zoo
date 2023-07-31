@@ -16,21 +16,6 @@ const HOST = process.env.VERCEL_URL
 
 import seeds from "../lib/seeds.js";
 
-const xValues = [{
-  num_inference_steps: 30,
-}, {
-  num_inference_steps: 40
-}, {
-  num_inference_steps: 50
-}];
-const yValues = [{
-  scheduler: 'DDIM',
-}, {
-  scheduler:  'DPMSolverMultistep',
-}, {
-  scheduler: 'K_EULER_ANCESTRAL'
-}];
-
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export default function Home({ baseUrl, submissionPredictions }) {
@@ -44,7 +29,21 @@ export default function Home({ baseUrl, submissionPredictions }) {
   const [anonId, setAnonId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [numRuns, setNumRuns] = useState(1);
-  const [popupOpen, setPopupOpen] = useState(false);
+  const [popupOpen, setPopupOpen] = useState(false);;
+  const [xValues, setXValues] = useState([{
+    num_inference_steps: 30,
+  }, {
+    num_inference_steps: 40
+  }, {
+    num_inference_steps: 50
+  }]);
+  const [yValues, setYValues] = useState([{
+    scheduler: 'DDIM',
+  }, {
+    scheduler:  'DPMSolverMultistep',
+  }, {
+    scheduler: 'K_EULER_ANCESTRAL'
+  }]);
 
   async function getPredictionsFromSeed(seed) {
     const response = await fetch(`/api/submissions/${seed}`, {
