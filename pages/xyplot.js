@@ -374,15 +374,23 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
             {getSelectedModels().map((model) => (
               <div key={model.id} className="mt-5">
-                <div className="grid grid-cols-6 gap-20">
+                <div className="grid grid-cols-6 gap-20 mb-5">
                   <div>&nbsp;</div>
                   {xValues.map((xValue) => {
-                    return <div key={xValue}>{xValue}</div>;
+                    return <div className={"text-center"}>
+                      <span className={"inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"} key={xValue}>
+                        {xValue}
+                      </span>
+                    </div>;
                   })}
                 </div>
                 {yValues.map((yValue) => {
                   return <div key={yValue} className={"grid grid-cols-6 gap-20 mb-5"}>
-                    <div>{yValue}</div>
+                    <div className={"flex items-center justify-end"}>
+                      <span className={"inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"} key={yValue}>
+                        {yValue}
+                      </span>
+                    </div>
                     {getPredictionsByVersionAndRow(model.version, yValue)
                         .reverse()
                         .map((prediction) => (
