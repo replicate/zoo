@@ -16,8 +16,20 @@ const HOST = process.env.VERCEL_URL
 
 import seeds from "../lib/seeds.js";
 
-const xValues = [30, 40, 50];
-const yValues = ['DDIM', 'DPMSolverMultistep', 'K_EULER_ANCESTRAL'];
+const xValues = [{
+  num_inference_steps: 30,
+}, {
+  num_inference_steps: 40
+}, {
+  num_inference_steps: 50
+}];
+const yValues = [{
+  scheduler: 'DDIM',
+}, {
+  scheduler:  'DPMSolverMultistep',
+}, {
+  scheduler: 'K_EULER_ANCESTRAL'
+}];
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -191,10 +203,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
         for (let j = 0; j < yValues.length; j++) {
           let promise = null;
 
-          const input = {
-            num_inference_steps: xValues[j],
-            scheduler: yValues[i]
-          };
+          const input = Object.assign({}, xValues[j], yValues[i]);
 
           if (model.source == "replicate") {
             promise = createReplicatePrediction(prompt, model, submissionId, input);
@@ -377,18 +386,24 @@ export default function Home({ baseUrl, submissionPredictions }) {
                 <div className="grid grid-cols-6 gap-20 mb-5">
                   <div>&nbsp;</div>
                   {xValues.map((xValue) => {
-                    return <div className={"text-center"}>
-                      <span className={"inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"} key={xValue}>
-                        {xValue}
+                    const displayValue = Object.keys(xValue).map(key => {
+                      return `${key}: ${xValue[key]}`;
+                    }).join(", ");
+                    return <div className={"text-center"} key={displayValue}>
+                      <span className={"inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"}>
+                        {displayValue}
                       </span>
                     </div>;
                   })}
                 </div>
                 {yValues.map((yValue) => {
-                  return <div key={yValue} className={"grid grid-cols-6 gap-20 mb-5"}>
+                  const displayValue = Object.keys(yValue).map(key => {
+                    return `${key}: ${yValue[key]}`;
+                  }).join(", ");
+                  return <div key={displayValue} className={"grid grid-cols-6 gap-20 mb-5"}>
                     <div className={"flex items-center justify-end"}>
-                      <span className={"inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"} key={yValue}>
-                        {yValue}
+                      <span className={"inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"}>
+                        {displayValue}
                       </span>
                     </div>
                     {getPredictionsByVersionAndRow(model.version, yValue)
