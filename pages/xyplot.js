@@ -406,7 +406,6 @@ export default function Home({ baseUrl, submissionPredictions }) {
                       </span>
                     </div>
                     {getPredictionsByVersionAndRow(model.version, yValue)
-                        .reverse()
                         .map((prediction) => (
                             <>
                               <Prediction
