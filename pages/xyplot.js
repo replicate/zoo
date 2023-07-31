@@ -1,20 +1,17 @@
-import { useState, useEffect } from "react";
+import {useEffect, useState} from "react";
 import Prediction from "../components/prediction";
 import Popup from "../components/popup";
 import ZooHead from "../components/zoo-head";
-import ExternalLink from "../components/external-link";
 import promptmaker from "promptmaker";
-import Link from "next/link";
 import MODELS from "../lib/models.js";
-import { v4 as uuidv4 } from "uuid";
-import { useRouter } from "next/router";
+import {v4 as uuidv4} from "uuid";
+import {useRouter} from "next/router";
 import Pills from "../components/pills";
+import seeds from "../lib/seeds.js";
 
 const HOST = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
-
-import seeds from "../lib/seeds.js";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -98,8 +95,22 @@ export default function Home({ baseUrl, submissionPredictions }) {
     return [models[1]];
   }
 
-  function getPredictionsByVersionAndRow(version, {scheduler}) {
-    return predictions.filter((p) => p.version === version && p.input.scheduler === scheduler);
+  const getReadableObjectValues = (object) => {
+    return Object.keys(object).map(key => {
+      return `${key}: ${object[key]}`;
+    }).join(", ");
+  }
+
+  function getPredictionsByVersionAndRow(version, yValue) {
+    return predictions.filter((p) => p.version === version).filter((p) => {
+      let matches = true;
+      Object.keys(yValue).forEach((key) => {
+        if (p.input[key] !== yValue[key]) {
+          matches = false;
+        }
+      });
+      return matches;
+    });
   }
 
   // cmd + enter to submit
@@ -196,14 +207,13 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
     const submissionId = uuidv4();
 
-    const model = models[1];
-
     for (const model of getSelectedModels()) {
       // Use the model variable to generate predictions with the selected model
       for (let i = 0; i < xValues.length; i++) {
         for (let j = 0; j < yValues.length; j++) {
           let promise = null;
 
+          // Merge X and Y values
           const input = Object.assign({}, xValues[j], yValues[i]);
 
           if (model.source == "replicate") {
@@ -387,9 +397,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
                 <div className="grid grid-cols-6 gap-20 mb-5">
                   <div>&nbsp;</div>
                   {xValues.map((xValue) => {
-                    const displayValue = Object.keys(xValue).map(key => {
-                      return `${key}: ${xValue[key]}`;
-                    }).join(", ");
+                    const displayValue = getReadableObjectValues(xValue);
                     return <div className={"text-center"} key={displayValue}>
                       <span className={"inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"}>
                         {displayValue}
@@ -398,9 +406,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
                   })}
                 </div>
                 {yValues.map((yValue) => {
-                  const displayValue = Object.keys(yValue).map(key => {
-                    return `${key}: ${yValue[key]}`;
-                  }).join(", ");
+                  const displayValue = getReadableObjectValues(yValue);
                   return <div key={displayValue} className={"grid grid-cols-6 gap-20 mb-5"}>
                     <div className={"flex items-center justify-end"}>
                       <span className={"inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"}>
