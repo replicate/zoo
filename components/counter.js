@@ -5,22 +5,9 @@ const Counter = () => {
 
   useEffect(() => {
     let intervalId;
-    let hidden = "";
-    let visibilityChange = "";
-
-    if (typeof document.hidden !== "undefined") {
-      hidden = "hidden";
-      visibilityChange = "visibilitychange";
-    } else if (typeof document.msHidden !== "undefined") {
-      hidden = "msHidden";
-      visibilityChange = "msvisibilitychange";
-    } else if (typeof document.webkitHidden !== "undefined") {
-      hidden = "webkitHidden";
-      visibilityChange = "webkitvisibilitychange";
-    }
 
     const handleVisibilityChange = () => {
-      if (document[hidden]) {
+      if (document.hidden) {
         // Tab is hidden, so start the timer
         intervalId = setInterval(() => {
           setTenthSeconds((tenthSeconds) => tenthSeconds + 1);
@@ -29,7 +16,7 @@ const Counter = () => {
     };
 
     // Add the event listener for visibility changes
-    document.addEventListener(visibilityChange, handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     // Start the timer initially when the component mounts
     intervalId = setInterval(() => {
