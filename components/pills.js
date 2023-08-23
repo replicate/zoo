@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 const tabs = [
   { name: "Text to Image", href: "/", current: true },
   { name: "ControlNet", href: "/controlnet", current: false },
+  { name: "X/Y plot", href: "/xyplot", current: false },
 ];
 
 function classNames(...classes) {
@@ -13,10 +14,10 @@ function classNames(...classes) {
 export default function Pills() {
   const router = useRouter();
   useEffect(() => {
-    if (router.pathname == "/controlnet") {
-      tabs[0].current = false;
-      tabs[1].current = true;
-    }
+    console.log(router.pathname);
+    tabs.forEach(tab => {
+      tab.current = router.pathname === tab.href;
+    });
   }, []);
   return (
     <div>

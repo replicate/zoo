@@ -47,10 +47,12 @@ export default async function handler(req, res) {
       source: req.body.source,
     });
 
+    const input = req.body.input;
     const body = JSON.stringify({
       input: {
         prompt: req.body.prompt,
         ...modelObject.default_params,
+        ...input,
       },
       version: modelObject.version,
       webhook: `${WEBHOOK_HOST}/api/replicate-webhook?${searchParams}`,

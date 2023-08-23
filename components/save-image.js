@@ -113,6 +113,13 @@ export function SaveImage({ open, setOpen, prediction, url, annotatedUrl = false
                       {prediction.input.prompt}
                     </p>
 
+                    {Object.keys(prediction.input).map(key => {
+                      const value = prediction.input[key];
+                      return <p key={key} className="block text-sm font-medium text-gray-500">
+                        {key}: {value}
+                      </p>
+                    })}
+
                     {prediction.metrics && (
                       <p className="mt-2 text-xs text-gray-500">
                         Predict time:{" "}
