@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 
 const tabs = [
   { name: "Text to Image", href: "/", current: true },
+  { name: "SDXL Fine-Tunes", href: "/sdxlfinetunes", current: false },
   { name: "ControlNet", href: "/controlnet", current: false },
   { name: "X/Y plot", href: "/xyplot", current: false },
 ];
