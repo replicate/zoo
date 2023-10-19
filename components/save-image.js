@@ -3,9 +3,19 @@ import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import FileSaver from "file-saver";
 
-export function SaveImage({ open, setOpen, prediction, url, annotatedUrl = false }) {
+export function SaveImage({
+  open,
+  setOpen,
+  prediction,
+  url,
+  annotatedUrl = false,
+}) {
   const download = async (url, id) => {
-    FileSaver.saveAs(url, `${id}.png`);
+    if (typeof url !== "list") {
+      FileSaver.saveAs(url[0], `${id}.png`);
+    } else {
+      FileSaver.saveAs(url, `${id}.png`);
+    }
   };
 
   return (
@@ -38,7 +48,11 @@ export function SaveImage({ open, setOpen, prediction, url, annotatedUrl = false
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className={`relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full ${annotatedUrl ? 'sm:max-w-3xl' : 'sm:max-w-sm'} mx-auto sm:p-6`}>
+            <Dialog.Panel
+              className={`relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full ${
+                annotatedUrl ? "sm:max-w-3xl" : "sm:max-w-sm"
+              } mx-auto sm:p-6`}
+            >
               <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
                 <button
                   type="button"
@@ -58,7 +72,6 @@ export function SaveImage({ open, setOpen, prediction, url, annotatedUrl = false
                     Zoo Prediction
                   </Dialog.Title>
                   <div className="mt-4">
-
                     {annotatedUrl ? (
                       <div className="grid grid-cols-3 mt-4 gap-x-4">
                         <div>
@@ -103,7 +116,6 @@ export function SaveImage({ open, setOpen, prediction, url, annotatedUrl = false
                         loading="lazy"
                       />
                     )}
-
                   </div>
                   <div>
                     <p className="mt-4 block truncate text-sm font-medium text-gray-900">
@@ -113,11 +125,16 @@ export function SaveImage({ open, setOpen, prediction, url, annotatedUrl = false
                       {prediction.input.prompt}
                     </p>
 
-                    {Object.keys(prediction.input).map(key => {
+                    {Object.keys(prediction.input).map((key) => {
                       const value = prediction.input[key];
-                      return <p key={key} className="block text-sm font-medium text-gray-500">
-                        {key}: {value}
-                      </p>
+                      return (
+                        <p
+                          key={key}
+                          className="block text-sm font-medium text-gray-500"
+                        >
+                          {key}: {value}
+                        </p>
+                      );
                     })}
 
                     {prediction.metrics && (

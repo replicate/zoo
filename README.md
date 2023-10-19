@@ -26,6 +26,12 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser.
 
+## Want to add a model?
+
+1. Check out `lib/models.js` and add your model to the MODELS array.
+2. Optionally, generate some example predictions by adding some submissions to `lib/seeds.js`.
+3. Push your PR!
+
 ## Deploying on Vercel
 
 Alternatively, you can [deploy Zoo on Vercel](./doc/deploy_vercel/README.md).
