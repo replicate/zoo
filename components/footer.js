@@ -45,17 +45,6 @@ export default function Footer() {
             unoptimized={true}
           />
         </Link>
-        <Link className={linkStyles} href="https://openai.com/product/dall-e-2">
-          <Image
-            src="/logomarks/openai.svg"
-            data-tooltip-id="openai-tooltip"
-            data-tooltip-content="DALL-E model powered by OpenAI"
-            alt="OpenAI"
-            className={imageStyles}
-            fill={true}
-            unoptimized={true}
-          />
-        </Link>
         <Link className={linkStyles} href="https://vercel.com/templates/ai">
           <Image
             src="/logomarks/vercel.svg"
