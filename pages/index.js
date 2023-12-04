@@ -544,7 +544,9 @@ export async function getServerSideProps({ req }) {
     const response = await fetch(`${baseUrl}/api/submissions/${submissionId}`, {
       method: "GET",
     });
-    submissionPredictions = await response.json();
+    if (response.ok) {
+      submissionPredictions = await response.json();
+    }
   }
 
   return { props: { baseUrl, submissionPredictions } };

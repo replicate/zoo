@@ -22,7 +22,7 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVubndqaWl0bWlxd2RyZ3hrZXZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODM5Mjc3OTgsImV4cCI6MTk5OTUwMzc5OH0.zCHzwchIjcmKNmccb9D4OLVwrWrpLHMmf4a8W7UedFs"
 );
 
-const supabaseUrl = "https://ennwjiitmiqwdrgxkevm.supabase.co";
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_IMAGES_HOST;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const fileTypes = ["JPG", "PNG"];

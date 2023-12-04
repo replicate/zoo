@@ -49,7 +49,7 @@ export default function Popup({ open, setOpen }) {
                       width={250}
                       height={250}
                       className="mx-auto"
-                      src="https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/2370caef-bc8c-423e-88bb-0ca4a71e19c8.png"
+                      src={`${process.env.NEXT_PUBLIC_SUPABASE_IMAGES_URL}/storage/v1/object/public/images/public/2370caef-bc8c-423e-88bb-0ca4a71e19c8.png`}
                       alt=""
                       unoptimized={true}
                     />
