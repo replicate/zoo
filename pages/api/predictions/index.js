@@ -26,7 +26,7 @@ export default async function handler(req, res) {
 
   if (!WEBHOOK_HOST) {
     throw new Error(
-      "WEBHOOK HOST is not set. If you're on local, make sure you set it to an ngrok url. If this doesn't exist, replicate predictions won't save to DB."
+      "WEBHOOK_HOST is not set. If you're on local, make sure you set NGROK_HOST. If this doesn't exist, replicate predictions won't save to DB."
     );
   }
 
