@@ -56,7 +56,7 @@ export default function Footer() {
             unoptimized={true}
           />
         </Link>
-        <Link className={linkStyles} href="https://github.com/replicate/zoo">
+        <Link className={linkStyles} href="https://supabase.com">
           <Image
             src="/logomarks/supabase.svg"
             data-tooltip-id="supabase-tooltip"
