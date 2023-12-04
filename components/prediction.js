@@ -13,7 +13,7 @@ export default function Prediction({ prediction }) {
     if (prediction.output) {
       return prediction.output;
     } else {
-      return `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public/${prediction.id}.png`;
+      return `${process.env.NEXT_PUBLIC_SUPABASE_IMAGES_URL}/storage/v1/object/public/images/public/${prediction.id}.png`;
     }
   }
 

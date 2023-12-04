@@ -19,7 +19,7 @@ export default function ControlnetPrediction({ prediction }) {
   }
 
   async function getOutput(prediction) {
-    const bucket = `https://ennwjiitmiqwdrgxkevm.supabase.co/storage/v1/object/public/images/public`;
+    const bucket = `${process.env.NEXT_PUBLIC_SUPABASE_IMAGES_URL}/storage/v1/object/public/images/public`;
     const predictionUrl = `${bucket}/${prediction.id}.png`;
     const predictionAnnotationUrl = `${bucket}/annotated-${prediction.id}.png`;
 
