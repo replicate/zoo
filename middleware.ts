@@ -7,6 +7,7 @@ const ratelimit = new Ratelimit({
   // 20 requests from the same IP within a 10 second sliding window
   limiter: Ratelimit.slidingWindow(20, '10s'),
   prefix: `v2/zoo/ratelimit/${process.env.VERCEL_ENV ?? 'local'}`,
+  timeout: 500,
 });
 
 // Rate limit the /api/predictions/[id] endpoint
