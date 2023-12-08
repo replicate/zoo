@@ -56,7 +56,7 @@ export default async function handler(req, res) {
       },
       version: modelObject.version,
       webhook: `${WEBHOOK_HOST}/api/replicate-webhook?${searchParams}`,
-      webhook_events_filter: ["start", "completed"],
+      webhook_events_filter: ["completed"],
     });
 
     const headers = {
