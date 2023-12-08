@@ -36,7 +36,9 @@ export default function Home({ baseUrl, submissionPredictions }) {
     const response = await fetch(`/api/submissions/${seed}`, {
       method: "GET",
     });
-    submissionPredictions = await response.json();
+    if (response.ok) {
+      submissionPredictions = await response.json();
+    }
     setPredictions(submissionPredictions);
 
     // get the model names from the predictions, and update which ones are checked
@@ -151,17 +153,36 @@ export default function Home({ baseUrl, submissionPredictions }) {
       throw new Error(prediction.detail);
     }
 
+    // Add incremental backoff for polling requests.
+    const backoff = [250, 500, 500, 750, 1000, 1500, 3000, 5000, 10000, 15000, 30000];
+
     while (
       prediction.status !== "succeeded" &&
       prediction.status !== "failed"
     ) {
-      await sleep(500);
+      const jitter = random(0, 100); // Don't make all requests at the same time.
+      const delay = backoff.shift();
+      if (!delay) {
+        // We've exceeded our timeout.
+        // TODO: Better user facing messaging here.
+        break;
+      }
+
+      await sleep(delay + jitter);
       const response = await fetch("/api/predictions/" + prediction.id);
-      prediction = await response.json();
-      console.log(prediction);
+
+      // Handle Rate Limiting
+      if (response.status === 429) {
+        const reset = response.headers.get('X-Ratelimit-Reset') ?? Date.now() + 10_000;        
+        const wait = reset - Date.now();
+        await sleep(wait)
+        continue;
+      }
+
       if (response.status !== 200) {
         throw new Error(prediction.detail);
       }
+      prediction = await response.json();
     }
 
     prediction.model = model.name;
@@ -550,4 +571,8 @@ export async function getServerSideProps({ req }) {
   }
 
   return { props: { baseUrl, submissionPredictions } };
+}
+
+function random(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min)
 }
