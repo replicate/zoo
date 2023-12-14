@@ -14,9 +14,9 @@ export default function Home() {
             .
           </h1>
 
-          <div className="cta my-24 flex justify-center space-x-5 items-center">
+          <div className="cta my-24 justify-center items-center flex-col sm:flex sm:flex-row">
             <a
-              className="text-white bg-black p-5 flex"
+              className="text-white bg-black p-5 flex mb-2 mx-6"
               href="https://github.com/replicate/zoo?utm_source=project&utm_campaign=zoo"
             >
               <GithubLogo
@@ -28,7 +28,7 @@ export default function Home() {
               Code on Github
             </a>
             <a
-              className="text-white bg-black p-5 flex"
+              className="text-white bg-black p-5 flex mb-2 mx-6"
               href="https://replicate.com/collections/text-to-image?utm_source=project&utm_campaign=zoo"
             >
               <ReplicateLogo className="mr-2" width={24} />
@@ -36,36 +36,6 @@ export default function Home() {
             </a>
           </div>
         </div>
-
-        {/* <ul className="features flex space-x-24">
-          <li className="feature">
-            <h3 className="text-2xl font-bold mb-4">
-              Run multiple text-to-image models side-by-side.
-            </h3>
-            <p>
-              Zoo lets you explore the differences between text-to-image models,
-              comparing output images side-by-side.
-            </p>
-          </li>
-          <li className="feature">
-            <h3 className="text-2xl font-bold mb-4">
-              Try multiple text-to-image models at the same time.
-            </h3>
-            <p>
-              Zoo is a place to play with machine learning models, and to share
-              your own. It's free and open source.
-            </p>
-          </li>
-          <li className="feature">
-            <h3 className="text-2xl font-bold mb-4">
-              Try multiple text-to-image models at the same time.
-            </h3>
-            <p>
-              Zoo is a place to play with machine learning models, and to share
-              your own. It's free and open source.
-            </p>
-          </li>
-        </ul> */}
       </div>
       <img
         className="mt-24"
