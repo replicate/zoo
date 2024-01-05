@@ -521,15 +521,15 @@ const Checkboxes = ({ models, handleCheckboxChange, className }) => {
 export function EmptyState() {
   return (
     <div className="text-center mt-16">
-      <img
-        alt="confused robot"
-        className="mx-auto rounded-lg"
-        src="./confused_bot.png"
-      />
-      <h3 className="mt-12 text-sm font-semibold text-gray-900">
+      <h3 className="text-sm font-semibold text-gray-900">
         No model selected!
       </h3>
       <p className="mt-1 text-sm text-gray-500">Select a model on the right.</p>
+      <img
+        alt="confused robot"
+        className="mt-12 mx-auto rounded-lg"
+        src="./confused_bot.png"
+      />
     </div>
   );
 }
