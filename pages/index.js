@@ -154,7 +154,9 @@ export default function Home({ baseUrl, submissionPredictions }) {
     }
 
     // Add incremental backoff for polling requests.
-    const backoff = [250, 500, 500, 750, 1000, 1500, 3000, 5000, 10000, 15000, 30000];
+    const backoff = [
+      250, 500, 500, 750, 1000, 1500, 3000, 5000, 10000, 15000, 30000,
+    ];
 
     while (
       prediction.status !== "succeeded" &&
@@ -173,9 +175,10 @@ export default function Home({ baseUrl, submissionPredictions }) {
 
       // Handle Rate Limiting
       if (response.status === 429) {
-        const reset = response.headers.get('X-Ratelimit-Reset') ?? Date.now() + 10_000;        
+        const reset =
+          response.headers.get("X-Ratelimit-Reset") ?? Date.now() + 10_000;
         const wait = reset - Date.now();
-        await sleep(wait)
+        await sleep(wait);
         continue;
       }
 
@@ -574,5 +577,5 @@ export async function getServerSideProps({ req }) {
 }
 
 function random(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min)
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
