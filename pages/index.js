@@ -320,7 +320,6 @@ export default function Home({ baseUrl, submissionPredictions }) {
       setAnonId(uuid);
       setFirstTime(true);
     } else {
-      console.log("returning user: ", anonId);
       setAnonId(anonId);
     }
   }, []);

@@ -1,11 +1,11 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import Prediction from "../components/prediction";
 import Popup from "../components/popup";
 import ZooHead from "../components/zoo-head";
 import promptmaker from "promptmaker";
 import MODELS from "../lib/models.js";
-import {v4 as uuidv4} from "uuid";
-import {useRouter} from "next/router";
+import { v4 as uuidv4 } from "uuid";
+import { useRouter } from "next/router";
 import Pills from "../components/pills";
 import seeds from "../lib/seeds.js";
 
@@ -26,21 +26,29 @@ export default function Home({ baseUrl, submissionPredictions }) {
   const [anonId, setAnonId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [numRuns, setNumRuns] = useState(1);
-  const [popupOpen, setPopupOpen] = useState(false);;
-  const [xValues, setXValues] = useState([{
-    num_inference_steps: 30,
-  }, {
-    num_inference_steps: 40
-  }, {
-    num_inference_steps: 50
-  }]);
-  const [yValues, setYValues] = useState([{
-    scheduler: 'DDIM',
-  }, {
-    scheduler:  'DPMSolverMultistep',
-  }, {
-    scheduler: 'K_EULER_ANCESTRAL'
-  }]);
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [xValues, setXValues] = useState([
+    {
+      num_inference_steps: 30,
+    },
+    {
+      num_inference_steps: 40,
+    },
+    {
+      num_inference_steps: 50,
+    },
+  ]);
+  const [yValues, setYValues] = useState([
+    {
+      scheduler: "DDIM",
+    },
+    {
+      scheduler: "DPMSolverMultistep",
+    },
+    {
+      scheduler: "K_EULER_ANCESTRAL",
+    },
+  ]);
 
   async function getPredictionsFromSeed(seed) {
     const response = await fetch(`/api/submissions/${seed}`, {
@@ -96,21 +104,25 @@ export default function Home({ baseUrl, submissionPredictions }) {
   }
 
   const getReadableObjectValues = (object) => {
-    return Object.keys(object).map(key => {
-      return `${key}: ${object[key]}`;
-    }).join(", ");
-  }
+    return Object.keys(object)
+      .map((key) => {
+        return `${key}: ${object[key]}`;
+      })
+      .join(", ");
+  };
 
   function getPredictionsByVersionAndRow(version, yValue) {
-    return predictions.filter((p) => p.version === version).filter((p) => {
-      let matches = true;
-      Object.keys(yValue).forEach((key) => {
-        if (p.input[key] !== yValue[key]) {
-          matches = false;
-        }
+    return predictions
+      .filter((p) => p.version === version)
+      .filter((p) => {
+        let matches = true;
+        Object.keys(yValue).forEach((key) => {
+          if (p.input[key] !== yValue[key]) {
+            matches = false;
+          }
+        });
+        return matches;
       });
-      return matches;
-    });
   }
 
   // cmd + enter to submit
@@ -150,7 +162,12 @@ export default function Home({ baseUrl, submissionPredictions }) {
     });
   }
 
-  async function createReplicatePrediction(prompt, model, submissionId, input = {}) {
+  async function createReplicatePrediction(
+    prompt,
+    model,
+    submissionId,
+    input = {}
+  ) {
     const response = await postPrediction(prompt, model, submissionId, input);
     let prediction = await response.json();
 
@@ -217,7 +234,12 @@ export default function Home({ baseUrl, submissionPredictions }) {
           const input = Object.assign({}, xValues[j], yValues[i]);
 
           if (model.source == "replicate") {
-            promise = createReplicatePrediction(prompt, model, submissionId, input);
+            promise = createReplicatePrediction(
+              prompt,
+              model,
+              submissionId,
+              input
+            );
           } else if (model.source == "openai") {
             promise = createDallePrediction(prompt, model, submissionId);
           } else if (model.source == "stability") {
@@ -232,12 +254,12 @@ export default function Home({ baseUrl, submissionPredictions }) {
           setPredictions((prev) => [...prev, promise]);
 
           promise
-              .then((result) => {
-                setPredictions((prev) =>
-                    prev.map((x) => (x === promise ? result : x))
-                );
-              })
-              .catch((error) => setError(error.message));
+            .then((result) => {
+              setPredictions((prev) =>
+                prev.map((x) => (x === promise ? result : x))
+              );
+            })
+            .catch((error) => setError(error.message));
         }
       }
     }
@@ -294,7 +316,6 @@ export default function Home({ baseUrl, submissionPredictions }) {
       setAnonId(uuid);
       setFirstTime(true);
     } else {
-      console.log("returning user: ", anonId);
       setAnonId(anonId);
     }
   }, []);
@@ -398,33 +419,49 @@ export default function Home({ baseUrl, submissionPredictions }) {
                   <div>&nbsp;</div>
                   {xValues.map((xValue) => {
                     const displayValue = getReadableObjectValues(xValue);
-                    return <div className={"text-center"} key={displayValue}>
-                      <span className={"inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"}>
-                        {displayValue}
-                      </span>
-                    </div>;
+                    return (
+                      <div className={"text-center"} key={displayValue}>
+                        <span
+                          className={
+                            "inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"
+                          }
+                        >
+                          {displayValue}
+                        </span>
+                      </div>
+                    );
                   })}
                 </div>
                 {yValues.map((yValue) => {
                   const displayValue = getReadableObjectValues(yValue);
-                  return <div key={displayValue} className={"grid grid-cols-6 gap-20 mb-5"}>
-                    <div className={"flex items-center justify-end"}>
-                      <span className={"inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"}>
-                        {displayValue}
-                      </span>
+                  return (
+                    <div
+                      key={displayValue}
+                      className={"grid grid-cols-6 gap-20 mb-5"}
+                    >
+                      <div className={"flex items-center justify-end"}>
+                        <span
+                          className={
+                            "inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"
+                          }
+                        >
+                          {displayValue}
+                        </span>
+                      </div>
+                      {getPredictionsByVersionAndRow(model.version, yValue).map(
+                        (prediction) => (
+                          <>
+                            <Prediction
+                              key={prediction.id}
+                              prediction={prediction}
+                              height={"52"}
+                              width={"52"}
+                            />
+                          </>
+                        )
+                      )}
                     </div>
-                    {getPredictionsByVersionAndRow(model.version, yValue)
-                        .map((prediction) => (
-                            <>
-                              <Prediction
-                                  key={prediction.id}
-                                  prediction={prediction}
-                                  height={"52"}
-                                  width={"52"}
-                              />
-                            </>
-                        ))}
-                  </div>;
+                  );
                 })}
               </div>
             ))}

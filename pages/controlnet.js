@@ -342,7 +342,6 @@ export default function Home({ baseUrl, submissionPredictions }) {
       localStorage.setItem("anonId", uuid);
       setAnonId(uuid);
     } else {
-      console.log("returning user: ", anonId);
       setAnonId(anonId);
     }
   }, []);
