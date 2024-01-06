@@ -361,7 +361,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
         {/* Form + Outputs */}
 
         <div className="col-span-10 h-full">
-          <div className="h-24">
+          <div className="min-h-24">
             <form
               onKeyDown={onKeyDown}
               className="w-full"
