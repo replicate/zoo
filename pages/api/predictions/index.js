@@ -18,12 +18,6 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 export default async function handler(req, res) {
-  if (!process.env.REPLICATE_API_TOKEN) {
-    throw new Error(
-      "The REPLICATE_API_TOKEN environment variable is not set. See README.md for instructions on how to set it."
-    );
-  }
-
   if (!WEBHOOK_HOST) {
     throw new Error(
       "WEBHOOK_HOST is not set. If you're on local, make sure you set NGROK_HOST. If this doesn't exist, replicate predictions won't save to DB."
@@ -60,7 +54,7 @@ export default async function handler(req, res) {
     });
 
     const headers = {
-      Authorization: `Token ${process.env.REPLICATE_API_TOKEN}`,
+      Authorization: `Token ${req.body.replicate_api_token}`,
       "Content-Type": "application/json",
       "User-Agent": `${packageData.name}/${packageData.version}`,
     };
