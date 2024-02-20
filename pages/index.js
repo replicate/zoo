@@ -172,25 +172,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
       prediction.status !== "succeeded" &&
       prediction.status !== "failed"
     ) {
-      const jitter = random(0, 100); // Don't make all requests at the same time.
-      const delay = backoff.shift();
-      if (!delay) {
-        // We've exceeded our timeout.
-        // TODO: Better user facing messaging here.
-        break;
-      }
-
-      await sleep(delay + jitter);
       const response = await fetch("/api/predictions/" + prediction.id);
-
-      // Handle Rate Limiting
-      if (response.status === 429) {
-        const reset =
-          response.headers.get("X-Ratelimit-Reset") ?? Date.now() + 10_000;
-        const wait = reset - Date.now();
-        await sleep(wait);
-        continue;
-      }
 
       if (response.status !== 200) {
         throw new Error(prediction.detail);
