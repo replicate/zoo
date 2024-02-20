@@ -131,6 +131,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        replicate_api_token: localStorage.getItem("replicate_api_token"),
         prompt: prompt,
         version: model.version,
         source: model.source,
