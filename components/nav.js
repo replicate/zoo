@@ -108,6 +108,7 @@ export default function Nav() {
                   <CodeBracketIcon className="h-5 w-5 bg- text-gray-100 mr-2 hidden sm:inline-flex" />{" "}
                   Code
                 </Link>
+
                 {id && (
                   <button
                     onClick={() => copyToClipboard()}

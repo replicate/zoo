@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Prediction from "../components/prediction";
 import Popup from "../components/popup";
+import Welcome from "../components/welcome.js";
 import ZooHead from "../components/zoo-head";
 import ExternalLink from "../components/external-link";
 import promptmaker from "promptmaker";
@@ -21,6 +22,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 export default function Home({ baseUrl, submissionPredictions }) {
   const router = useRouter();
   const { id } = router.query;
+
   const [prompt, setPrompt] = useState("");
   const [predictions, setPredictions] = useState([]);
   const [error, setError] = useState(null);
@@ -30,7 +32,7 @@ export default function Home({ baseUrl, submissionPredictions }) {
   const [anonId, setAnonId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [numRuns, setNumRuns] = useState(1);
-  const [popupOpen, setPopupOpen] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
 
   async function getPredictionsFromSeed(seed) {
     const response = await fetch(`/api/submissions/${seed}`, {
@@ -87,6 +89,13 @@ export default function Home({ baseUrl, submissionPredictions }) {
   function getPredictionsByVersion(version) {
     return predictions.filter((p) => p.version === version);
   }
+
+  const handleTokenSubmit = (e) => {
+    e.preventDefault();
+    console.log(e.target[0].value);
+    localStorage.setItem("replicate_api_token", e.target[0].value);
+    setWelcomeOpen(false);
+  };
 
   const handleCheckboxChange = (e) => {
     const modelId = parseInt(e.target.value, 10);
@@ -280,6 +289,14 @@ export default function Home({ baseUrl, submissionPredictions }) {
     );
     const anonId = localStorage.getItem("anonId");
     const storedModels = localStorage.getItem("models");
+    const replicateApiToken = localStorage.getItem("replicate_api_token");
+
+    if (replicateApiToken) {
+      setWelcomeOpen(false);
+    } else {
+      setWelcomeOpen(true);
+    }
+
     setLoading(true);
 
     // if the page has an id set
@@ -338,151 +355,156 @@ export default function Home({ baseUrl, submissionPredictions }) {
         ogImage={`${baseUrl}/api/og?${ogParams()}`}
       />
 
-      <Popup open={popupOpen} setOpen={setPopupOpen} />
-      <Pills />
-
-      <div className="pt-4">
-        <div className="mx-0 max-w-7xl">
-          <div className="flex justify-between mx-0">
-            <div>
-              {firstTime && (
-                <span className="text-2xl font-medium tracking-tight text-gray-500">
-                  Welcome to the Zoo, a playground for text to image models.{" "}
-                </span>
-              )}
-              <span className="text-2xl font-medium tracking-tight text-gray-900">
-                What do you want to see?
-              </span>
+      {welcomeOpen ? (
+        <Welcome handleTokenSubmit={handleTokenSubmit} />
+      ) : (
+        <div>
+          <Pills />
+          <div className="pt-4">
+            <div className="mx-0 max-w-7xl">
+              <div className="flex justify-between mx-0">
+                <div>
+                  {firstTime && (
+                    <span className="text-2xl font-medium tracking-tight text-gray-500">
+                      Welcome to the Zoo, a playground for text to image models.{" "}
+                    </span>
+                  )}
+                  <span className="text-2xl font-medium tracking-tight text-gray-900">
+                    What do you want to see?
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+          <div className="md:grid grid-cols-12 gap-x-16 mt-2">
+            {/* Form + Outputs */}
 
-      <div className="md:grid grid-cols-12 gap-x-16 mt-2">
-        {/* Form + Outputs */}
-
-        <div className="col-span-10 h-full">
-          <div className="h-24">
-            <form
-              onKeyDown={onKeyDown}
-              className="w-full"
-              onSubmit={(e) => handleSubmit(e, prompt)}
-            >
-              <div className="flex relative mt-2">
-                {" "}
-                <div className="w-full h-full relative">
-                  <textarea
-                    name="prompt"
-                    className="w-full border-2 p-3 pr-12 text-sm md:text-base rounded-md ring-brand outline-brand"
-                    rows="2"
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="Enter a prompt to display an image"
-                  />
-
-                  <button
-                    className="absolute right-3.5 top-2 text-gray-500 hover:text-gray-900 px-1 py-2 rounded-md flex justify-center items-center"
-                    type="button"
-                    onClick={() => setPrompt(promptmaker({ flavors: null }))}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+            <div className="col-span-10 h-full">
+              <div className="h-24">
+                <form
+                  onKeyDown={onKeyDown}
+                  className="w-full"
+                  onSubmit={(e) => handleSubmit(e, prompt)}
+                >
+                  <div className="flex relative mt-2">
+                    {" "}
+                    <div className="w-full h-full relative">
+                      <textarea
+                        name="prompt"
+                        className="w-full border-2 p-3 pr-12 text-sm md:text-base rounded-md ring-brand outline-brand"
+                        rows="2"
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
+                        placeholder="Enter a prompt to display an image"
                       />
-                    </svg>
-                  </button>
-                </div>
-                <div className="ml-3 mb-1.5 inline-flex">
-                  <button
-                    className="button bg-brand h-full flex justify-center items-center font-bold hover:bg-orange-600"
-                    type="submit"
-                  >
-                    Go{" "}
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
 
-          {loading && "Loading..."}
-
-          <div className="-mt-2">
-            {!loading && getSelectedModels().length == 0 && <EmptyState />}
-
-            {getSelectedModels().map((model) => (
-              <div key={model.id} className="mt-5">
-                <div className="flex gap-6 tracking-wide mb-10">
-                  {/* Model description */}
-                  <div className="w-72 border-l-4 border-gray-900 pl-5 md:pl-6 py-2">
-                    <Link
-                      href={`https://replicate.com/${model.owner.toLowerCase()}?utm_source=project&utm_campaign=zoo`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <h5 className="text-xs md:text-sm text-gray-500 hover:text-gray-900">
-                        {model.owner}
-                      </h5>
-                    </Link>
-                    <Link
-                      href={model.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <h5 className="text-base md:text-xl font-medium text-gray-800 hover:text-gray-500">
-                        {model.name}
-                      </h5>
-                    </Link>
-                    <p className="text-xs md:text-sm text-gray-500 mt-2 md:mt-4">
-                      {model.description}
-                    </p>
-
-                    <div className="mt-2 md:mt-6 flex gap-2">
-                      {model.links != null &&
-                        model.links.map((link) => (
-                          <ExternalLink
-                            key={`${model.id}-${link.url}`}
-                            link={link}
+                      <button
+                        className="absolute right-3.5 top-2 text-gray-500 hover:text-gray-900 px-1 py-2 rounded-md flex justify-center items-center"
+                        type="button"
+                        onClick={() =>
+                          setPrompt(promptmaker({ flavors: null }))
+                        }
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-5 h-5"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
                           />
-                        ))}
+                        </svg>
+                      </button>
+                    </div>
+                    <div className="ml-3 mb-1.5 inline-flex">
+                      <button
+                        className="button bg-brand h-full flex justify-center items-center font-bold hover:bg-orange-600"
+                        type="submit"
+                      >
+                        Go{" "}
+                      </button>
                     </div>
                   </div>
-
-                  {/* Row for predictions */}
-                  <div className="flex w-full overflow-y-hidden overflow-x-auto space-x-6">
-                    {getPredictionsByVersion(model.version)
-                      .reverse()
-                      .map((prediction) => (
-                        <>
-                          <Prediction
-                            key={prediction.id}
-                            prediction={prediction}
-                            height={"52"}
-                            width={"52"}
-                          />
-                        </>
-                      ))}
-                  </div>
-                </div>
+                </form>
               </div>
-            ))}
+
+              {loading && "Loading..."}
+
+              <div className="-mt-2">
+                {!loading && getSelectedModels().length == 0 && <EmptyState />}
+
+                {getSelectedModels().map((model) => (
+                  <div key={model.id} className="mt-5">
+                    <div className="flex gap-6 tracking-wide mb-10">
+                      {/* Model description */}
+                      <div className="w-72 border-l-4 border-gray-900 pl-5 md:pl-6 py-2">
+                        <Link
+                          href={`https://replicate.com/${model.owner.toLowerCase()}?utm_source=project&utm_campaign=zoo`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <h5 className="text-xs md:text-sm text-gray-500 hover:text-gray-900">
+                            {model.owner}
+                          </h5>
+                        </Link>
+                        <Link
+                          href={model.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <h5 className="text-base md:text-xl font-medium text-gray-800 hover:text-gray-500">
+                            {model.name}
+                          </h5>
+                        </Link>
+                        <p className="text-xs md:text-sm text-gray-500 mt-2 md:mt-4">
+                          {model.description}
+                        </p>
+
+                        <div className="mt-2 md:mt-6 flex gap-2">
+                          {model.links != null &&
+                            model.links.map((link) => (
+                              <ExternalLink
+                                key={`${model.id}-${link.url}`}
+                                link={link}
+                              />
+                            ))}
+                        </div>
+                      </div>
+
+                      {/* Row for predictions */}
+                      <div className="flex w-full overflow-y-hidden overflow-x-auto space-x-6">
+                        {getPredictionsByVersion(model.version)
+                          .reverse()
+                          .map((prediction) => (
+                            <>
+                              <Prediction
+                                key={prediction.id}
+                                prediction={prediction}
+                                height={"52"}
+                                width={"52"}
+                              />
+                            </>
+                          ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Checkboxes
+              models={models}
+              handleCheckboxChange={handleCheckboxChange}
+              className={"mt-28"}
+            />
           </div>
         </div>
-
-        <Checkboxes
-          models={models}
-          handleCheckboxChange={handleCheckboxChange}
-          className={"mt-28"}
-        />
-      </div>
+      )}
     </div>
   );
 }
